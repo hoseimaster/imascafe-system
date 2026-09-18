@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>法マス喫茶 総合管理システム</title>
+
+    <meta
+        name="theme-color"
+        content="#f7f1e9"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="default"
+    >
+
+    <link rel="stylesheet" href="./base.css">
+    <link rel="stylesheet" href="./pages.css">
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="stylesheet" href="./expenses.css">
+    <link rel="stylesheet" href="./dashboard.css">
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="./login-status.css">
+    <link rel="stylesheet" href="./icons.css">
+    <link rel="stylesheet" href="./login.css">
+
+</head>
+
+
+<body>
+
+<div id="app">
+
+
+    <!-- ========================================
+         ログイン
+    ======================================== -->
+
+    <section
+        id="loginScreen"
+        class="screen login-screen"
+    >
+
+        <div class="login-container">
+
+            <div class="app-logo">
+
+                <div class="app-logo-main">
+                    法マス喫茶
+                </div>
+
+                <div class="app-logo-sub">
+                    総合管理システム
+                </div>
+
+            </div>
+
+
+            <div class="login-heading">
+                ログイン
+            </div>
+
+
+            <p class="login-description">
+                管理システムを利用するにはログインしてください。
+            </p>
+
+
+            <form
+                id="loginForm"
+                class="login-form"
+            >
+
+                <div class="form-group">
+
+                    <label for="operatorName">
+                        担当者
+                    </label>
+
+                    <input
+                        type="text"
+                        id="operatorName"
+                        name="operatorName"
+                        autocomplete="name"
+                        placeholder="担当者名を入力してください"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        パスワード
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="パスワードを入力してください"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="primary-button"
+                >
+                    ログイン
+                </button>
+
+
+                <p
+                    id="loginError"
+                    class="form-error"
+                    hidden
+                ></p>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         メインアプリ
+    ======================================== -->
+
+    <section
+        id="mainApp"
+        class="main-app"
+        hidden
+    >
+
+        <!-- ========================================
+             PCサイドナビ
+        ======================================== -->
+
+        <aside
+            id="sideNavigation"
+            class="side-navigation"
+        >
+
+            <div class="side-navigation-logo">
+
+                <div>
+                    法マス喫茶
+                </div>
+
+                <small>
+                    総合管理システム
+                </small>
+
+            </div>
+
+
+            <nav class="side-nav-list">
+
+                <button
+                    type="button"
+                    class="nav-button active"
+                    data-screen="dashboardScreen"
+                >
+
+                    <img
+                        src="./logo_1.png"
+                        class="navigation-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        ホーム
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="nav-button"
+                    data-screen="ordersScreen"
+                >
+
+                    <img
+                        src="./logo_2.png"
+                        class="navigation-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        注文
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="nav-button"
+                    data-screen="inventoryScreen"
+                >
+
+                    <img
+                        src="./logo_3.png"
+                        class="navigation-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        在庫
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="nav-button"
+                    data-screen="historyScreen"
+                >
+
+                    <img
+                        src="./logo_4.png"
+                        class="navigation-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        履歴
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="nav-button"
+                    data-screen="settingsScreen"
+                >
+
+                    <img
+                        src="./logo_5.png"
+                        class="navigation-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        設定
+                    </span>
+
+                </button>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- ========================================
+             メインコンテンツ
+        ======================================== -->
+
+        <main class="main-content">
+
+
+            <!-- ========================================
+                 ホーム
+            ======================================== -->
+
+            <section
+                id="dashboardScreen"
+                class="app-screen active-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+                            総合管理画面
+                        </h1>
+
+                        <p>
+                            法マス喫茶の現在の状況
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="dashboardRefreshButton"
+                        class="large-action-button dashboard-refresh-button"
+                        data-refresh
+                        aria-label="更新"
+                        title="更新"
+                    >
+
+                        <img
+                            src="./logo_8.png"
+                            class="action-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            更新
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="dashboardDate"
+                    class="current-date"
+                >
+
+                    <img
+                        src="./logo_9.png"
+                        class="date-icon"
+                        alt=""
+                        aria-hidden="true"
+                    >
+
+                    <span>
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="dashboard-grid">
+
+                    <article class="stat-card stat-card-primary">
+
+                        <span class="stat-card-label">
+                            今日の売上
+                        </span>
+
+                        <strong
+                            id="todaySales"
+                            class="stat-card-value"
+                        >
+                            ¥0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            累計売上
+                        </span>
+
+                        <strong
+                            id="totalSales"
+                            class="stat-card-value"
+                        >
+                            ¥0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            注文件数
+                        </span>
+
+                        <strong
+                            id="orderCount"
+                            class="stat-card-value"
+                        >
+                            0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            来場者数
+                        </span>
+
+                        <strong
+                            id="visitorCount"
+                            class="stat-card-value"
+                        >
+                            0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            現在庫
+                        </span>
+
+                        <strong
+                            id="inventoryCount"
+                            class="stat-card-value"
+                        >
+                            0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            経費
+                        </span>
+
+                        <strong
+                            id="dashboardExpenseTotal"
+                            class="stat-card-value"
+                        >
+                            ¥0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            利益
+                        </span>
+
+                        <strong
+                            id="profitTotal"
+                            class="stat-card-value"
+                        >
+                            ¥0
+                        </strong>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-card-label">
+                            平均注文額
+                        </span>
+
+                        <strong
+                            id="averageOrderAmount"
+                            class="stat-card-value"
+                        >
+                            ¥0
+                        </strong>
+
+                    </article>
+
+                </div>
+
+
+                <div class="dashboard-actions">
+
+                    <button
+                        type="button"
+                        class="large-action-button"
+                        data-screen="statisticsScreen"
+                    >
+
+                        <img
+                            src="./logo_11.png"
+                            class="action-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            詳細統計
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="large-action-button"
+                        data-screen="ordersScreen"
+                    >
+
+                        <img
+                            src="./logo_2.png"
+                            class="action-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            注文を登録
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 詳細統計
+            ======================================== -->
+
+            <section
+                id="statisticsScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_11.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                詳細統計
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            売上・来場者・商品販売状況
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="statistics-section">
+
+                    <h2>
+                        売上
+                    </h2>
+
+                    <div
+                        id="dailySalesContainer"
+                        class="data-card"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+
+                    <div
+                        id="hourlySalesContainer"
+                        class="data-card"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+                </div>
+
+
+                <div class="statistics-section">
+
+                    <h2>
+                        商品販売数
+                    </h2>
+
+                    <div
+                        id="productSalesContainer"
+                        class="data-card"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+                </div>
+
+
+                <div class="statistics-section">
+
+                    <h2>
+                        商品別・日別販売数
+                    </h2>
+
+                    <div
+                        id="productDailySalesContainer"
+                        class="data-card table-container"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+                </div>
+
+
+                <div class="statistics-section">
+
+                    <h2>
+                        来場者
+                    </h2>
+
+                    <div
+                        id="visitorStatisticsContainer"
+                        class="data-card"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+                </div>
+
+
+                <div class="statistics-section">
+
+                    <h2>
+                        KPI
+                    </h2>
+
+                    <div
+                        id="kpiContainer"
+                        class="data-card"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 注文
+            ======================================== -->
+
+            <section
+                id="ordersScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_2.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                注文
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            注文を登録・管理します
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-layout">
+
+                    <div class="order-products-panel">
+
+                        <div class="section-title">
+
+                            <img
+                                src="./logo_10.png"
+                                class="section-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                商品
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="productList"
+                            class="product-grid"
+                        >
+
+                            <div class="loading-message">
+                                商品を読み込んでいます
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-cart-panel">
+
+                        <div class="section-title">
+
+                            <img
+                                src="./logo_2.png"
+                                class="section-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                注文内容
+                            </span>
+
+                        </div>
+
+
+                        <div class="order-information">
+
+                            <div class="form-group">
+
+                                <label for="orderDate">
+                                    注文日
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="orderDate"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="orderTime">
+                                    注文時刻
+                                </label>
+
+                                <input
+                                    type="time"
+                                    id="orderTime"
+                                    step="1"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="customerCount">
+                                    来場者数
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="customerCount"
+                                    min="1"
+                                    step="1"
+                                    value="1"
+                                    inputmode="numeric"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="orderCart"
+                            class="order-cart"
+                        >
+
+                            <div class="empty-message">
+                                商品を選択してください
+                            </div>
+
+                        </div>
+
+
+                        <div class="order-total">
+
+                            <span>
+                                合計
+                            </span>
+
+                            <strong id="orderTotal">
+                                ¥0
+                            </strong>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="submitOrderButton"
+                            class="primary-button order-submit-button"
+                            disabled
+                        >
+                            注文を登録
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="active-orders-section">
+
+                    <div class="section-title">
+
+                        <img
+                            src="./logo_4.png"
+                            class="section-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            注文履歴
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="activeOrdersList"
+                        class="active-orders-list"
+                    >
+                        データを読み込んでいます
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="secondary-button order-history-all-button"
+                        data-order-history
+                    >
+                        すべての注文履歴
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 注文履歴
+            ======================================== -->
+
+            <section
+                id="orderHistoryScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_4.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                注文履歴
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            登録された注文を確認します
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-history-filter">
+
+                    <div class="form-group">
+
+                        <label for="orderHistoryDate">
+                            日付
+                        </label>
+
+                        <input
+                            type="date"
+                            id="orderHistoryDate"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="orderHistoryDateClear"
+                        class="secondary-button"
+                    >
+                        すべて
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="orderHistoryList"
+                    class="order-history-list"
+                >
+                    データを読み込んでいます
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 在庫
+            ======================================== -->
+
+            <section
+                id="inventoryScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_3.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                在庫
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            現在の在庫状況
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="inventoryList"
+                    class="inventory-list"
+                >
+                    データを読み込んでいます
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 履歴
+            ======================================== -->
+
+            <section
+                id="historyScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_4.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                操作履歴
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            システム上の操作履歴
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="history-filter">
+
+                    <div class="form-group">
+
+                        <label for="historyDate">
+                            日付
+                        </label>
+
+                        <input
+                            type="date"
+                            id="historyDate"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="historyOperationType">
+                            操作
+                        </label>
+
+                        <select id="historyOperationType">
+
+                            <option value="">
+                                すべて
+                            </option>
+
+                            <option value="order_created">
+                                注文登録
+                            </option>
+
+                            <option value="order_cancelled">
+                                注文キャンセル
+                            </option>
+
+                            <option value="order_datetime_updated">
+                                注文日時変更
+                            </option>
+
+                            <option value="inventory_added">
+                                在庫追加
+                            </option>
+
+                            <option value="inventory_updated">
+                                在庫変更
+                            </option>
+
+                            <option value="product_created">
+                                商品追加
+                            </option>
+
+                            <option value="product_updated">
+                                商品変更
+                            </option>
+
+                            <option value="event_day_created">
+                                日付追加
+                            </option>
+
+                            <option value="event_day_updated">
+                                日付変更
+                            </option>
+
+                            <option value="reset">
+                                リセット
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="historyList"
+                    class="history-list"
+                >
+                    データを読み込んでいます
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 設定
+            ======================================== -->
+
+            <section
+                id="settingsScreen"
+                class="app-screen"
+            >
+
+                <div class="screen-header">
+
+                    <div>
+
+                        <h1>
+
+                            <img
+                                src="./logo_5.png"
+                                class="title-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                設定
+                            </span>
+
+                        </h1>
+
+                        <p>
+                            システム設定
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-list">
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
+                        data-settings="products"
+                        data-screen="productSettingsScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_10.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                商品設定
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
+                        data-settings="event-days"
+                        data-screen="eventDaySettingsScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_9.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                日付設定
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
+                        data-settings="expenses"
+                        data-screen="expensesScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_16.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                支出管理
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
+                        data-settings="history"
+                        data-screen="historyScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_4.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                操作履歴
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item"
+                        data-settings="output"
+                        data-screen="outputScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_17.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                データ出力
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
+                        data-settings="reset"
+                        id="settingsResetButton"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_7.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                リセット
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <!-- ========================================
+                         ログイン中の担当者
+                    ======================================== -->
+
+                    <div class="settings-item settings-account">
+
+                        <button
+                            type="button"
+                            class="settings-account-main settings-account-switch"
+                            data-staff-switch
+                            aria-label="担当者を切り替える"
+                        >
+
+                            <div class="settings-account-user">
+
+                                <img
+                                    src="./logo_6.png"
+                                    class="settings-account-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span class="settings-account-text">
+
+                                    <span class="settings-label">
+                                        ログイン中
+                                    </span>
+
+                                    <strong id="settingsOperatorName">
+                                        -
+                                    </strong>
+
+                                </span>
+
+                            </div>
+
+
+                            <span
+                                id="settingsOperatorRole"
+                                class="role-badge"
+                            >
+                                -
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="logoutButton"
+                        class="settings-item logout-item"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_12.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                ログアウト
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 支出管理
+            ======================================== -->
+
+            <section
+                id="expensesScreen"
+                class="app-screen settings-management-screen expenses-screen"
+            >
+
+                <div class="screen-header management-screen-header">
+
+                    <div class="screen-header-back">
+
+                        <button
+                            type="button"
+                            class="panel-back-button"
+                            data-screen="settingsScreen"
+                            aria-label="設定に戻る"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div>
+
+                            <h1>
+
+                                <img
+                                    src="./logo_16.png"
+                                    class="title-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span>
+                                    支出管理
+                                </span>
+
+                            </h1>
+
+                            <p>
+                                支出の登録・変更・削除を管理します
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-screen-actions">
+
+                        <button
+                            type="button"
+                            id="expenseAddButton"
+                            class="primary-button admin-only"
+                        >
+
+                        
+                            <span>
+                                ＋ 支出を登録
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="expense-filter">
+
+                    <div class="form-group">
+
+                        <label for="expenseDate">
+                            日付
+                        </label>
+
+                        <input
+                            type="date"
+                            id="expenseDate"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="expenseDateClear"
+                        class="secondary-button"
+                    >
+                        すべて
+                    </button>
+
+                </div>
+
+
+                <div class="expense-summary">
+
+                    <span>
+                        支出合計
+                    </span>
+
+                    <strong id="expenseTotal">
+                        ¥0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    id="expenseList"
+                    class="expense-list"
+                >
+
+                    <div class="loading-message">
+                        支出を読み込んでいます
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 商品設定
+            ======================================== -->
+
+            <section
+                id="productSettingsScreen"
+                class="app-screen settings-management-screen"
+            >
+
+                <div class="screen-header management-screen-header">
+
+                    <div class="screen-header-back">
+
+                        <button
+                            type="button"
+                            class="panel-back-button"
+                            data-screen="settingsScreen"
+                            aria-label="設定に戻る"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div>
+
+                            <h1>
+
+                                <img
+                                    src="./logo_10.png"
+                                    class="title-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span>
+                                    商品設定
+                                </span>
+
+                            </h1>
+
+                            <p>
+                                商品の登録・変更・販売状態を管理します
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-screen-actions">
+
+                        <button
+                            type="button"
+                            id="addProductButton"
+                            class="primary-button admin-only"
+                        >
+                    
+                            <span>
+                               ＋ 商品を追加
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="productSettingsList"
+                    class="settings-data-list product-settings-list"
+                >
+
+                    <div class="loading-message">
+                        商品を読み込んでいます
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 日付設定
+            ======================================== -->
+
+            <section
+                id="eventDaySettingsScreen"
+                class="app-screen settings-management-screen"
+            >
+
+                <div class="screen-header management-screen-header">
+
+                    <div class="screen-header-back">
+
+                        <button
+                            type="button"
+                            class="panel-back-button"
+                            data-screen="settingsScreen"
+                            aria-label="設定に戻る"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div>
+
+                            <h1>
+
+                                <img
+                                    src="./logo_9.png"
+                                    class="title-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span>
+                                    日付設定
+                                </span>
+
+                            </h1>
+
+                            <p>
+                                開催日・営業日を管理します
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-screen-actions">
+
+                        <button
+                            type="button"
+                            id="addEventDayButton"
+                            class="primary-button admin-only"
+                        >
+
+                                                
+                            <span>
+                                ＋ 日付を追加
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="eventDaySettingsList"
+                    class="settings-data-list event-day-settings-list"
+                >
+
+                    <div class="loading-message">
+                        日付を読み込んでいます
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 データ出力
+            ======================================== -->
+
+            <section
+                id="outputScreen"
+                class="app-screen settings-management-screen output-screen"
+            >
+
+                <div class="screen-header management-screen-header">
+
+                    <div class="screen-header-back">
+
+                        <button
+                            type="button"
+                            class="panel-back-button"
+                            data-screen="settingsScreen"
+                            aria-label="設定に戻る"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div>
+
+                            <h1>
+
+                                <img
+                                    src="./logo_17.png"
+                                    class="title-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span>
+                                    データ出力
+                                </span>
+
+                            </h1>
+
+                            <p>
+                                システム内のデータを出力します
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="output-section">
+
+                    <div class="output-section-title">
+
+                        <img
+                            src="./logo_17.png"
+                            class="section-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            CSV出力
+                        </span>
+
+                    </div>
+
+
+                    <div class="output-button-list">
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="orders"
+                        >
+
+                            <span class="output-button-title">
+                                注文データ
+                            </span>
+
+                            <span class="output-button-description">
+                                注文情報をCSV形式で出力
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="order-items"
+                        >
+
+                            <span class="output-button-title">
+                                注文明細
+                            </span>
+
+                            <span class="output-button-description">
+                                商品ごとの注文内容をCSV形式で出力
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="sales"
+                        >
+
+                            <span class="output-button-title">
+                                売上データ
+                            </span>
+
+                            <span class="output-button-description">
+                                売上集計データをCSV形式で出力
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="expenses"
+                        >
+
+                            <span class="output-button-title">
+                                支出データ
+                            </span>
+
+                            <span class="output-button-description">
+                                支出情報をCSV形式で出力
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="inventory"
+                        >
+
+                            <span class="output-button-title">
+                                在庫データ
+                            </span>
+
+                            <span class="output-button-description">
+                                現在の在庫情報をCSV形式で出力
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="output-button"
+                            data-output-csv="history"
+                        >
+
+                            <span class="output-button-title">
+                                操作履歴
+                            </span>
+
+                            <span class="output-button-description">
+                                操作履歴をCSV形式で出力
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="output-section">
+
+                    <div class="output-section-title">
+
+                        <img
+                            src="./logo_17.png"
+                            class="section-icon"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span>
+                            PDF出力
+                        </span>
+
+                    </div>
+
+
+                    <div class="output-button-list">
+
+                        <button
+                            type="button"
+                            class="output-button output-pdf-button"
+                            data-output-pdf
+                        >
+
+                            <span class="output-button-title">
+                                PDF形式で出力
+                            </span>
+
+                            <span class="output-button-description">
+                                現在の売上・支出・利益などをPDF形式で出力
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- ========================================
+             全画面共通 更新ボタン
+        ======================================== -->
+
+        <button
+            type="button"
+            id="globalRefreshButton"
+            class="global-refresh-button"
+            data-refresh
+            aria-label="現在の画面を更新"
+            title="更新"
+        >
+
+            <img
+                src="./logo_8.png"
+                class="global-refresh-icon"
+                alt=""
+                aria-hidden="true"
+            >
+
+        </button>
+
+
+        <!-- ========================================
+             スマホ・タブレット下部ナビ
+        ======================================== -->
+
+        <nav
+            id="bottomNavigation"
+            class="bottom-navigation"
+        >
+
+            <button
+                type="button"
+                class="bottom-nav-button active"
+                data-screen="dashboardScreen"
+            >
+
+                <img
+                    src="./logo_1.png"
+                    class="bottom-navigation-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    ホーム
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="bottom-nav-button"
+                data-screen="ordersScreen"
+            >
+
+                <img
+                    src="./logo_2.png"
+                    class="bottom-navigation-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    注文
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="bottom-nav-button"
+                data-screen="inventoryScreen"
+            >
+
+                <img
+                    src="./logo_3.png"
+                    class="bottom-navigation-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    在庫
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="bottom-nav-button"
+                data-screen="historyScreen"
+            >
+
+                <img
+                    src="./logo_4.png"
+                    class="bottom-navigation-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    履歴
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="bottom-nav-button"
+                data-screen="settingsScreen"
+            >
+
+                <img
+                    src="./logo_5.png"
+                    class="bottom-navigation-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    設定
+                </span>
+
+            </button>
+
+        </nav>
+
+    </section>
+
+
+    <!-- ========================================
+         商品追加・編集モーダル
+    ======================================== -->
+
+    <div
+        id="productModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="productModal"
+            class="modal management-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="productModalTitle"
+        >
+
+            <button
+                type="button"
+                id="productModalCloseButton"
+                class="modal-close-button"
+                aria-label="閉じる"
+            >
+                ×
+            </button>
+
+
+            <h2
+                id="productModalTitle"
+                class="modal-title"
+            >
+                商品を追加
+            </h2>
+
+
+            <form id="productForm">
+
+                <input
+                    type="hidden"
+                    id="productId"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="productName">
+                        商品名
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productName"
+                        placeholder="商品名を入力してください"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productCategory">
+                        カテゴリ
+                    </label>
+
+                    <select
+                        id="productCategory"
+                        required
+                    >
+
+                        <option value="">
+                            カテゴリを選択してください
+                        </option>
+
+                        <option value="drink">
+                            ドリンク
+                        </option>
+
+                        <option value="dessert">
+                            デザート
+                        </option>
+
+
+                        <option value="other">
+                            その他
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productPrice">
+                        価格
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="productPrice"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                            required
+                        >
+
+                        <span>
+                            円
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productProvidedQuantity">
+                        提供個数
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="productProvidedQuantity"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            value="1"
+                            placeholder="1"
+                            required
+                        >
+
+                        <span>
+                            個
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productLowStockThreshold">
+                        在庫警告閾値
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="productLowStockThreshold"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            value="5"
+                            placeholder="5"
+                            required
+                        >
+
+                        <span>
+                            個
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productDescription">
+                        商品説明
+                    </label>
+
+                    <textarea
+                        id="productDescription"
+                        rows="3"
+                        placeholder="商品説明を入力してください"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="productModalCancelButton"
+                        class="secondary-button"
+                    >
+                        キャンセル
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="productSaveButton"
+                        class="primary-button"
+                    >
+                        保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         支出登録・編集モーダル
+    ======================================== -->
+
+    <div
+        id="expenseModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="expenseModal"
+            class="modal management-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="expenseFormTitle"
+        >
+
+            <button
+                type="button"
+                id="expenseModalCloseButton"
+                class="modal-close-button"
+                aria-label="閉じる"
+            >
+                ×
+            </button>
+
+
+            <h2
+                id="expenseFormTitle"
+                class="modal-title"
+            >
+                支出を登録
+            </h2>
+
+
+            <form id="expenseFormElement">
+
+                <input
+                    type="hidden"
+                    id="expenseId"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="expenseItem">
+                        支出項目
+                    </label>
+
+                    <input
+                        type="text"
+                        id="expenseItem"
+                        maxlength="100"
+                        placeholder="例：材料費"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="expenseAmount">
+                        金額
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="expenseAmount"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                            required
+                        >
+
+                        <span>
+                            円
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="expenseDateInput">
+                        支出日
+                    </label>
+
+                    <input
+                        type="date"
+                        id="expenseDateInput"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="expenseMemo">
+                        メモ
+                    </label>
+
+                    <textarea
+                        id="expenseMemo"
+                        rows="3"
+                        maxlength="500"
+                        placeholder="必要に応じて入力してください"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="expenseCancelButton"
+                        class="secondary-button"
+                    >
+                        キャンセル
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="expenseSaveButton"
+                        class="primary-button"
+                    >
+                        保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         日付追加・編集モーダル
+    ======================================== -->
+
+    <div
+        id="eventDayModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="eventDayModal"
+            class="modal management-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="eventDayModalTitle"
+        >
+
+            <button
+                type="button"
+                id="eventDayModalCloseButton"
+                class="modal-close-button"
+                aria-label="閉じる"
+            >
+                ×
+            </button>
+
+
+            <h2
+                id="eventDayModalTitle"
+                class="modal-title"
+            >
+                日付を追加
+            </h2>
+
+
+            <form id="eventDayForm">
+
+                <input
+                    type="hidden"
+                    id="eventDayId"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="eventDayDate">
+                        開催日
+                    </label>
+
+                    <input
+                        type="date"
+                        id="eventDayDate"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDayName">
+                        日付の名称
+                    </label>
+
+                    <input
+                        type="text"
+                        id="eventDayName"
+                        placeholder="例：1日目"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDayStartTime">
+                        開始時刻
+                    </label>
+
+                    <input
+                        type="time"
+                        id="eventDayStartTime"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDayEndTime">
+                        終了時刻
+                    </label>
+
+                    <input
+                        type="time"
+                        id="eventDayEndTime"
+                    >
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="eventDayModalCancelButton"
+                        class="secondary-button"
+                    >
+                        キャンセル
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="eventDaySaveButton"
+                        class="primary-button"
+                    >
+                        保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         リセットコード入力モーダル
+    ======================================== -->
+
+    <div
+        id="resetCodeModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="resetCodeModal"
+            class="modal management-modal reset-code-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="resetCodeModalTitle"
+        >
+
+            <h2
+                id="resetCodeModalTitle"
+                class="modal-title"
+            >
+
+                <img
+                    src="./logo_7.png"
+                    class="title-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    リセットコード
+                </span>
+
+            </h2>
+
+
+            <p class="modal-description">
+                リセットを実行するには管理者用コードを入力してください。
+            </p>
+
+
+            <form id="resetCodeForm">
+
+                <div class="form-group">
+
+                    <label for="resetCodeInput">
+                        リセットコード
+                    </label>
+
+                    <input
+                        type="password"
+                        id="resetCodeInput"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="20"
+                        placeholder="コードを入力してください"
+                        required
+                    >
+
+                </div>
+
+
+                <p
+                    id="resetCodeError"
+                    class="form-error"
+                    hidden
+                ></p>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="resetCodeCancel"
+                        class="secondary-button"
+                    >
+                        キャンセル
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="resetCodeSubmitButton"
+                        class="danger-button"
+                    >
+                        確認
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         リセット操作モーダル
+    ======================================== -->
+
+    <div
+        id="resetActionModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="resetActionModal"
+            class="modal management-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="resetActionModalTitle"
+        >
+
+            <h2
+                id="resetActionModalTitle"
+                class="modal-title"
+            >
+
+                <img
+                    src="./logo_7.png"
+                    class="title-icon"
+                    alt=""
+                    aria-hidden="true"
+                >
+
+                <span>
+                    リセット
+                </span>
+
+            </h2>
+
+
+            <div class="reset-warning">
+
+                <strong>
+                    注意
+                </strong>
+
+                <p>
+                    リセットしたデータは元に戻せません。
+                </p>
+
+            </div>
+
+
+            <div
+                id="resetActionList"
+                class="reset-action-list"
+            >
+
+                <button
+                    type="button"
+                    id="resetDateButton"
+                    class="reset-action-button"
+                >
+
+                    <span class="reset-action-title">
+
+                       
+
+                        <span>
+                            日付リセット
+                        </span>
+
+                    </span>
+
+                    <small>
+                        指定した開催日の注文履歴を削除
+                    </small>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="resetAllDataButton"
+                    class="reset-action-button danger"
+                >
+
+                    <span class="reset-action-title">
+
+                       
+
+                        <span>
+                            全データリセット
+                        </span>
+
+                    </span>
+
+                    <small>
+                        全注文履歴を削除
+                    </small>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="resetCompleteButton"
+                    class="reset-action-button danger"
+                >
+
+                    <span class="reset-action-title">
+
+                       
+                        <span>
+                            完全初期化
+                        </span>
+
+                    </span>
+
+                    <small>
+                        システムを初期状態に戻す
+                    </small>
+
+                </button>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="resetActionCancel"
+                    class="secondary-button"
+                >
+                    キャンセル
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         汎用モーダル
+    ======================================== -->
+
+    <div
+        id="modalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="modal"
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+        >
+
+            <button
+                type="button"
+                id="modalCloseButton"
+                class="modal-close-button"
+                aria-label="閉じる"
+            >
+                ×
+            </button>
+
+
+            <h2
+                id="modalTitle"
+                class="modal-title"
+            ></h2>
+
+
+            <div
+                id="modalContent"
+                class="modal-content"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         トースト
+    ======================================== -->
+
+    <div
+        id="toast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+        hidden
+    ></div>
+
+
+    <script
+        type="module"
+        src="./app.js"
+    ></script>
+
+
+</div>
+
+</body>
+
+</html>
