@@ -1,0 +1,169 @@
+/* ========================================
+   データ出力選択画面
+======================================== */
+
+.output-screen {
+    width: 100%;
+}
+
+.output-screen .management-screen-header {
+    width: 100%;
+}
+
+.output-description {
+    width: 100%;
+    margin: 0 0 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #666666;
+}
+
+.output-section {
+    width: 100%;
+    margin: 0 0 24px;
+}
+
+.output-section-title {
+    width: 100%;
+    margin: 0 0 10px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #333333;
+}
+
+.output-button-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.output-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 54px;
+    padding: 14px 16px;
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.output-button:hover {
+    background: #fff8f2;
+    border-color: #f3c49e;
+}
+
+.output-button:active {
+    transform: scale(0.99);
+}
+
+.output-button:focus-visible {
+    outline: 2px solid #f0a66b;
+    outline-offset: 2px;
+}
+
+.output-button-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.output-button-arrow {
+    flex: 0 0 auto;
+    margin-left: 12px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #aaaaaa;
+}
+
+.output-pdf-button {
+    background: #fff7ef;
+    border-color: #f1c39c;
+}
+
+.output-pdf-button:hover {
+    background: #fff1e5;
+    border-color: #edae78;
+}
+
+.output-note {
+    width: 100%;
+    margin: 6px 0 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #888888;
+}
+
+@media (max-width: 600px) {
+
+    .output-description {
+        margin-bottom: 16px;
+        font-size: 13px;
+    }
+
+    .output-section {
+        margin-bottom: 20px;
+    }
+
+    .output-section-title {
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .output-button-list {
+        gap: 8px;
+    }
+
+    .output-button {
+        min-height: 50px;
+        padding: 12px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+    }
+
+    .output-button-arrow {
+        margin-left: 10px;
+        font-size: 17px;
+    }
+
+    .output-note {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    .output-description {
+        font-size: 12px;
+    }
+
+    .output-section-title {
+        font-size: 14px;
+    }
+
+    .output-button {
+        min-height: 48px;
+        padding: 11px 13px;
+        font-size: 12px;
+    }
+
+    .output-button-arrow {
+        margin-left: 8px;
+        font-size: 16px;
+    }
+}
