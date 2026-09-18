@@ -1,0 +1,322 @@
+/* ========================================
+   支出管理
+======================================== */
+
+.expenses-screen {
+    width: 100%;
+}
+
+.expenses-screen .management-screen-header {
+    width: 100%;
+}
+
+
+/* ========================================
+   絞り込み
+======================================== */
+
+.expense-filter {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    width: 100%;
+    margin: 0 0 var(--space-5);
+}
+
+.expense-filter .form-group {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+}
+
+.expense-filter .secondary-button {
+    flex: 0 0 auto;
+    min-height: var(--control-height);
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   支出合計
+======================================== */
+
+.expense-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+    margin: 0 0 var(--space-5);
+    padding: var(--space-4) var(--card-padding);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-xs);
+}
+
+.expense-summary span {
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.expense-summary strong {
+    flex: 0 0 auto;
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ========================================
+   支出一覧
+======================================== */
+
+.expense-list {
+    width: 100%;
+}
+
+.expense-card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+}
+
+
+/* ========================================
+   支出カード
+======================================== */
+
+.expense-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    padding: var(--card-padding);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-xs);
+    transition:
+        border-color 0.16s ease,
+        box-shadow 0.16s ease,
+        transform 0.12s ease;
+}
+
+.expense-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: var(--primary-light);
+}
+
+.expense-card:hover {
+    border-color: #ddcfc3;
+    box-shadow: var(--shadow-sm);
+}
+
+.expense-card-title {
+    width: 100%;
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.expense-card-amount {
+    width: 100%;
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.expense-card-date {
+    width: 100%;
+    margin: 0 0 var(--space-1);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.4;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.expense-card-memo {
+    width: 100%;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/* ========================================
+   カード操作
+======================================== */
+
+.expense-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    width: 100%;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-light);
+}
+
+.expense-card-actions button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 58px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   状態表示
+======================================== */
+
+.expense-empty,
+.expense-loading {
+    width: 100%;
+    padding: 32px var(--space-4);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.expense-error {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    color: var(--danger-dark);
+    background: var(--danger-soft);
+    border: 1px solid #efcaca;
+    border-radius: var(--radius-small);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* ========================================
+   タブレット・スマートフォン
+======================================== */
+
+@media (max-width: 600px) {
+    .expense-filter {
+        align-items: stretch;
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+    }
+
+    .expense-summary {
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+        padding: 14px var(--space-4);
+    }
+
+    .expense-summary span {
+        font-size: 12px;
+    }
+
+    .expense-summary strong {
+        font-size: 20px;
+    }
+
+    .expense-card-grid {
+        gap: 10px;
+    }
+
+    .expense-card {
+        padding: 14px var(--space-4);
+    }
+
+    .expense-card-title {
+        font-size: 14px;
+    }
+
+    .expense-card-amount {
+        font-size: 19px;
+    }
+
+    .expense-card-date,
+    .expense-card-memo {
+        font-size: 11px;
+    }
+
+    .expense-card-actions {
+        gap: 6px;
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
+    .expense-card-actions button {
+        min-width: 54px;
+        min-height: 34px;
+        padding: 5px 9px;
+        font-size: 10px;
+    }
+}
+
+
+/* ========================================
+   小型スマートフォン
+======================================== */
+
+@media (max-width: 380px) {
+    .expense-filter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .expense-filter .secondary-button {
+        width: 100%;
+    }
+
+    .expense-summary,
+    .expense-card {
+        padding: 13px 14px;
+    }
+
+    .expense-summary strong {
+        font-size: 19px;
+    }
+
+    .expense-card-title {
+        font-size: 14px;
+    }
+
+    .expense-card-amount {
+        font-size: 18px;
+    }
+}
