@@ -1,0 +1,1078 @@
+/* ========================================
+   担当者切り替え
+======================================== */
+
+.staff-switch-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.42);
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.15s ease,
+        visibility 0.15s ease;
+}
+
+.staff-switch-modal.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.staff-switch-modal[hidden] {
+    display: none;
+}
+
+.staff-switch-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.staff-switch-content {
+    position: relative;
+    z-index: 1;
+    width: min(420px, 100%);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+    transform: translateY(8px) scale(0.98);
+    transition: transform 0.15s ease;
+    box-sizing: border-box;
+}
+
+.staff-switch-modal.is-visible .staff-switch-content {
+    transform: translateY(0) scale(1);
+}
+
+
+/* ----------------------------------------
+   モーダルヘッダー
+---------------------------------------- */
+
+.staff-switch-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 62px;
+    padding: 0 56px;
+    border-bottom: 1px solid var(--border-light);
+    box-sizing: border-box;
+}
+
+.staff-switch-title {
+    margin: 0;
+    color: var(--primary-dark);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.staff-switch-close {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-light);
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.staff-switch-close:hover {
+    background: #f7f7f7;
+    color: var(--text-secondary);
+}
+
+.staff-switch-close:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+
+/* ----------------------------------------
+   モーダル本文
+---------------------------------------- */
+
+.staff-switch-body {
+    width: 100%;
+    padding: 22px 24px 4px;
+    box-sizing: border-box;
+}
+
+.staff-switch-current {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-height: 58px;
+    margin-bottom: 22px;
+    padding: 12px 14px;
+    border: 1px solid #f1e8e1;
+    border-radius: 9px;
+    background: var(--surface-soft);
+    box-sizing: border-box;
+}
+
+.staff-switch-current-label {
+    flex: 0 0 auto;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.staff-switch-current-name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ----------------------------------------
+   入力フォーム
+---------------------------------------- */
+
+.staff-switch-form {
+    width: 100%;
+}
+
+.staff-switch-label {
+    display: block;
+    margin: 0 0 8px;
+    color: #444444;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.staff-switch-input {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    box-sizing: border-box;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.staff-switch-input::placeholder {
+    color: #aaaaaa;
+}
+
+.staff-switch-input:hover {
+    border-color: #cccccc;
+}
+
+.staff-switch-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(239, 166, 106, 0.14);
+}
+
+.staff-switch-message {
+    min-height: 19px;
+    margin: 7px 0 0;
+    color: #d66a6a;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+
+/* ----------------------------------------
+   ボタン
+---------------------------------------- */
+
+.staff-switch-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 24px 24px;
+    box-sizing: border-box;
+}
+
+.staff-switch-button {
+    flex: 1 1 0;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.staff-switch-button:hover {
+    background: #fafafa;
+    border-color: #d8d8d8;
+}
+
+.staff-switch-button:active {
+    transform: scale(0.985);
+}
+
+.staff-switch-button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.staff-switch-confirm {
+    border-color: #f1c49e;
+    background: #fff4ea;
+    color: #d96b24;
+}
+
+.staff-switch-confirm:hover {
+    border-color: #edaf7b;
+    background: #ffecdd;
+}
+
+.staff-switch-confirm:disabled {
+    opacity: 0.55;
+    cursor: default;
+    transform: none;
+}
+
+
+/* ========================================
+   ログイン中・担当者情報
+======================================== */
+
+
+/* ----------------------------------------
+   ヘッダー担当者情報
+---------------------------------------- */
+
+.header-operator-info {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    width: auto;
+    min-width: 0;
+    max-width: 280px;
+    margin: 0 0 0 auto;
+    padding: 0;
+    line-height: 1.25;
+    text-align: right;
+}
+
+.header-operator-name {
+    display: block;
+    width: auto;
+    max-width: 280px;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header-operator-role {
+    display: block;
+    width: auto;
+    max-width: 280px;
+    margin: 2px 0 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.3;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ----------------------------------------
+   ヘッダー内のログイン情報
+---------------------------------------- */
+
+.header-operator-info,
+.header-operator-name,
+.header-operator-role {
+    box-sizing: border-box;
+}
+
+
+/* ========================================
+   アカウント情報
+======================================== */
+
+.account-info {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-sizing: border-box;
+}
+
+.account-info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.account-info-item:last-child {
+    border-bottom: 0;
+}
+
+.account-info-label {
+    flex: 0 0 auto;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.account-info-value {
+    min-width: 0;
+    max-width: 65%;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   担当者切り替えボタン
+======================================== */
+
+[data-staff-switch] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+[data-staff-switch]:hover {
+    border-color: #f0d2b7;
+    background: var(--surface-soft);
+}
+
+[data-staff-switch]:active {
+    transform: scale(0.99);
+}
+
+[data-staff-switch]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+
+/* ========================================
+   ログイン画面
+======================================== */
+
+.login-screen {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.login-form {
+    width: 100%;
+}
+
+.login-form-group {
+    width: 100%;
+    margin: 0 0 16px;
+}
+
+.login-form-label {
+    display: block;
+    margin: 0 0 7px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.login-form-input {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    box-sizing: border-box;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.login-form-input:hover {
+    border-color: #cccccc;
+}
+
+.login-form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(239, 166, 106, 0.14);
+}
+
+.login-error {
+    min-height: 19px;
+    margin: 8px 0 0;
+    color: #d66a6a;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+
+/* ========================================
+   ログアウト
+======================================== */
+
+#logoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+#logoutButton:hover {
+    border-color: #dddddd;
+    background: #fafafa;
+}
+
+#logoutButton:active {
+    transform: scale(0.99);
+}
+
+#logoutButton:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+
+/* ========================================
+   スクロール制御
+======================================== */
+
+body.staff-switch-open {
+    overflow: hidden;
+}
+
+
+/* ========================================
+   スマートフォン
+======================================== */
+
+@media (max-width: 600px) {
+
+    .header-operator-info {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: 170px;
+        margin-left: auto;
+    }
+
+    .header-operator-name {
+        max-width: 170px;
+        font-size: 13px;
+    }
+
+    .header-operator-role {
+        max-width: 170px;
+        font-size: 10px;
+    }
+
+    .account-info-item {
+        min-height: 48px;
+        padding: 12px 13px;
+    }
+
+    .account-info-label {
+        font-size: 12px;
+    }
+
+    .account-info-value {
+        max-width: 60%;
+        font-size: 13px;
+    }
+
+    [data-staff-switch] {
+        min-height: 50px;
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .staff-switch-modal {
+        padding: 14px;
+    }
+
+    .staff-switch-content {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 12px;
+    }
+
+    .staff-switch-header {
+        min-height: 58px;
+        padding: 0 52px;
+    }
+
+    .staff-switch-title {
+        font-size: 18px;
+    }
+
+    .staff-switch-body {
+        padding: 18px 18px 2px;
+    }
+
+    .staff-switch-current {
+        min-height: 54px;
+        margin-bottom: 19px;
+        padding: 11px 12px;
+    }
+
+    .staff-switch-current-label {
+        font-size: 11px;
+    }
+
+    .staff-switch-current-name {
+        font-size: 13px;
+    }
+
+    .staff-switch-label {
+        font-size: 12px;
+    }
+
+    .staff-switch-input {
+        min-height: 46px;
+        font-size: 16px;
+    }
+
+    .staff-switch-actions {
+        gap: 8px;
+        padding: 16px 18px 18px;
+    }
+
+    .staff-switch-button {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+
+/* ========================================
+   小型スマートフォン
+======================================== */
+
+@media (max-width: 380px) {
+
+    .header-operator-info {
+        max-width: 130px;
+    }
+
+    .header-operator-name {
+        max-width: 130px;
+        font-size: 12px;
+    }
+
+    .header-operator-role {
+        max-width: 130px;
+        font-size: 9px;
+    }
+
+    .account-info-item {
+        gap: 12px;
+        padding: 11px 12px;
+    }
+
+    .account-info-value {
+        max-width: 55%;
+        font-size: 12px;
+    }
+
+    [data-staff-switch] {
+        min-height: 48px;
+        padding: 11px 13px;
+        font-size: 12px;
+    }
+
+    .staff-switch-modal {
+        padding: 10px;
+    }
+
+    .staff-switch-header {
+        min-height: 54px;
+    }
+
+    .staff-switch-title {
+        font-size: 17px;
+    }
+
+    .staff-switch-body {
+        padding: 16px 14px 0;
+    }
+
+    .staff-switch-current {
+        margin-bottom: 17px;
+    }
+
+    .staff-switch-actions {
+        padding: 14px 14px 15px;
+    }
+
+    .staff-switch-button {
+        min-height: 42px;
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+}
+
+.login-presence-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-xs);
+    box-sizing: border-box;
+}
+
+.login-presence-section::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+    width: 4px;
+    background: var(--primary-light);
+    border-radius: 0 999px 999px 0;
+}
+
+.login-presence-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 68px;
+    padding: 11px 12px 11px 20px;
+    box-sizing: border-box;
+}
+
+.login-presence-heading {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.login-presence-title,
+.login-presence-section .section-title {
+    margin: 0;
+    color: #4b403a;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.login-presence-description {
+    margin: 3px 0 0;
+    color: #8a7c73;
+    font-size: 10px;
+    font-weight: 450;
+    line-height: 1.45;
+}
+
+.login-presence-refresh {
+    flex: 0 0 auto;
+    min-width: 60px;
+    min-height: 34px;
+    padding: 6px 10px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.login-presence-refresh:hover {
+    background: var(--surface-soft);
+    border-color: #f0d2b7;
+}
+
+.login-presence-refresh:active {
+    transform: scale(0.97);
+}
+
+.login-presence-refresh:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.login-presence-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    border-top: 1px solid var(--border-light);
+}
+
+.login-presence-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-height: 62px;
+    padding: 10px 12px 10px 20px;
+    background: var(--surface);
+    box-sizing: border-box;
+}
+
+.login-presence-item + .login-presence-item {
+    border-top: 1px solid var(--border-light);
+}
+
+.login-presence-item::before {
+    content: "";
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: 0;
+    width: 3px;
+    background: var(--success);
+    border-radius: 0 999px 999px 0;
+}
+
+.login-presence-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
+}
+
+.login-presence-name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-width: 0;
+}
+
+.login-presence-main strong,
+.login-presence-name-row strong {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.login-presence-role,
+.login-presence-current {
+    flex: 0 0 auto;
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.login-presence-role {
+    color: var(--primary-dark);
+    background: var(--primary-soft);
+    border: 1px solid rgba(232, 137, 73, 0.18);
+}
+
+.login-presence-current {
+    color: var(--text-secondary);
+    background: var(--surface-soft);
+    border: 1px solid var(--border-light);
+}
+
+.login-presence-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.35;
+    white-space: normal;
+}
+
+.login-presence-online,
+.login-presence-meta span:first-child {
+    position: relative;
+    padding-left: 11px;
+    color: var(--success);
+    font-weight: 700;
+}
+
+.login-presence-online::before,
+.login-presence-meta span:first-child::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+    transform: translateY(-50%);
+}
+
+.login-presence-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+.login-presence-force-button {
+    min-width: 104px;
+    min-height: 34px;
+    padding: 6px 10px;
+    color: var(--danger-dark);
+    background: var(--danger-soft);
+    border: 1px solid #efcaca;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.login-presence-force-button:hover {
+    background: #ffe7e7;
+    border-color: #e5b7b7;
+}
+
+.login-presence-force-button:active {
+    transform: scale(0.97);
+}
+
+.login-presence-force-button:focus-visible {
+    outline: 2px solid var(--danger);
+    outline-offset: 2px;
+}
+
+.login-presence-force-button:disabled {
+    opacity: 0.55;
+    cursor: default;
+    transform: none;
+}
+
+.login-presence-loading,
+.login-presence-empty,
+.login-presence-error {
+    width: 100%;
+    padding: 18px 14px;
+    color: var(--text-secondary);
+    background: var(--surface-soft);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.login-presence-error {
+    color: var(--danger-dark);
+    background: var(--danger-soft);
+}
+
+@media (max-width: 600px) {
+    .login-presence-header {
+        align-items: flex-start;
+        min-height: 64px;
+        padding: 10px 10px 10px 17px;
+    }
+
+    .login-presence-refresh {
+        min-width: 54px;
+        min-height: 32px;
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    .login-presence-item {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 9px;
+        min-height: 0;
+        padding: 11px 10px 11px 17px;
+    }
+
+    .login-presence-actions {
+        width: 100%;
+    }
+
+    .login-presence-force-button {
+        width: 100%;
+        min-height: 36px;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-presence-header {
+        gap: 8px;
+    }
+
+    .login-presence-title,
+    .login-presence-section .section-title {
+        font-size: 13px;
+    }
+
+    .login-presence-description {
+        font-size: 9px;
+    }
+
+    .login-presence-main strong,
+    .login-presence-name-row strong {
+        font-size: 12px;
+    }
+
+    .login-presence-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+    }
+}
+
