@@ -1,0 +1,1649 @@
+/* =========================================================
+   レスポンシブUI
+   iPhone / iPad アプリUI最適化版
+========================================================= */
+
+
+/* =========================================================
+   タブレット
+========================================================= */
+
+@media (max-width: 1023px) {
+
+    :root {
+        --sidebar-width: 190px;
+    }
+
+    .main-content {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    /* ダッシュボード */
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-overview,
+    .dashboard-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* 注文 */
+
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .order-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .order-cart-panel {
+        position: static;
+    }
+
+    /* 在庫 */
+
+    .inventory-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* グラフ */
+
+    .statistics-chart-grid,
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* タッチ操作 */
+
+    button,
+    select,
+    input,
+    textarea {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+
+/* =========================================================
+   スマートフォン
+========================================================= */
+
+@media (max-width: 767px) {
+
+    /* -----------------------------------------------------
+       基本
+    ----------------------------------------------------- */
+
+    html {
+        scroll-padding-top:
+            calc(
+                var(--header-height) +
+                env(safe-area-inset-top) +
+                12px
+            );
+        scroll-padding-bottom:
+            calc(
+                72px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    body {
+        width: 100%;
+        min-width: 0;
+        padding-bottom:
+            calc(
+                76px +
+                env(safe-area-inset-bottom)
+            );
+        overflow-x: hidden;
+    }
+
+
+    /* -----------------------------------------------------
+       ログイン
+    ----------------------------------------------------- */
+
+    .login-screen {
+        min-height: 100dvh;
+        padding:
+            calc(
+                20px +
+                env(safe-area-inset-top)
+            )
+            16px
+            calc(
+                20px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 420px;
+        padding: 30px 20px;
+        border-radius: 22px;
+    }
+
+    .app-logo {
+        margin-bottom: 28px;
+    }
+
+    .app-logo-main {
+        font-size: 25px;
+        line-height: 1.25;
+    }
+
+    .app-logo-sub {
+        font-size: 11px;
+    }
+
+    .login-form {
+        gap: 16px;
+    }
+
+    .form-group {
+        gap: 7px;
+    }
+
+    .form-input {
+        min-height: 48px;
+        padding: 12px 14px;
+        border-radius: 13px;
+        font-size: 16px;
+    }
+
+    .form-error {
+        font-size: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       ヘッダー
+    ----------------------------------------------------- */
+
+    .app-header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+
+        width: 100%;
+        height:
+            calc(
+                var(--header-height) +
+                env(safe-area-inset-top)
+            );
+
+        padding:
+            env(safe-area-inset-top)
+            15px
+            0;
+
+        display: flex;
+        align-items: center;
+
+        z-index: 400;
+
+        background:
+            rgba(255, 253, 250, 0.94);
+
+        border-bottom:
+            1px solid
+            rgba(90, 70, 50, 0.08);
+
+        box-shadow:
+            0 1px 8px
+            rgba(60, 45, 30, 0.04);
+
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .app-header-title {
+        min-width: 0;
+        gap: 5px;
+    }
+
+    .app-header-title-main {
+        min-width: 0;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .app-header-title-sub {
+        display: none;
+    }
+
+    .app-header-user {
+        max-width: 45%;
+        min-width: 0;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .role-badge {
+        flex-shrink: 0;
+        padding: 3px 7px;
+        border-radius: 999px;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+
+    /* -----------------------------------------------------
+       サイドナビ
+    ----------------------------------------------------- */
+
+    .side-navigation {
+        display: none;
+    }
+
+
+    /* -----------------------------------------------------
+       メイン
+    ----------------------------------------------------- */
+
+    .main-content {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+
+        padding:
+            calc(
+                var(--header-height) +
+                env(safe-area-inset-top) +
+                18px
+            )
+            12px
+            22px;
+    }
+
+    .app-screen {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .screen-header {
+        width: 100%;
+        margin-bottom: 18px;
+
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    .screen-header h1 {
+        margin: 0;
+        font-size: 21px;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+    }
+
+    .screen-header p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .screen-header .secondary-button,
+    .screen-header .primary-button {
+        width: 100%;
+    }
+
+    .current-date {
+        font-size: 11px;
+    }
+
+
+    /* -----------------------------------------------------
+       ボタン
+    ----------------------------------------------------- */
+
+    .primary-button,
+    .secondary-button,
+    .danger-button,
+    .button {
+        min-height: 44px;
+        border-radius: 13px;
+        font-size: 13px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .primary-button:active,
+    .secondary-button:active,
+    .danger-button:active,
+    .button:active {
+        transform: scale(0.98);
+    }
+
+
+    /* -----------------------------------------------------
+       ホーム
+    ----------------------------------------------------- */
+
+    .dashboard-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+    .stat-card-label {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .stat-card-value {
+        margin-top: 4px;
+        font-size: 20px;
+        line-height: 1.15;
+    }
+
+    .dashboard-card {
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+    .dashboard-card-value {
+        font-size: 20px;
+    }
+
+    .dashboard-overview,
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-section-card {
+        padding: 15px;
+        border-radius: 18px;
+    }
+
+    .dashboard-actions {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       統計
+    ----------------------------------------------------- */
+
+    .statistics-section {
+        margin-bottom: 18px;
+    }
+
+    .statistics-section h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .data-card {
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+    .statistics-chart-grid,
+    .chart-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .statistics-chart-card,
+    .chart-card {
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+    .statistics-chart,
+    .chart-container {
+        min-height: 220px;
+    }
+
+
+    /* -----------------------------------------------------
+       統計テーブル
+    ----------------------------------------------------- */
+
+    .statistics-table-wrapper {
+        width: 100%;
+        margin-right: -1px;
+        margin-left: -1px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-radius: 13px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .statistics-table {
+        min-width: 520px;
+    }
+
+    .statistics-table th,
+    .statistics-table td {
+        padding: 10px;
+    }
+
+    .statistics-table th {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .statistics-table td {
+        font-size: 12px;
+    }
+
+    .statistics-kpi-table {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .statistics-kpi-table th:first-child,
+    .statistics-kpi-table td:first-child {
+        width: 55%;
+    }
+
+    .statistics-daily-table,
+    .statistics-hourly-table,
+    .statistics-product-daily-table {
+        min-width: 570px;
+    }
+
+    .statistics-product-table {
+        min-width: 480px;
+    }
+
+    .statistics-visitor-table {
+        min-width: 400px;
+    }
+
+
+    /* -----------------------------------------------------
+       注文
+    ----------------------------------------------------- */
+
+    .order-layout {
+        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .order-products-panel,
+    .order-cart-panel,
+    .active-orders-section {
+        min-width: 0;
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .order-cart-panel {
+        position: static;
+    }
+
+    .section-title {
+        margin-bottom: 11px;
+        font-size: 16px;
+    }
+
+
+    /* カテゴリー */
+
+    .order-product-categories,
+    .product-category-list,
+    .order-category-buttons {
+        width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: none;
+        overscroll-behavior-x: contain;
+    }
+
+    .order-product-categories::-webkit-scrollbar,
+    .product-category-list::-webkit-scrollbar,
+    .order-category-buttons::-webkit-scrollbar {
+        display: none;
+    }
+
+    .order-category-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 7px;
+    }
+
+    .order-product-category-button,
+    .product-category-button,
+    .order-category-button {
+        flex: 0 0 auto;
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+
+    /* 商品 */
+
+    .product-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .product-grid > button,
+    .product-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 84px;
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .product-button-name,
+    .product-button .product-name {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .product-button-price,
+    .product-button .product-price {
+        margin-top: 4px;
+        font-size: 12px;
+    }
+
+    .order-information {
+        gap: 9px;
+    }
+
+    .order-cart {
+        border-radius: 15px;
+    }
+
+
+    /* カート */
+
+    .order-cart-item {
+        padding: 10px 11px;
+        border-radius: 12px;
+    }
+
+    .order-cart-item-name {
+        font-size: 12px;
+    }
+
+    .order-cart-item-price,
+    .order-cart-item-quantity,
+    .order-cart-item-total {
+        font-size: 11px;
+    }
+
+    .order-total {
+        padding-top: 11px;
+        font-size: 16px;
+    }
+
+    .order-submit-button {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       開催中注文
+    ----------------------------------------------------- */
+
+    .active-orders-list {
+        gap: 7px;
+    }
+
+    .active-order-item {
+        width: 100%;
+        min-width: 0;
+        min-height: 50px;
+        gap: 8px;
+        padding: 9px 10px;
+        border-radius: 13px;
+    }
+
+    .active-order-main {
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .active-order-number {
+        flex-shrink: 0;
+    }
+
+    .active-order-display-number {
+        font-size: 11px;
+    }
+
+    .active-order-detail {
+        min-width: 0;
+        gap: 8px;
+        font-size: 10px;
+    }
+
+    .active-order-detail strong {
+        font-size: 11px;
+    }
+
+    .active-order-actions {
+        flex-shrink: 0;
+        gap: 5px;
+    }
+
+    .active-order-actions .button {
+        min-height: 34px;
+        padding: 6px 9px;
+        border-radius: 10px;
+        font-size: 10px;
+    }
+
+    .order-detail-button {
+        min-height: 34px;
+        padding: 6px 9px;
+        border-radius: 10px;
+        font-size: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       在庫
+    ----------------------------------------------------- */
+
+    .inventory-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .inventory-item {
+        min-width: 0;
+        padding: 13px 14px;
+        border-radius: 15px;
+    }
+
+    .inventory-item-name {
+        font-size: 13px;
+    }
+
+    .inventory-item-stock {
+        font-size: 18px;
+    }
+
+
+    /* -----------------------------------------------------
+       履歴
+    ----------------------------------------------------- */
+
+    .history-filter {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        padding: 13px;
+        border-radius: 17px;
+    }
+
+    .history-list {
+        gap: 7px;
+    }
+
+    .history-item {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        gap: 6px 9px;
+        min-height: 50px;
+        padding: 9px 10px;
+        border-radius: 13px;
+    }
+
+    .history-item-time {
+        font-size: 10px;
+    }
+
+    .history-item-operator {
+        min-width: 0;
+        font-size: 11px;
+    }
+
+    .history-item-content {
+        grid-column: 1 / -1;
+        min-width: 0;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .history-item-detail {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .history-detail-button {
+        min-height: 34px;
+        padding: 6px 9px;
+        border-radius: 10px;
+        font-size: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       履歴詳細
+    ----------------------------------------------------- */
+
+    .history-detail-main {
+        margin-bottom: 13px;
+        padding: 11px 13px;
+        border-radius: 13px;
+    }
+
+    .history-detail-main-label {
+        font-size: 10px;
+    }
+
+    .history-detail-main-value {
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    .history-detail-section {
+        grid-template-columns:
+            74px
+            minmax(0, 1fr);
+
+        gap: 9px;
+        padding: 9px 0;
+    }
+
+    .history-detail-label {
+        font-size: 11px;
+    }
+
+    .history-detail-value {
+        min-width: 0;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .history-detail-id {
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .history-detail-change-section {
+        margin-top: 14px;
+        padding: 11px;
+        border-radius: 13px;
+    }
+
+    .history-detail-change-title {
+        margin-bottom: 9px;
+        font-size: 11px;
+    }
+
+    .history-detail-change-block {
+        padding: 9px;
+        border-radius: 10px;
+    }
+
+    .history-detail-change-label {
+        font-size: 10px;
+    }
+
+    .history-detail-change-value {
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .history-detail-row {
+        grid-template-columns:
+            78px
+            minmax(0, 1fr);
+
+        gap: 8px;
+        padding: 7px 0;
+    }
+
+    .history-detail-key {
+        font-size: 10px;
+    }
+
+    .history-detail-data {
+        min-width: 0;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .history-detail-line {
+        padding: 7px 9px;
+        border-radius: 9px;
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+    .history-detail-object {
+        padding: 8px 9px;
+        border-radius: 9px;
+    }
+
+    .history-detail-plain {
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+
+    /* -----------------------------------------------------
+       設定
+    ----------------------------------------------------- */
+
+    .settings-list {
+        width: 100%;
+        max-width: none;
+        gap: 8px;
+    }
+
+    .settings-item {
+        width: 100%;
+        min-width: 0;
+        min-height: 56px;
+        padding: 12px 14px;
+        border-radius: 15px;
+    }
+
+    .settings-item-title {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .settings-item-description {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .settings-panel {
+        width: 100%;
+        margin-top: 14px;
+        padding: 15px;
+        border-radius: 18px;
+    }
+
+    .panel-header {
+        margin-bottom: 15px;
+    }
+
+    .panel-header h2 {
+        font-size: 18px;
+        line-height: 1.35;
+    }
+
+
+    /* -----------------------------------------------------
+       アカウント設定
+    ----------------------------------------------------- */
+
+    .settings-account {
+        border-radius: 17px;
+    }
+
+    .settings-account-main {
+        min-width: 0;
+    }
+
+    .settings-label {
+        font-size: 11px;
+    }
+
+    #settingsOperatorName {
+        font-size: 15px;
+    }
+
+    .settings-account-description {
+        margin-top: 12px;
+        padding-top: 11px;
+        line-height: 1.6;
+    }
+
+    .settings-account-description-list {
+        padding-left: 16px;
+    }
+
+    .settings-account-description-item {
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+
+    /* -----------------------------------------------------
+       商品管理
+    ----------------------------------------------------- */
+
+    .product-category-section {
+        margin-bottom: 19px;
+    }
+
+    .product-category-header {
+        margin-bottom: 8px;
+    }
+
+    .product-category-header h2 {
+        font-size: 16px;
+        line-height: 1.35;
+    }
+
+    .product-management-list {
+        gap: 8px;
+    }
+
+    .product-management-item {
+        width: 100%;
+        min-width: 0;
+
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 12px;
+        padding: 14px;
+
+        border-radius: 16px;
+    }
+
+    .product-management-main {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .product-management-name {
+        font-size: 14px;
+        line-height: 1.45;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .product-management-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .product-management-actions .button {
+        width: 100%;
+        min-width: 0;
+        min-height: 42px;
+        padding: 7px 5px;
+        border-radius: 11px;
+        font-size: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       日付管理
+    ----------------------------------------------------- */
+
+    .event-day-management-list {
+        gap: 8px;
+    }
+
+    .event-day-management-item,
+    .event-day-item {
+        width: 100%;
+        min-width: 0;
+
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 12px;
+        padding: 14px;
+
+        border-radius: 16px;
+    }
+
+    .event-day-management-main {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .event-day-management-date {
+        font-size: 17px;
+        line-height: 1.3;
+    }
+
+    .event-day-management-actions,
+    .event-day-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .event-day-management-actions .button,
+    .event-day-actions .button {
+        width: 100%;
+        min-width: 0;
+        min-height: 42px;
+        padding: 7px 5px;
+        border-radius: 11px;
+        font-size: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       モーダル
+    ----------------------------------------------------- */
+
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal {
+        width: 100%;
+        max-width: none;
+
+        max-height: 90vh;
+        max-height: 90dvh;
+
+        margin: 0;
+
+        padding:
+            24px
+            16px
+            calc(
+                24px +
+                env(safe-area-inset-bottom)
+            );
+
+        border-radius:
+            24px
+            24px
+            0
+            0;
+
+        box-shadow:
+            0 -10px 35px
+            rgba(50, 35, 20, 0.12);
+    }
+
+    .modal-close-button {
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 999px;
+    }
+
+    .modal-title {
+        padding-right: 44px;
+        font-size: 19px;
+        line-height: 1.35;
+    }
+
+    .modal-content {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .modal-actions {
+        gap: 8px;
+    }
+
+    .modal-actions button {
+        min-height: 46px;
+    }
+
+
+    /* -----------------------------------------------------
+       リセットモーダル
+    ----------------------------------------------------- */
+
+    #resetCodeModalOverlay,
+    #resetActionModalOverlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    #resetCodeModal,
+    #resetActionModal {
+        width: 100%;
+        max-width: none;
+        max-height: 90dvh;
+
+        padding:
+            24px
+            16px
+            calc(
+                24px +
+                env(safe-area-inset-bottom)
+            );
+
+        border-radius:
+            24px
+            24px
+            0
+            0;
+    }
+
+    #resetCodeInput {
+        min-height: 50px;
+        border-radius: 13px;
+        font-size: 16px;
+    }
+
+    #resetCodeSubmitButton,
+    #resetCodeCancel {
+        min-height: 46px;
+        border-radius: 13px;
+    }
+
+    .reset-action-list {
+        gap: 9px;
+    }
+
+    .reset-action-button {
+        width: 100%;
+        min-height: 64px;
+        padding: 12px 14px;
+        border-radius: 15px;
+    }
+
+    .reset-action-button-title {
+        font-size: 13px;
+    }
+
+    .reset-action-button-description {
+        margin-top: 3px;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       トースト
+    ----------------------------------------------------- */
+
+    .toast {
+        right: 12px;
+        bottom:
+            calc(
+                82px +
+                env(safe-area-inset-bottom)
+            );
+
+        width: auto;
+        max-width:
+            calc(100vw - 24px);
+
+        padding: 11px 14px;
+        border-radius: 13px;
+
+        font-size: 12px;
+        line-height: 1.45;
+
+        box-shadow:
+            0 6px 22px
+            rgba(40, 30, 20, 0.12);
+    }
+
+
+    /* -----------------------------------------------------
+       下部ナビ
+    ----------------------------------------------------- */
+
+    .bottom-navigation {
+        position: fixed;
+
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        z-index: 500;
+
+        width: 100%;
+
+        display: grid;
+        grid-template-columns:
+            repeat(5, minmax(0, 1fr));
+
+        padding:
+            5px
+            4px
+            calc(
+                5px +
+                env(safe-area-inset-bottom)
+            );
+
+        background:
+            rgba(255, 253, 250, 0.94);
+
+        border-top:
+            1px solid
+            rgba(90, 70, 50, 0.08);
+
+        box-shadow:
+            0 -4px 18px
+            rgba(55, 40, 25, 0.06);
+
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+
+        overscroll-behavior: none;
+    }
+
+    .bottom-nav-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 52px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        padding: 4px 2px;
+
+        color: var(--text-secondary);
+        background: transparent;
+
+        border: 0;
+        border-radius: 14px;
+
+        font-size: 10px;
+        line-height: 1.2;
+
+        transition:
+            background 0.15s ease,
+            color 0.15s ease,
+            transform 0.15s ease;
+
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .bottom-nav-button:hover {
+        background: transparent;
+    }
+
+    .bottom-nav-button:active {
+        transform: scale(0.94);
+    }
+
+    .bottom-nav-button.active {
+        color: var(--primary-dark);
+        background: var(--primary-soft);
+        font-weight: 700;
+    }
+
+    .bottom-nav-icon {
+        font-size: 19px;
+        line-height: 1;
+    }
+
+
+    /* -----------------------------------------------------
+       更新ボタン
+    ----------------------------------------------------- */
+
+    .global-refresh-button {
+        min-width: 42px;
+        min-height: 42px;
+        border-radius: 999px;
+    }
+
+
+    /* -----------------------------------------------------
+       非表示要素
+    ----------------------------------------------------- */
+
+    [hidden] {
+        display: none !important;
+    }
+}
+
+
+/* =========================================================
+   小型スマートフォン
+========================================================= */
+
+@media (max-width: 380px) {
+
+    :root {
+        --header-height: 54px;
+    }
+
+    .main-content {
+        padding-right: 9px;
+        padding-left: 9px;
+    }
+
+    .screen-header h1 {
+        font-size: 20px;
+    }
+
+    /* ダッシュボード */
+
+    .dashboard-grid {
+        gap: 7px;
+    }
+
+    .stat-card {
+        padding: 11px;
+        border-radius: 15px;
+    }
+
+    .stat-card-label {
+        font-size: 10px;
+    }
+
+    .stat-card-value {
+        font-size: 17px;
+    }
+
+    .dashboard-card {
+        padding: 12px;
+        border-radius: 15px;
+    }
+
+    .dashboard-section-card {
+        padding: 13px;
+        border-radius: 16px;
+    }
+
+
+    /* 注文 */
+
+    .product-grid {
+        gap: 7px;
+    }
+
+    .product-grid > button,
+    .product-button {
+        min-height: 78px;
+        padding: 8px;
+        border-radius: 14px;
+    }
+
+    .product-button-name,
+    .product-button .product-name {
+        font-size: 12px;
+    }
+
+    .product-button-price,
+    .product-button .product-price {
+        font-size: 11px;
+    }
+
+    .order-products-panel,
+    .order-cart-panel,
+    .active-orders-section {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+
+    /* 設定 */
+
+    .settings-panel {
+        padding: 13px;
+        border-radius: 16px;
+    }
+
+    .settings-item {
+        padding: 11px 12px;
+        border-radius: 14px;
+    }
+
+
+    /* 商品管理 */
+
+    .product-management-actions {
+        gap: 5px;
+    }
+
+    .product-management-actions .button {
+        min-height: 40px;
+        padding-right: 4px;
+        padding-left: 4px;
+        font-size: 11px;
+    }
+
+
+    /* 日付管理 */
+
+    .event-day-management-actions,
+    .event-day-actions {
+        gap: 5px;
+    }
+
+    .event-day-management-actions .button,
+    .event-day-actions .button {
+        min-height: 40px;
+        padding-right: 4px;
+        padding-left: 4px;
+        font-size: 11px;
+    }
+
+
+    /* 開催中注文 */
+
+    .active-order-item {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .active-order-actions .button {
+        min-height: 32px;
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+
+
+    /* 履歴 */
+
+    .history-item {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .history-detail-button {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+
+
+    /* 履歴詳細 */
+
+    .history-detail-main {
+        padding: 10px 11px;
+        border-radius: 12px;
+    }
+
+    .history-detail-section {
+        grid-template-columns:
+            68px
+            minmax(0, 1fr);
+        gap: 7px;
+    }
+
+    .history-detail-row {
+        grid-template-columns:
+            70px
+            minmax(0, 1fr);
+        gap: 7px;
+    }
+
+
+    /* 統計 */
+
+    .statistics-table th,
+    .statistics-table td {
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+
+    /* 下部ナビ */
+
+    .bottom-nav-button {
+        min-height: 50px;
+        font-size: 9px;
+    }
+
+    .bottom-nav-icon {
+        font-size: 18px;
+    }
+}
+
+
+/* =========================================================
+   大型ディスプレイ
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .main-content {
+        padding-right: 40px;
+        padding-left: 40px;
+    }
+
+    .app-screen {
+        max-width: 1500px;
+    }
+}
+
+
+/* =========================================================
+   小型画面：設定説明
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .settings-account-description {
+        margin-top: 12px;
+        padding-top: 10px;
+    }
+
+    .settings-account-section {
+        margin-bottom: 10px;
+    }
+
+    .settings-account-section-title {
+        font-size: 10px;
+    }
+
+    .settings-account-section p {
+        font-size: 10px;
+        line-height: 1.55;
+    }
+}
+
+
+/* =========================================================
+   タッチデバイス最適化
+========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+
+    button,
+    select,
+    input,
+    textarea,
+    .nav-button,
+    .bottom-nav-button,
+    .product-button,
+    .order-product-category-button,
+    .product-category-button,
+    .order-category-button {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button:hover,
+    .nav-button:hover,
+    .product-button:hover,
+    .bottom-nav-button:hover {
+        filter: none;
+    }
+
+    button:active,
+    .nav-button:active,
+    .product-button:active,
+    .bottom-nav-button:active {
+        transition-duration: 0.08s;
+    }
+}
+
+
+/* =========================================================
+   iOS Safari 最適化
+========================================================= */
+
+@supports (-webkit-touch-callout: none) {
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    button {
+        -webkit-appearance: none;
+    }
+
+    .main-content {
+        min-height: calc(100dvh - var(--header-height));
+    }
+}
+
+/* =========================================================
+   統一レスポンシブ補正
+========================================================= */
+
+@media (max-width: 767px) {
+    .dashboard-today-card,
+    .dashboard-summary-card,
+    .dashboard-profit-card,
+    .dashboard-break-even-card,
+    .expense-summary,
+    .expense-card {
+        border-radius: 14px;
+    }
+
+    .dashboard-refresh-button,
+    .dashboard-statistics-button {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 380px) {
+    .dashboard-summary-grid,
+    .dashboard-break-even-grid {
+        grid-template-columns: 1fr;
+    }
+}
