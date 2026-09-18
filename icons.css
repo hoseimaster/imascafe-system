@@ -1,0 +1,210 @@
+/* ========================================
+   アイコン共通
+======================================== */
+
+.navigation-icon,
+.bottom-navigation-icon,
+.title-icon,
+.section-icon,
+.action-icon,
+.date-icon,
+.settings-icon,
+.settings-account-icon,
+.global-refresh-icon,
+.category-icon {
+    display: inline-block;
+    flex: 0 0 auto;
+    object-fit: contain;
+    object-position: center;
+}
+
+
+/* ========================================
+   画面タイトル
+======================================== */
+
+.screen-title,
+.page-title,
+.section-title {
+    display: flex;
+    align-items: center;
+}
+
+.title-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+}
+
+
+/* ========================================
+   商品カード
+======================================== */
+
+.category-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+}
+
+
+/* ========================================
+   ナビゲーション
+======================================== */
+
+.navigation-icon,
+.bottom-navigation-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* ========================================
+   セクション
+======================================== */
+
+.section-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* ========================================
+   アクション
+======================================== */
+
+.action-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* ========================================
+   日付
+======================================== */
+
+.date-icon {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* ========================================
+   設定
+======================================== */
+
+.settings-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.settings-account-icon {
+    width: 22px;
+    height: 22px;
+}
+
+
+/* ========================================
+   全画面更新
+======================================== */
+
+.global-refresh-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* ========================================
+   モバイル
+======================================== */
+
+@media (max-width: 600px) {
+
+    .navigation-icon,
+    .bottom-navigation-icon,
+    .section-icon,
+    .action-icon,
+    .settings-icon,
+    .global-refresh-icon {
+        width: 19px;
+        height: 19px;
+    }
+
+    .title-icon {
+        width: 25px;
+        height: 25px;
+        margin-right: 7px;
+    }
+
+    .category-icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 5px;
+    }
+
+    .settings-account-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+    .date-icon {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+/* 商品カテゴリ アイコン */
+.product-category-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+}
+
+.product-button .product-category-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    opacity: 0.9;
+}
+
+.product-button {
+    padding-right: 44px;
+}
+
+.inventory-item-title-row,
+.product-management-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.inventory-item-title-row .inventory-item-name,
+.product-management-title-row .product-management-name {
+    min-width: 0;
+}
+
+@media (max-width: 767px) {
+    .product-category-icon {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+    }
+
+    .product-button .product-category-icon {
+        top: 8px;
+        right: 8px;
+        width: 22px;
+        height: 22px;
+    }
+
+    .product-button {
+        padding-right: 38px;
+    }
+}
