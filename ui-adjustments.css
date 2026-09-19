@@ -673,3 +673,135 @@
     }
 }
 
+/* ========================================
+   在庫：カードデザイン再修正
+   2026-09-20
+======================================== */
+
+#inventoryScreen #inventoryList {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important;
+    width: 100% !important;
+}
+
+#inventoryScreen #inventoryList > .inventory-category {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+#inventoryScreen #inventoryList .inventory-category-list {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 6px !important;
+    row-gap: 6px !important;
+    width: 100% !important;
+}
+
+#inventoryScreen #inventoryList .inventory-category-list > .inventory-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 12px 14px 12px 17px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    background: var(--surface-soft) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: var(--radius-small) !important;
+    box-shadow: none !important;
+}
+
+#inventoryScreen #inventoryList .inventory-category-list > .inventory-item::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: auto !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: var(--stock-normal) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="critical"] {
+    background: color-mix(in srgb, var(--danger) 4%, var(--surface)) !important;
+    border-color: color-mix(in srgb, var(--danger) 28%, var(--border)) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="warning"] {
+    background: color-mix(in srgb, var(--warning) 4%, var(--surface)) !important;
+    border-color: color-mix(in srgb, var(--warning) 28%, var(--border)) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="normal"] {
+    background: var(--surface-soft) !important;
+    border-color: var(--border-light) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="critical"]::before {
+    background: var(--danger) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="warning"]::before {
+    background: var(--warning) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="normal"]::before {
+    background: var(--stock-normal) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="critical"] .inventory-item-stock {
+    color: var(--danger) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="warning"] .inventory-item-stock {
+    color: var(--warning) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-item[data-stock-level="normal"] .inventory-item-stock {
+    color: var(--stock-normal) !important;
+}
+
+#inventoryScreen #inventoryList .inventory-edit-button,
+#inventoryScreen #inventoryList [data-inventory-edit],
+#inventoryScreen #inventoryList [data-edit-inventory] {
+    color: var(--danger-dark) !important;
+    background: var(--danger-soft) !important;
+    border: 1px solid #efcaca !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+#inventoryScreen #inventoryList .inventory-edit-button:active,
+#inventoryScreen #inventoryList [data-inventory-edit]:active,
+#inventoryScreen #inventoryList [data-edit-inventory]:active {
+    color: var(--danger-dark) !important;
+    background: #f7dddd !important;
+    border-color: #e8baba !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+@media (max-width: 767px) {
+    #inventoryScreen #inventoryList {
+        gap: 16px !important;
+    }
+
+    #inventoryScreen #inventoryList .inventory-category-list {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 10px !important;
+        row-gap: 10px !important;
+    }
+
+    #inventoryScreen #inventoryList .inventory-category-list > .inventory-item {
+        padding: 11px 12px 11px 16px !important;
+    }
+}
+
