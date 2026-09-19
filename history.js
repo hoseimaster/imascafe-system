@@ -2067,6 +2067,9 @@ function formatReadableValue(
         stopped:
             "販売停止",
 
+        super_admin:
+            "最高管理者",
+
         admin:
             "管理者",
 
