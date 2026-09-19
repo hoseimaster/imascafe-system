@@ -1,7 +1,9 @@
 import { supabase } from "./supabase.js";
+import { showConfirmModal } from "./confirm-modal.js";
 
 import {
     isAdmin,
+    isSuperAdmin,
     getOperatorName,
     getTerminalId
 } from "./auth.js";
@@ -966,6 +968,17 @@ async function handleResetTypeSelect(resetType) {
         return;
     }
 
+    if (
+        (resetType === "all" || resetType === "full") &&
+        !isSuperAdmin()
+    ) {
+        showToast(
+            "全データリセットと完全初期化は最高管理者のみ実行できます。"
+        );
+
+        return;
+    }
+
 
     if (
         resetType !==
@@ -1011,12 +1024,15 @@ async function handleResetTypeSelect(resetType) {
     if (resetType === "full") {
 
         const firstConfirmed =
-            window.confirm(
-                "【完全初期化】\n\n" +
-                "注文・商品・在庫・開催日・操作履歴などのデータを初期化します。\n\n" +
-                "認証情報やリセットコード、注文IDの連番は維持されます。\n\n" +
-                "この操作は取り消せません。\n\n" +
-                "本当に完全初期化を続けますか？"
+            await showConfirmModal(
+                "注文・商品・在庫・開催日・操作履歴などのデータを初期化します。\n\n認証情報やリセットコード、注文IDの連番は維持されます。\n\nこの操作は取り消せません。",
+                {
+                    title: "完全初期化を続けますか？",
+                    confirmText: "確認して次へ",
+                    cancelText: "キャンセル",
+                    tone: "danger",
+                    operation: "reset-full-first"
+                }
             );
 
 
@@ -1029,11 +1045,15 @@ async function handleResetTypeSelect(resetType) {
 
 
         const secondConfirmed =
-            window.confirm(
-                "【最終確認】\n\n" +
-                "完全初期化したデータを元に戻すことはできません。\n\n" +
-                "管理者による最終確認です。\n\n" +
-                "本当に実行してよろしいですか？"
+            await showConfirmModal(
+                "完全初期化したデータを元に戻すことはできません。\n\n管理者による最終確認です。",
+                {
+                    title: "最終確認",
+                    confirmText: "完全初期化を実行",
+                    cancelText: "中止する",
+                    tone: "danger",
+                    operation: "reset-full-final"
+                }
             );
 
 
@@ -1061,14 +1081,13 @@ async function handleResetTypeSelect(resetType) {
 
 
         let warning =
-            "この操作は取り消せません。\n\n";
+            "この操作は取り消せません。";
 
 
         if (resetType === "date") {
 
             warning =
-                "指定した日の注文データのみ削除します。\n\n" +
-                warning;
+                `${targetLabel}\n\n指定した日の注文データのみ削除します。\n\n${warning}`;
 
         }
 
@@ -1076,18 +1095,23 @@ async function handleResetTypeSelect(resetType) {
         if (resetType === "all") {
 
             warning =
-                "すべての注文データを削除します。\n\n" +
-                warning;
+                `すべての注文データを削除します。\n\n${warning}`;
 
         }
 
 
         const confirmed =
-            window.confirm(
-                `${typeLabel}\n\n` +
-                `${targetLabel ? targetLabel + "\n\n" : ""}` +
-                warning +
-                "本当に実行しますか？"
+            await showConfirmModal(
+                warning,
+                {
+                    title: `${typeLabel}を実行しますか？`,
+                    confirmText: "リセットを実行",
+                    cancelText: "キャンセル",
+                    tone: "danger",
+                    operation: resetType === "date"
+                        ? "reset-date-final"
+                        : "reset-all-final"
+                }
             );
 
 
