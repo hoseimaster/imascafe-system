@@ -6,6 +6,11 @@ import {
     canManageInventory
 } from "./auth.js";
 
+import {
+    requestInventoryAddition,
+    requestInventoryCorrection
+} from "./confirm-modal.js";
+
 
 let initialized = false;
 let inventoryLoading = false;
@@ -413,13 +418,6 @@ function renderInventoryItem(
         );
 
 
-    const stockClass =
-        getStockClass(
-            quantity,
-            lowStockThreshold
-        );
-
-
     const soldOut =
         quantity <= 0;
 
@@ -440,6 +438,14 @@ function renderInventoryItem(
         quantity <= lowStockThreshold;
 
 
+    const stockLevel =
+        soldOut
+            ? "critical"
+            : lowStock
+                ? "warning"
+                : "normal";
+
+
     return `
         <div
             class="
@@ -448,6 +454,7 @@ function renderInventoryItem(
                 ${lowStock ? "is-low-stock" : ""}
             "
             data-category="${escapeHtml(category)}"
+            data-stock-level="${stockLevel}"
         >
 
             <div
@@ -539,7 +546,7 @@ function renderInventoryItem(
                 <div
                     class="
                         inventory-item-stock
-                        ${stockClass}
+                        stock-${stockLevel}
                     "
                 >
                     ${formatNumber(
@@ -723,7 +730,7 @@ function getStockClass(
    入庫入力
 ======================================== */
 
-function openInventoryAdd(
+async function openInventoryAdd(
     productId
 ) {
 
@@ -737,44 +744,48 @@ function openInventoryAdd(
     }
 
 
-    const quantityText =
-        window.prompt(
-            "追加する数量を入力してください",
-            "1"
+    const {
+        data,
+        error
+    } = await supabase
+        .from("inventory_status")
+        .select("name,quantity")
+        .eq("product_id", productId)
+        .maybeSingle();
+
+
+    if (error || !data) {
+
+        console.error(
+            "在庫確認エラー:",
+            error
         );
 
-
-    if (
-        quantityText === null
-    ) {
+        showToast(
+            "現在の在庫数を取得できませんでした。"
+        );
 
         return;
-
     }
+
+
+    const currentQuantity =
+        Number(data.quantity) || 0;
 
 
     const quantity =
-        Number(
-            quantityText
-        );
+        await requestInventoryAddition({
+            name: data.name,
+            currentQuantity
+        });
 
 
-    if (
-        !Number.isInteger(
-            quantity
-        ) ||
-        quantity <= 0
-    ) {
-
-        showToast(
-            "1以上の整数を入力してください。"
-        );
-
+    if (quantity === null) {
         return;
     }
 
 
-    addInventory(
+    await addInventory(
         productId,
         quantity
     );
@@ -912,41 +923,14 @@ async function openInventoryEdit(
         ) || 0;
 
 
-    const quantityText =
-        window.prompt(
-            `${data.name}の在庫数を修正してください`,
-            String(
-                currentQuantity
-            )
-        );
-
-
-    if (
-        quantityText === null
-    ) {
-
-        return;
-
-    }
-
-
     const quantity =
-        Number(
-            quantityText
-        );
+        await requestInventoryCorrection({
+            name: data.name,
+            currentQuantity
+        });
 
 
-    if (
-        !Number.isInteger(
-            quantity
-        ) ||
-        quantity < 0
-    ) {
-
-        showToast(
-            "0以上の整数を入力してください。"
-        );
-
+    if (quantity === null) {
         return;
     }
 
