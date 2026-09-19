@@ -1338,6 +1338,27 @@ async function handleIdleLogout() {
 }
 
 
+async function waitForPresenceOffline() {
+
+    const handler =
+        window.hoseimasterPresence
+            ?.prepareForLogout;
+
+    if (typeof handler !== "function") {
+        return;
+    }
+
+    try {
+        await handler();
+    } catch (error) {
+        console.error(
+            "ログアウト前のPresence停止エラー:",
+            error
+        );
+    }
+}
+
+
 /* ========================================
    ログアウト
 ======================================== */
@@ -1363,6 +1384,23 @@ export async function logout() {
 
 
     if (sessionBeforeLogout) {
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "app:before-logout",
+                {
+                    detail: {
+                        session: sessionBeforeLogout,
+                        profile: profileBeforeLogout,
+                        operatorName: operatorNameBeforeLogout,
+                        role: roleBeforeLogout,
+                        terminalId: terminalIdBeforeLogout
+                    }
+                }
+            )
+        );
+
+        await waitForPresenceOffline();
 
         await recordAuthHistory(
             "logout",
