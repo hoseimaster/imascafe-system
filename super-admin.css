@@ -604,87 +604,301 @@
     background: #ffe7cf;
 }
 
-/* システム診断：データベース容量 */
-.diagnostic-storage-card {
-    grid-column: 1 / -1;
-}
 
-.diagnostic-storage-summary {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: 12px;
-}
+/* ========================================
+   システム診断：データベース使用状況
+======================================== */
 
-.diagnostic-storage-summary > div {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.035);
-}
 
-.diagnostic-storage-summary span {
-    font-size: 11px;
-    color: #777;
-}
-
-.diagnostic-storage-summary strong {
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-}
-
-.diagnostic-storage-meter {
-    width: 100%;
-    height: 8px;
-    margin-top: 12px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.08);
-}
-
-.diagnostic-storage-meter > span {
+.diagnostics-results {
     display: block;
-    height: 100%;
-    border-radius: inherit;
-    background: currentColor;
-    transition: width 0.25s ease;
+    width: 100%;
 }
 
-.diagnostic-storage-tables {
+.diagnostics-results > .diagnostics-grid {
+    width: 100%;
+}
+
+.diagnostics-results > .database-storage-section {
+    width: 100%;
+}
+
+
+.database-storage-section {
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid #eee1d5;
+}
+
+.database-storage-heading {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 14px;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
 }
 
-.diagnostic-storage-tables > strong {
+.database-storage-heading > div {
+    min-width: 0;
+}
+
+.database-storage-eyebrow {
+    display: block;
+    margin-bottom: 3px;
+    color: #a78f7c;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.database-storage-heading h3 {
+    margin: 0;
+    color: #3d332b;
+    font-size: 16px;
+}
+
+.database-storage-card {
+    overflow: hidden;
+    padding: 20px;
+    border: 1px solid #eadfd4;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.database-storage-card.is-ok {
+    border-color: #d7e8dc;
+}
+
+.database-storage-card.is-warning {
+    border-color: #efd8ad;
+}
+
+.database-storage-card.is-error {
+    border-color: #edc5c5;
+}
+
+.database-storage-primary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 3px 16px;
+    padding-bottom: 16px;
+}
+
+.database-storage-primary > span {
+    color: #82756a;
     font-size: 12px;
+    font-weight: 650;
 }
 
-.diagnostic-storage-tables > div {
+.database-storage-primary > strong {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    color: #3d332b;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.database-storage-primary > small {
+    color: #a0958b;
+    font-size: 11px;
+}
+
+.database-storage-progress-block {
+    padding: 15px 0 17px;
+    border-top: 1px solid #f0e8e1;
+    border-bottom: 1px solid #f0e8e1;
+}
+
+.database-storage-progress-meta {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    margin-bottom: 8px;
+    color: #82756a;
     font-size: 12px;
 }
 
-.diagnostic-storage-tables > div > span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.database-storage-progress-meta strong {
+    color: #51463f;
+    font-size: 13px;
 }
 
-.diagnostic-storage-tables > div > strong {
+.database-storage-progress {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #f0ebe6;
+}
+
+.database-storage-progress > span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #7eb18c;
+}
+
+.database-storage-card.is-warning .database-storage-progress > span {
+    background: #dfa144;
+}
+
+.database-storage-card.is-error .database-storage-progress > span {
+    background: #d96565;
+}
+
+.database-storage-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 16px 0 0;
+}
+
+.database-storage-stats > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    background: #faf7f3;
+}
+
+.database-storage-stats span {
+    color: #82756a;
+    font-size: 11px;
+}
+
+.database-storage-stats strong {
+    color: #51463f;
+    font-size: 13px;
+}
+
+.database-storage-tables {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #f0e8e1;
+}
+
+.database-storage-subheading {
+    margin-bottom: 8px;
+    color: #5e5147;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.database-storage-table-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.database-storage-table-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 34px;
+    padding: 7px 2px;
+    border-bottom: 1px solid #f3ede8;
+}
+
+.database-storage-table-row:last-child {
+    border-bottom: 0;
+}
+
+.database-storage-table-row span {
+    min-width: 0;
+    color: #6c6057;
+    font-size: 12px;
+}
+
+.database-storage-table-row strong {
     flex: 0 0 auto;
+    color: #4b4037;
+    font-size: 12px;
     font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 767px) {
-    .diagnostic-storage-summary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+.database-storage-issues {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    background: #fff6e9;
+    color: #885018;
+}
+
+.database-storage-issues small {
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+    .database-storage-section {
+        margin-top: 24px;
+        padding-top: 20px;
     }
+
+    .database-storage-card {
+        padding: 16px;
+    }
+
+    .database-storage-primary {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .database-storage-primary > strong {
+        grid-row: auto;
+        grid-column: auto;
+        margin: 4px 0 2px;
+        font-size: 26px;
+    }
+
+    .database-storage-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   システム診断：状態表示
+======================================== */
+
+.diagnostic-card > div > span {
+    flex: 0 0 auto;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* 正常 */
+.diagnostic-card.is-ok > div > span {
+    color: #287643;
+    background: #e8f6ed;
+}
+
+/* 注意 */
+.diagnostic-card.is-warning > div > span {
+    color: #996017;
+    background: #fff1d8;
+}
+
+/* 異常 */
+.diagnostic-card.is-error > div > span {
+    color: #a43636;
+    background: #fde7e7;
+}
+
+/* 確認不能 */
+.diagnostic-card.is-unknown > div > span {
+    color: #666666;
+    background: #eeeeee;
 }
