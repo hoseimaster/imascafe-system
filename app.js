@@ -69,6 +69,8 @@ import {
 } from "./presence.js";
 
 
+import "./confirm-modal.js";
+
 let initialized = false;
 
 
@@ -937,6 +939,18 @@ function showGlobalError(
 /* ========================================
    起動
 ======================================== */
+
+/*
+ * 初回表示時に未ログインだった場合は認証画面だけを表示して
+ * initializeApp() が終了するため、ログイン成功後に再度初期化する。
+ */
+window.addEventListener(
+    "app:login",
+    () => {
+        void initializeApp();
+    }
+);
+
 
 if (
     document.readyState ===
