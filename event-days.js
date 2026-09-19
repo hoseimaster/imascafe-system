@@ -10,6 +10,8 @@ import {
     getTerminalId
 } from "./auth.js";
 
+import { confirmEventDayStatusChange } from "./confirm-modal.js";
+
 
 let initialized = false;
 let eventDaysLoading = false;
@@ -1324,7 +1326,7 @@ async function updateEventDay(
    有効・無効確認
 ======================================== */
 
-function openEventDayToggleConfirm(
+async function openEventDayToggleConfirm(
     eventDayId
 ) {
 
@@ -1381,15 +1383,10 @@ function openEventDayToggleConfirm(
     }
 
 
-    const action =
-        nextActive
-            ? "有効化"
-            : "無効化";
-
-
     const confirmed =
-        window.confirm(
-            `${formatDate(day.event_date)} を${action}しますか？`
+        await confirmEventDayStatusChange(
+            formatDate(day.event_date),
+            nextActive
         );
 
 
