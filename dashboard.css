@@ -447,3 +447,16 @@
     }
 
 }
+
+
+/* ホーム：日付を少し大きく */
+.dashboard-date {
+    font-size: 15px;
+    font-weight: 550;
+}
+
+@media (max-width: 600px) {
+    .dashboard-date {
+        font-size: 14px;
+    }
+}
