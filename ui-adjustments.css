@@ -1,0 +1,585 @@
+/* ========================================
+   法マス喫茶 総合管理システム
+   UI最終調整
+   2026-09-19
+======================================== */
+
+
+/* ========================================
+   注文：商品 / 注文内容の横幅
+======================================== */
+
+#ordersScreen .order-layout {
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(350px, 0.95fr) !important;
+}
+
+
+/* ========================================
+   注文履歴：カード間隔
+======================================== */
+
+#orderHistoryScreen #orderHistoryList.order-history-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    row-gap: 12px !important;
+    width: 100% !important;
+}
+
+#orderHistoryScreen #orderHistoryList > .active-order-item {
+    margin: 0 !important;
+}
+
+
+/* ========================================
+   注文履歴：日付と「すべて」を同じ行
+======================================== */
+
+#orderHistoryScreen .order-history-filter {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-bottom: 14px !important;
+}
+
+#orderHistoryScreen .order-history-filter .form-group {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+#orderHistoryScreen #orderHistoryDateClear {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-height: var(--control-height) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+
+/* ========================================
+   注文履歴：取消済み
+======================================== */
+
+#orderHistoryScreen .active-order-item.is-cancelled {
+    position: relative !important;
+    background:
+        linear-gradient(
+            135deg,
+            #fffafa 0%,
+            var(--danger-soft) 100%
+        ) !important;
+    border-color: #efcaca !important;
+    box-shadow: 0 2px 8px rgba(190, 90, 90, 0.07) !important;
+}
+
+#orderHistoryScreen .active-order-item.is-cancelled::before {
+    background: var(--danger) !important;
+}
+
+#orderHistoryScreen .active-order-item.is-cancelled .active-order-main {
+    opacity: 0.78 !important;
+}
+
+#orderHistoryScreen .active-order-item.is-cancelled .active-order-actions {
+    opacity: 1 !important;
+}
+
+#orderHistoryScreen .order-history-cancelled {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 62px !important;
+    min-height: 30px !important;
+    padding: 5px 10px !important;
+    color: var(--danger-dark) !important;
+    background: #ffffff !important;
+    border: 1px solid #eabbbb !important;
+    border-radius: 999px !important;
+    box-shadow: 0 1px 4px rgba(190, 90, 90, 0.08) !important;
+    font-size: 11px !important;
+    font-weight: 750 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+}
+
+
+/* ========================================
+   在庫：カード間隔
+======================================== */
+
+#inventoryScreen #inventoryList.inventory-list {
+    gap: 12px !important;
+    row-gap: 12px !important;
+}
+
+#inventoryScreen #inventoryList > .inventory-item {
+    margin: 0 !important;
+}
+
+
+/* ========================================
+   在庫：閾値に応じた左アクセント
+======================================== */
+
+#inventoryScreen .inventory-item::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    background: var(--stock-normal) !important;
+}
+
+#inventoryScreen .inventory-item[data-stock-level="critical"]::before {
+    background: var(--danger) !important;
+}
+
+#inventoryScreen .inventory-item[data-stock-level="warning"]::before {
+    background: var(--warning) !important;
+}
+
+#inventoryScreen .inventory-item[data-stock-level="normal"]::before {
+    background: var(--stock-normal) !important;
+}
+
+
+/* 在庫：修正ボタンは赤系 */
+#inventoryScreen .inventory-edit-button,
+#inventoryScreen [data-inventory-edit],
+#inventoryScreen [data-edit-inventory] {
+    color: var(--danger-dark) !important;
+    background: var(--danger-soft) !important;
+    border-color: #efcaca !important;
+}
+
+#inventoryScreen .inventory-edit-button:hover,
+#inventoryScreen [data-inventory-edit]:hover,
+#inventoryScreen [data-edit-inventory]:hover {
+    color: #ffffff !important;
+    background: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+
+/* ========================================
+   操作履歴：注文履歴と同じ寸法・文字設計
+======================================== */
+
+#historyScreen .history-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    row-gap: 12px !important;
+    width: 100% !important;
+}
+
+#historyScreen .history-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 8px 10px 8px 14px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    background: var(--surface-soft) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: var(--radius-small) !important;
+    box-shadow: none !important;
+}
+
+#historyScreen .history-item::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: auto !important;
+    margin: 0 !important;
+    background: var(--primary-light) !important;
+    border-radius: 0 !important;
+}
+
+#historyScreen .history-item-time {
+    flex: 0 0 105px !important;
+    color: #77706a !important;
+    font-size: 10px !important;
+    font-weight: 550 !important;
+    line-height: 1.3 !important;
+}
+
+#historyScreen .history-item-operator {
+    flex: 0 0 80px !important;
+    color: #51463f !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+}
+
+#historyScreen .history-item-content {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+}
+
+#historyScreen .history-detail-button,
+#historyScreen [data-history-detail] {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin-left: auto !important;
+}
+
+
+/* ========================================
+   左アクセント：在庫方式へ統一
+   設定画面だけはアクセントなし
+======================================== */
+
+.product-management-item::before,
+.event-day-item::before,
+.expense-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: auto !important;
+    border-radius: 0 !important;
+}
+
+/* 設定画面は左線なし */
+#settingsScreen .settings-item::before,
+#settingsScreen .settings-card::before,
+#settingsScreen .settings-section::before {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* ========================================
+   商品管理：トグル → 編集 → 削除
+======================================== */
+
+.product-management-actions {
+    justify-content: flex-end !important;
+}
+
+.product-management-actions [data-product-toggle] {
+    position: relative !important;
+    display: inline-block !important;
+    order: -1 !important;
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    background: linear-gradient(135deg, var(--success), #8eb7a0) !important;
+    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    border-radius: 999px !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(70, 110, 85, 0.12),
+        0 2px 6px rgba(75, 55, 40, 0.10) !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+.product-management-actions [data-product-toggle]::before {
+    content: none !important;
+    display: none !important;
+}
+
+.product-management-actions [data-product-toggle]::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 3px !important;
+    left: 25px !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(145deg, #ffffff, #f5f1ec) !important;
+    border: 1px solid rgba(90, 70, 55, 0.08) !important;
+    box-shadow:
+        0 2px 5px rgba(65, 50, 40, 0.22),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+    transition: left 0.18s cubic-bezier(.2,.8,.2,1) !important;
+}
+
+.product-management-item.is-inactive
+.product-management-actions [data-product-toggle] {
+    background: linear-gradient(135deg, #c9c1bb, #aaa19a) !important;
+}
+
+.product-management-item.is-inactive
+.product-management-actions [data-product-toggle]::after {
+    left: 3px !important;
+}
+
+
+/* ========================================
+   商品カード：押下時は拡大せず色だけ変化
+======================================== */
+
+#ordersScreen .product-grid > button:active,
+#ordersScreen .product-button:active {
+    transform: none !important;
+    box-shadow:
+        inset 0 0 0 999px rgba(232, 137, 73, 0.14),
+        var(--shadow-xs) !important;
+}
+
+
+/* ========================================
+   注文内容：− / ＋ ボタンを小さく
+   文字サイズは既存値を継承
+======================================== */
+
+#ordersScreen .order-quantity-button {
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+
+/* ========================================
+   モーダル：円 / 個を入力欄右端へ固定
+======================================== */
+
+#productModal .input-with-unit,
+#expenseModal .input-with-unit {
+    position: relative !important;
+    width: 100% !important;
+}
+
+#productModal .input-with-unit input,
+#expenseModal .input-with-unit input {
+    width: 100% !important;
+    padding-right: 42px !important;
+}
+
+#productModal .input-with-unit > span,
+#expenseModal .input-with-unit > span {
+    position: absolute !important;
+    top: 50% !important;
+    right: 13px !important;
+    z-index: 2 !important;
+    margin: 0 !important;
+    color: var(--text-secondary) !important;
+    pointer-events: none !important;
+    transform: translateY(-50%) !important;
+}
+
+
+/* ========================================
+   商品 / 日付 / 支出追加モーダル
+   キャンセル・保存の上に余白
+======================================== */
+
+#productModal .modal-actions,
+#eventDayModal .modal-actions,
+#expenseModal .modal-actions {
+    margin-top: 18px !important;
+    padding-top: 4px !important;
+}
+
+
+/* ========================================
+   ホーム：詳細統計アイコン
+   index.html側の logo_11.png を使用
+======================================== */
+
+#dashboardScreen .large-action-button .action-icon {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    object-fit: contain !important;
+    vertical-align: middle !important;
+}
+
+
+/* ========================================
+   スマートフォン
+======================================== */
+
+@media (max-width: 767px) {
+
+    /* ヘッダー下の余分な空白を削除 */
+    .main-content {
+        padding-top:
+            calc(
+                var(--header-height) +
+                env(safe-area-inset-top)
+            ) !important;
+    }
+
+    .app-screen > .screen-header:first-child,
+    .app-screen > .management-screen-header:first-child {
+        margin-top: 0 !important;
+    }
+
+    /* 注文は1カラム */
+    #ordersScreen .order-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* 注文履歴 */
+    #orderHistoryScreen #orderHistoryList.order-history-list {
+        gap: 10px !important;
+        row-gap: 10px !important;
+    }
+
+    #orderHistoryScreen .order-history-filter {
+        flex-direction: row !important;
+        align-items: flex-end !important;
+        gap: 8px !important;
+    }
+
+    #orderHistoryScreen #orderHistoryDateClear {
+        width: auto !important;
+        min-width: 64px !important;
+    }
+
+    #orderHistoryScreen .order-history-cancelled {
+        min-width: 58px !important;
+        min-height: 28px !important;
+        padding: 5px 9px !important;
+        font-size: 10px !important;
+    }
+
+    /* 在庫 */
+    #inventoryScreen #inventoryList.inventory-list {
+        gap: 10px !important;
+        row-gap: 10px !important;
+    }
+
+    /* 操作履歴 */
+    #historyScreen .history-list {
+        gap: 10px !important;
+        row-gap: 10px !important;
+    }
+
+    #historyScreen .history-item {
+        min-height: 48px !important;
+        padding: 8px 9px 8px 13px !important;
+    }
+
+    #historyScreen .history-item-time {
+        font-size: 10px !important;
+    }
+
+    #historyScreen .history-item-operator,
+    #historyScreen .history-item-content {
+        font-size: 11px !important;
+    }
+
+    #historyScreen .history-detail-button,
+    #historyScreen [data-history-detail] {
+        width: auto !important;
+        min-width: 58px !important;
+        margin-left: auto !important;
+    }
+
+    /* 商品管理の操作部も右詰め */
+    .product-management-actions {
+        justify-content: flex-end !important;
+    }
+
+    /* モーダル操作ボタン上部余白 */
+    #productModal .modal-actions,
+    #eventDayModal .modal-actions,
+    #expenseModal .modal-actions {
+        margin-top: 16px !important;
+    }
+}
+
+/* ========================================
+   2026-09-19 指定修正
+======================================== */
+
+/* 在庫：カード間隔 */
+#inventoryScreen #inventoryList.inventory-list {
+    gap: 14px !important;
+    row-gap: 14px !important;
+}
+
+/* 在庫：在庫数に応じて左アクセントと数字色を同期 */
+#inventoryScreen .inventory-item[data-stock-level="critical"]::before {
+    background: var(--danger) !important;
+}
+#inventoryScreen .inventory-item[data-stock-level="critical"] .inventory-item-stock {
+    color: var(--danger) !important;
+}
+#inventoryScreen .inventory-item[data-stock-level="warning"]::before {
+    background: var(--warning) !important;
+}
+#inventoryScreen .inventory-item[data-stock-level="warning"] .inventory-item-stock {
+    color: var(--warning) !important;
+}
+#inventoryScreen .inventory-item[data-stock-level="normal"]::before {
+    background: var(--stock-normal) !important;
+}
+#inventoryScreen .inventory-item[data-stock-level="normal"] .inventory-item-stock {
+    color: var(--stock-normal) !important;
+}
+
+/* 操作履歴：カードをさらに低く */
+#historyScreen .history-list {
+    gap: 6px !important;
+    row-gap: 6px !important;
+}
+#historyScreen .history-item {
+    min-height: 40px !important;
+    padding: 5px 9px 5px 13px !important;
+    gap: 8px !important;
+}
+
+/* 注文：商品名は可能な限り1行 */
+#ordersScreen .product-grid > button .product-name,
+#ordersScreen .product-button .product-name {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: keep-all !important;
+}
+
+/* 注文履歴：通常カードの外枠を薄オレンジ */
+#orderHistoryScreen .active-order-item:not(.is-cancelled) {
+    border-color: #f2d7c3 !important;
+}
+
+/* 商品・日付・支出モーダル：項目間の余白 */
+#productModal .form-group + .form-group,
+#eventDayModal .form-group + .form-group,
+#expenseModal .form-group + .form-group {
+    margin-top: 16px !important;
+}
+
+/* 現在ログイン中：左アクセントのみ非表示 */
+#settingsScreen .settings-account::before {
+    display: none !important;
+    content: none !important;
+}
