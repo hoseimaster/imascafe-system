@@ -664,8 +664,8 @@ textarea {
 .order-layout {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.6fr)
-        minmax(300px, 0.85fr);
+        minmax(0, 1.55fr)
+        minmax(320px, 0.95fr);
     gap: 18px;
     width: 100%;
     align-items: start;
@@ -2705,4 +2705,182 @@ textarea,
     .product-button[data-sold-out="true"] {
         min-height: 74px !important;
     }
+}
+
+
+
+/* ========================================
+   UI Detail Adjustment - 2026-09-18
+======================================== */
+
+/* 注文ページ：すべての注文履歴 */
+#ordersScreen .active-orders-section {
+    display: flex;
+    flex-direction: column;
+}
+
+#ordersScreen .order-history-all-button,
+#ordersScreen .all-order-history-button,
+#ordersScreen #allOrderHistoryButton {
+    align-self: flex-end;
+    width: auto;
+    min-width: 150px;
+    margin: 14px 0 0 auto;
+    padding-right: 16px;
+    padding-left: 16px;
+}
+
+/* 管理画面：追加ボタンを右詰め */
+.management-screen-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.management-screen-header .screen-header-back {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.management-screen-header .management-screen-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+/* 戻るボタン：タイトルと重ならない */
+.management-screen-header .panel-back-button {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 40px;
+    margin: 0;
+}
+
+/* カード左アクセント：形状を共通化 */
+.inventory-item::before,
+.product-management-item::before,
+.event-day-management-item::before,
+.event-day-item::before,
+.expense-card::before,
+.history-item::before,
+.active-order-item::before,
+.login-presence-section::before,
+.login-presence-item::before {
+    width: 4px;
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+    border-radius: 0 999px 999px 0;
+}
+
+/* 意味に応じたアクセント */
+.expense-card::before {
+    background: var(--danger);
+}
+
+.history-item::before,
+.active-order-item::before {
+    background: var(--primary-light);
+}
+
+.product-management-item::before,
+.event-day-management-item::before,
+.event-day-item::before {
+    background: var(--primary);
+}
+
+.product-management-item.is-inactive::before {
+    background: var(--danger);
+}
+
+@media (max-width: 767px) {
+    .management-screen-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .management-screen-header .screen-header-back {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .management-screen-header .management-screen-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-left: 0;
+    }
+
+    .management-screen-header .management-screen-actions .primary-button {
+        width: auto;
+        min-width: 132px;
+    }
+
+    #ordersScreen .order-history-all-button,
+    #ordersScreen .all-order-history-button,
+    #ordersScreen #allOrderHistoryButton {
+        width: auto;
+        min-width: 145px;
+        margin-top: 12px;
+        margin-left: auto;
+    }
+}
+
+
+/* ========================================
+   2026-09-18 UI precision adjustments
+======================================== */
+
+/* 商品と注文内容：注文内容側を少し広げる */
+.order-layout {
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(320px, 0.95fr);
+}
+
+/* 注文内容の数量ボタン */
+.order-cart-item-controls .order-quantity-button {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    padding: 0;
+}
+
+/* 単位表示を入力欄右端に固定 */
+.input-with-unit {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-unit > input {
+    width: 100%;
+    padding-right: 44px;
+}
+
+.input-with-unit > span {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    z-index: 1;
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+/* 商品カード押下：拡大せず一瞬色だけ変える */
+.product-grid > button:active,
+.product-button:active {
+    transform: none;
+    background: var(--primary-soft);
+    border-color: var(--primary-light);
 }
