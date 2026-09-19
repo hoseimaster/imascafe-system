@@ -4,6 +4,10 @@
 
 import { supabase } from "./supabase.js";
 import { APP_CONFIG } from "./config.js";
+import {
+    getDateScope,
+    setupDateScopeControls
+} from "./date-scope.js";
 
 
 let outputInitialized = false;
@@ -20,6 +24,25 @@ export function initializeOutput() {
     }
 
     outputInitialized = true;
+
+    const header = document.querySelector("#outputScreen .screen-header");
+    if (header && !document.getElementById("outputDateMode")) {
+        header.insertAdjacentHTML("afterend", `
+            <div class="date-scope-control output-date-scope">
+                <select id="outputDateMode" aria-label="出力期間">
+                    <option value="all">すべて</option>
+                    <option value="date">指定日</option>
+                </select>
+                <input id="outputTargetDate" type="date" aria-label="出力日">
+            </div>
+        `);
+    }
+
+    setupDateScopeControls({
+        modeElement: document.getElementById("outputDateMode"),
+        dateElement: document.getElementById("outputTargetDate"),
+        defaultMode: "all"
+    });
 
     document.addEventListener(
         "click",
@@ -259,7 +282,9 @@ async function getOrdersCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            order => matchesOutputDate(order.order_date)
+        ).map(
             order => [
 
                 order.order_id,
@@ -310,6 +335,20 @@ async function getOrderItemsCSVData() {
         throw error;
     }
 
+    let filteredData = data || [];
+    const scope = getDateScope("all");
+
+    if (scope.mode === "date") {
+        const { data: orders, error: ordersError } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("order_date", scope.date);
+
+        if (ordersError) throw ordersError;
+        const orderIds = new Set((orders || []).map(order => String(order.id)));
+        filteredData = filteredData.filter(item => orderIds.has(String(item.order_id)));
+    }
+
 
     return [
 
@@ -323,7 +362,7 @@ async function getOrderItemsCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...filteredData.map(
             item => [
 
                 item.id,
@@ -392,7 +431,9 @@ async function getExpensesCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            expense => matchesOutputDate(expense.expense_date)
+        ).map(
             expense => [
 
                 expense.id,
@@ -461,7 +502,9 @@ async function getInventoryCSVData() {
             "更新日時"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            row => matchesOutputDate(row.event_date)
+        ).map(
             item => [
 
                 item.product_id,
@@ -602,7 +645,8 @@ async function getSalesCSVData() {
         (orders || []).filter(
             order =>
                 order.status !==
-                "cancelled"
+                "cancelled" &&
+                matchesOutputDate(order.order_date)
         );
 
 
@@ -964,7 +1008,8 @@ async function getPDFData() {
     const activeOrders =
         (orders || []).filter(
             order =>
-                order.status !== "cancelled"
+                order.status !== "cancelled" &&
+                matchesOutputDate(order.order_date)
         );
 
     const orderIds =
@@ -1096,14 +1141,16 @@ async function getPDFData() {
         error: expensesError
     } = await supabase
         .from("expenses")
-        .select("amount");
+        .select("amount,expense_date");
 
     if (expensesError) {
         throw expensesError;
     }
 
     const totalExpenses =
-        (expenses || []).reduce(
+        (expenses || []).filter(
+            expense => matchesOutputDate(expense.expense_date)
+        ).reduce(
             (total, expense) =>
                 total +
                 (Number(expense.amount) || 0),
@@ -1132,7 +1179,9 @@ async function getPDFData() {
             : 0;
 
     return {
-        date: today,
+        date: getDateScope("all").mode === "date"
+            ? getDateScope("all").date
+            : "すべての期間",
         sales,
         expenses: totalExpenses,
         profit,
@@ -1771,4 +1820,10 @@ function showOutputError(
 
 export function refreshOutput() {
     return true;
+}
+
+
+function matchesOutputDate(date) {
+    const scope = getDateScope("all");
+    return scope.mode === "all" || String(date || "") === String(scope.date || "");
 }
