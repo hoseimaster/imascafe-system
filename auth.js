@@ -730,12 +730,6 @@ async function signIn(
 
 
     if (error) {
-
-        console.error(
-            "Supabase Auth:",
-            error
-        );
-
         return null;
     }
 
