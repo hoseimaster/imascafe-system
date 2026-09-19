@@ -1475,6 +1475,55 @@
     max-width: 700px;
 }
 
+.date-scope-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 0 0 16px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-xs);
+}
+
+.date-scope-control select,
+.date-scope-control input {
+    min-height: 38px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+}
+
+.dashboard-header .date-scope-control {
+    margin: 8px 0 0;
+}
+
+.order-acceptance-setting[data-accepting="true"] {
+    border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+}
+
+.order-acceptance-setting[data-accepting="false"] {
+    border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
+    background: color-mix(in srgb, var(--danger) 5%, var(--surface));
+}
+
+.order-acceptance-title,
+.order-acceptance-status {
+    display: block;
+}
+
+.order-acceptance-status {
+    margin-top: 3px;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
 .settings-item {
     position: relative;
     display: flex;
