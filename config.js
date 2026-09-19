@@ -36,18 +36,31 @@ export const APP_CONFIG = {
         "hoseimaster_cafe_current_role",
 
     ROLES: {
+        SUPER_ADMIN: "super_admin",
         ADMIN: "admin",
         STAFF: "staff",
         VIEWER: "viewer"
     },
 
     ROLE_LABELS: {
+        super_admin: "最高管理者",
         admin: "管理者",
         staff: "スタッフ",
         viewer: "閲覧者"
     },
 
     NAVIGATION: {
+        SUPER_ADMIN: [
+            "home",
+            "orders",
+            "inventory",
+            "history",
+            "statistics",
+            "products",
+            "settings",
+            "system-management"
+        ],
+
         ADMIN: [
             "home",
             "orders",
