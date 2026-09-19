@@ -192,6 +192,35 @@ function setupOrderHistoryDetailEvents() {
             }
 
 
+            const modalCancelButton =
+                event.target.closest(
+                    "[data-order-detail-cancel]"
+                );
+
+
+            if (modalCancelButton) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                const orderId =
+                    modalCancelButton.dataset
+                        .orderDetailCancel;
+
+
+                if (orderId) {
+
+                    cancelOrder(
+                        orderId
+                    );
+
+                }
+
+                return;
+
+            }
+
+
             const closeButton =
                 event.target.closest(
                     "[data-order-detail-close]"
@@ -1255,6 +1284,25 @@ function renderOrderDetail(
 
             </div>
 
+
+            ${
+                cancelled
+                    ? ""
+                    : `
+                        <div class="active-order-actions">
+                            <button
+                                type="button"
+                                class="button button-danger"
+                                data-order-detail-cancel="${escapeHtml(
+                                    order.order_id
+                                )}"
+                            >
+                                取消
+                            </button>
+                        </div>
+                    `
+            }
+
         </div>
 
     `;
@@ -1453,6 +1501,9 @@ async function cancelOrder(
         showToast(
             `${orderId} を取り消しました。`
         );
+
+
+        closeOrderDetail();
 
 
         await loadOrderHistory();
