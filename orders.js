@@ -9,6 +9,11 @@ import {
     canManageOrders
 } from "./auth.js";
 
+import {
+    confirmOrderCancellation,
+    confirmOrderCountMismatch
+} from "./confirm-modal.js";
+
 
 let initialized = false;
 
@@ -2288,16 +2293,9 @@ async function submitOrder() {
     ) {
 
         const confirmed =
-            window.confirm(
-                "ドリンクとデザートの注文数が一致していません。\n\n" +
-                `ドリンク：${formatNumber(
-                    drinkCount
-                )}点\n` +
-                `デザート：${formatNumber(
-                    dessertCount
-                )}点\n\n` +
-                "注文内容を確認してください。\n" +
-                "このまま注文を登録しますか？"
+            await confirmOrderCountMismatch(
+                formatNumber(drinkCount),
+                formatNumber(dessertCount)
             );
 
 
@@ -3106,9 +3104,7 @@ async function cancelOrder(
 
 
     const confirmed =
-        window.confirm(
-            `${orderId} の注文を取り消しますか？\n\n取り消した注文は売上集計から除外され、使用した在庫が復元されます。`
-        );
+        await confirmOrderCancellation(orderId);
 
 
     if (!confirmed) {
