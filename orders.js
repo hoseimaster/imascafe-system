@@ -98,6 +98,16 @@ function setupOrderForm() {
         dateInput.value =
             getTodayJST();
 
+        dateInput.readOnly = false;
+        dateInput.removeAttribute("tabindex");
+
+        const dateGroup =
+            dateInput.closest(".form-group");
+
+        if (dateGroup) {
+            dateGroup.hidden = false;
+        }
+
     }
 
 
@@ -2133,6 +2143,11 @@ async function submitOrder() {
 
     }
 
+    if (!await isOrderAccepting()) {
+        showToast("現在、注文受付を停止しています。");
+        return;
+    }
+
 
     if (!cart.size) {
 
@@ -2184,10 +2199,8 @@ async function submitOrder() {
 
 
     const orderDate =
-        String(
-            dateInput.value ||
-            ""
-        ).trim();
+        dateInput.value ||
+        getTodayJST();
 
 
     const orderTime =
@@ -2586,6 +2599,24 @@ async function submitOrder() {
 
     }
 
+}
+
+
+async function isOrderAccepting() {
+
+    const { data, error } =
+        await supabase
+            .from("system_settings")
+            .select("value")
+            .eq("key", "order_accepting")
+            .maybeSingle();
+
+    if (error) {
+        console.error("注文受付状態取得エラー:", error);
+        return false;
+    }
+
+    return data?.value === true;
 }
 
 
