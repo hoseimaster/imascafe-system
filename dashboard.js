@@ -81,8 +81,8 @@ function renderDashboardBase() {
 
                 <div class="date-scope-control">
                     <select id="dashboardDateMode" aria-label="集計期間">
-                        <option value="date">指定日</option>
                         <option value="all">すべて</option>
+                        <option value="date">指定日</option>
                     </select>
                     <input id="dashboardTargetDate" type="date" aria-label="集計日">
                 </div>
@@ -118,11 +118,31 @@ function renderDashboardBase() {
 
         <div class="dashboard-summary-grid">
 
+            <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">対象期間の注文数</div>
+                <div id="dashboardTargetOrderCount" class="dashboard-summary-value">0</div>
+            </div>
+
+            <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">対象期間の来客数</div>
+                <div id="dashboardTargetVisitorCount" class="dashboard-summary-value">0</div>
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-section-title">
+            累計
+        </div>
+
+
+        <div class="dashboard-summary-grid">
+
 
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    売上
+                    累計売上
                 </div>
 
                 <div
@@ -138,7 +158,7 @@ function renderDashboardBase() {
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    支出
+                    累計支出
                 </div>
 
                 <div
@@ -154,7 +174,7 @@ function renderDashboardBase() {
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    注文数
+                    累計注文数
                 </div>
 
                 <div
@@ -170,7 +190,7 @@ function renderDashboardBase() {
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    来客数
+                    累計来客数
                 </div>
 
                 <div
@@ -189,7 +209,7 @@ function renderDashboardBase() {
         <div class="dashboard-profit-card">
 
             <div class="dashboard-profit-label">
-                利益
+                累計利益
             </div>
 
             <div
@@ -364,27 +384,15 @@ export async function loadDashboard() {
         );
 
 
-        /* ====================================
-           今日の売上
-        ==================================== */
-
-        const totalData =
-            await getTotalSalesData(
-                targetDate
-            );
-
-        const todayData =
-            totalData;
-
-
-        /* ====================================
-           累計支出
-        ==================================== */
-
-        const expenseData =
-            await getExpenseData(
-                targetDate
-            );
+        const [
+            targetData,
+            cumulativeData,
+            expenseData
+        ] = await Promise.all([
+            getTotalSalesData(targetDate),
+            getTotalSalesData(),
+            getExpenseData()
+        ]);
 
 
         if (
@@ -399,19 +407,25 @@ export async function loadDashboard() {
             updateDashboard({
 
                 todaySales:
-                    todayData.sales,
+                    targetData.sales,
+
+                targetOrderCount:
+                    targetData.orderCount,
+
+                targetVisitorCount:
+                    targetData.visitorCount,
 
                 totalSales:
-                    totalData.sales,
+                    cumulativeData.sales,
 
                 totalExpenses:
                     null,
 
                 orderCount:
-                    totalData.orderCount,
+                    cumulativeData.orderCount,
 
                 visitorCount:
-                    totalData.visitorCount,
+                    cumulativeData.visitorCount,
 
                 totalProfit:
                     null,
@@ -435,7 +449,7 @@ export async function loadDashboard() {
         ==================================== */
 
         const totalProfit =
-            totalData.sales -
+            cumulativeData.sales -
             expenseData.total;
 
 
@@ -444,9 +458,9 @@ export async function loadDashboard() {
         ==================================== */
 
         const averageOrderAmount =
-            totalData.orderCount > 0
-                ? totalData.sales /
-                  totalData.orderCount
+            cumulativeData.orderCount > 0
+                ? cumulativeData.sales /
+                  cumulativeData.orderCount
                 : 0;
 
 
@@ -490,19 +504,25 @@ export async function loadDashboard() {
         updateDashboard({
 
             todaySales:
-                todayData.sales,
+                targetData.sales,
+
+            targetOrderCount:
+                targetData.orderCount,
+
+            targetVisitorCount:
+                targetData.visitorCount,
 
             totalSales:
-                totalData.sales,
+                cumulativeData.sales,
 
             totalExpenses:
                 expenseData.total,
 
             orderCount:
-                totalData.orderCount,
+                cumulativeData.orderCount,
 
             visitorCount:
-                totalData.visitorCount,
+                cumulativeData.visitorCount,
 
             totalProfit:
                 totalProfit,
@@ -879,6 +899,22 @@ function updateDashboard(
         "dashboardTodaySales",
         formatYen(
             data.todaySales
+        )
+    );
+
+
+    setText(
+        "dashboardTargetOrderCount",
+        formatNumber(
+            data.targetOrderCount
+        )
+    );
+
+
+    setText(
+        "dashboardTargetVisitorCount",
+        formatNumber(
+            data.targetVisitorCount
         )
     );
 
