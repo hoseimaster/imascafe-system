@@ -1127,6 +1127,15 @@ function renderProducts() {
     }
 
 
+    container.classList.remove(
+        "product-grid"
+    );
+
+    container.classList.add(
+        "order-product-list"
+    );
+
+
     if (!products.length) {
 
         container.innerHTML = `
@@ -1236,7 +1245,14 @@ function renderProducts() {
 
                     <div class="order-product-category-title">
 
-                        <span>
+                        <img
+                            class="order-product-category-icon"
+                            src="./logo_${category === "drink" ? "13" : category === "dessert" ? "14" : "15"}.png"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                        <span class="order-product-category-name">
                             ${escapeHtml(
                                 categoryLabels[
                                     category
@@ -1296,6 +1312,7 @@ function renderProducts() {
                                             type="button"
                                             class="
                                                 product-button
+                                                order-product-card
                                                 ${stockClass}
                                                 ${soldOut
                                                     ? "is-sold-out"
@@ -1305,22 +1322,26 @@ function renderProducts() {
                                             data-product-id="${escapeHtml(
                                                 product.id
                                             )}"
+                                            data-category="${escapeHtml(
+                                                category
+                                            )}"
+                                            aria-label="${escapeHtml(
+                                                soldOut
+                                                    ? `${product.name} 売り切れ`
+                                                    : `${product.name} ${formatYen(product.price)}を追加`
+                                            )}"
                                             ${soldOut
                                                 ? "disabled"
                                                 : ""
                                             }
                                         >
 
-                                            <img
-                                            class="product-category-icon"
-                                            src="./logo_${category === "drink" ? "13" : category === "dessert" ? "14" : "15"}.png"
-                                            alt=""
-                                            aria-hidden="true"
-                                        >
-                                        <span class="product-button-name">
-                                                ${escapeHtml(
-                                                    product.name
-                                                )}
+                                        <span class="product-button-body">
+
+                                            <span class="product-button-name">
+                                                    ${escapeHtml(
+                                                        product.name
+                                                    )}
                                             </span>
 
                                             ${soldOut
@@ -1331,6 +1352,23 @@ function renderProducts() {
                                                 `
                                                 : ""
                                             }
+
+                                        </span>
+
+                                        <span class="product-button-price">
+                                            ${escapeHtml(
+                                                formatYen(
+                                                    product.price
+                                                )
+                                            )}
+                                        </span>
+
+                                        <span
+                                            class="product-button-add"
+                                            aria-hidden="true"
+                                        >
+                                            ＋
+                                        </span>
 
                                         </button>
                                     `;
