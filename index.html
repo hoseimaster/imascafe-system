@@ -43,6 +43,8 @@
     <link rel="stylesheet" href="./login.css">
     <link rel="stylesheet" href="./ui-adjustments.css">
     <link rel="stylesheet" href="./confirm-modal.css">
+    <link rel="stylesheet" href="./super-admin.css">
+    <link rel="stylesheet" href="./startup-status.css">
 
 
 </head>
@@ -52,6 +54,26 @@
 
 <div id="app">
 
+    <section id="startupScreen" class="startup-screen" aria-live="polite">
+        <div class="startup-card">
+            <div class="startup-brand">
+                <strong>法マス喫茶</strong>
+                <span>総合管理システム</span>
+            </div>
+            <div class="startup-spinner" aria-hidden="true"></div>
+            <h1>システムを起動しています</h1>
+            <p id="startupMessage">起動準備をしています</p>
+            <div class="startup-progress" aria-hidden="true"><span id="startupProgressBar"></span></div>
+            <div class="startup-steps">
+                <div class="startup-step" data-startup-step="page"><span></span><p>ページを読み込みました</p></div>
+                <div class="startup-step" data-startup-step="system"><span></span><p>システムを確認しています</p></div>
+                <div class="startup-step" data-startup-step="server"><span></span><p>サーバーに接続しています</p></div>
+                <div class="startup-step" data-startup-step="session"><span></span><p>ログイン状態を確認しています</p></div>
+            </div>
+        </div>
+    </section>
+
+
 
     <!-- ========================================
          ログイン
@@ -60,6 +82,7 @@
     <section
         id="loginScreen"
         class="screen login-screen"
+        hidden
     >
 
         <div class="login-container">
