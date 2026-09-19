@@ -29,6 +29,7 @@ let ordersLoading = false;
 let cancelLoading = false;
 
 let orderSubmitting = false;
+let orderTimeTimer = null;
 
 
 /* ========================================
@@ -115,6 +116,20 @@ function setupOrderForm() {
 
         timeInput.value =
             getCurrentTimeJST();
+
+        if (orderTimeTimer) {
+            clearInterval(
+                orderTimeTimer
+            );
+        }
+
+        orderTimeTimer = setInterval(
+            () => {
+                timeInput.value =
+                    getCurrentTimeJST();
+            },
+            1000
+        );
 
     }
 
@@ -3564,6 +3579,9 @@ function getCurrentTimeJST() {
                 minute:
                     "2-digit",
 
+                second:
+                    "2-digit",
+
                 hour12:
                     false
             }
@@ -3577,6 +3595,9 @@ function getCurrentTimeJST() {
         "00";
 
     let minute =
+        "00";
+
+    let second =
         "00";
 
 
@@ -3602,6 +3623,16 @@ function getCurrentTimeJST() {
 
             }
 
+
+            if (
+                part.type === "second"
+            ) {
+
+                second =
+                    part.value;
+
+            }
+
         }
     );
 
@@ -3616,7 +3647,7 @@ function getCurrentTimeJST() {
     }
 
 
-    return `${hour}:${minute}`;
+    return `${hour}:${minute}:${second}`;
 
 }
 
