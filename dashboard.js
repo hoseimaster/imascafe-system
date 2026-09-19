@@ -9,6 +9,7 @@ import {
 
 
 let dashboardLoading = false;
+let dashboardInitialScope = { mode: "date", date: getTodayJST() };
 
 
 /* ========================================
@@ -22,8 +23,12 @@ export function initializeDashboard() {
     setupDateScopeControls({
         modeElement: document.getElementById("dashboardDateMode"),
         dateElement: document.getElementById("dashboardTargetDate"),
-        defaultMode: "all",
-        onChange: () => loadDashboard()
+        defaultMode: "date",
+        initialScope: dashboardInitialScope,
+        onChange: (scope) => {
+            dashboardInitialScope = null;
+            loadDashboard(scope);
+        }
     });
 
     loadDashboard();
@@ -354,7 +359,7 @@ function renderDashboardBase() {
    データ取得
 ======================================== */
 
-export async function loadDashboard() {
+export async function loadDashboard(scopeOverride = null) {
 
     if (dashboardLoading) {
         return;
@@ -371,6 +376,8 @@ export async function loadDashboard() {
     try {
 
         const scope =
+            scopeOverride ||
+            dashboardInitialScope ||
             getDateScope("all");
 
         const targetDate =
