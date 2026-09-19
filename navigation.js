@@ -43,9 +43,6 @@ const SCREEN_TITLES = {
     productSettingsScreen:
         "商品設定",
 
-    eventDaySettingsScreen:
-        "日付設定",
-
     expensesScreen:
         "支出管理",
 
@@ -102,10 +99,6 @@ const SCREEN_PERMISSIONS = {
         "admin"
     ],
 
-    eventDaySettingsScreen: [
-        "admin"
-    ],
-
     expensesScreen: [
         "admin"
     ],
@@ -128,6 +121,10 @@ export function initializeNavigation() {
     }
 
     initialized = true;
+
+    document.querySelectorAll(
+        '[data-screen="eventDaySettingsScreen"], #eventDaySettingsScreen, #eventDayModalOverlay'
+    ).forEach((element) => element.remove());
 
     document.addEventListener(
         "click",
@@ -787,14 +784,6 @@ export function openProductSettings() {
 
     return navigateTo(
         "productSettingsScreen"
-    );
-}
-
-
-export function openEventDaySettings() {
-
-    return navigateTo(
-        "eventDaySettingsScreen"
     );
 }
 
