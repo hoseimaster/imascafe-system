@@ -185,8 +185,6 @@ export async function initializeAuth(options = {}) {
 
             showLoginScreen();
 
-            await getSystemAccessState();
-
             return false;
         }
 
