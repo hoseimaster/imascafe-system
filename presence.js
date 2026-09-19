@@ -861,6 +861,9 @@ function getPresenceRoleLabel(role) {
 
     switch (String(role || "")) {
 
+        case "super_admin":
+            return "最高管理者";
+
         case "admin":
             return "管理者";
 
