@@ -167,3 +167,15 @@
         font-size: 16px;
     }
 }
+
+
+/* PDF出力だけ付いていた常時カラーを廃止 */
+.output-pdf-button {
+    background: #ffffff;
+    border-color: #eeeeee;
+}
+
+.output-pdf-button:hover {
+    background: #fff8f2;
+    border-color: #f3c49e;
+}
