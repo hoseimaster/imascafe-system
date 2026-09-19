@@ -1,0 +1,690 @@
+.system-access-notice {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border: 1px solid #efc48f;
+    border-radius: 12px;
+    background: #fff6e9;
+    color: #885018;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.system-access-notice.is-denied {
+    border-color: #efb0b0;
+    background: #fff0f0;
+    color: #9c3434;
+}
+
+#loginScreen.is-maintenance-mode .system-access-notice {
+    border-color: #e0a05f;
+    background: #fff3e5;
+    color: #70431e;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.system-management-screen {
+    padding-bottom: 40px;
+}
+
+.system-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.system-admin-card {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid #ecd8c2;
+    border-radius: 18px;
+    background: #fffdfa;
+    box-shadow: 0 8px 24px rgba(91, 61, 30, 0.06);
+}
+
+.system-admin-card-wide {
+    grid-column: 1 / -1;
+}
+
+.system-admin-card h2 {
+    margin: 0 0 14px;
+    font-size: 18px;
+    color: #3d332b;
+}
+
+.system-admin-card p {
+    margin: 4px 0 14px;
+    color: #82756a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.system-admin-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.system-admin-card-header h2,
+.system-admin-card-header p {
+    margin-bottom: 4px;
+}
+
+.system-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.system-summary-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #faf4ed;
+}
+
+.system-summary-grid span {
+    color: #82756a;
+    font-size: 12px;
+}
+
+.system-summary-grid strong {
+    color: #3d332b;
+    font-size: 16px;
+}
+
+.system-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 48px;
+    padding: 0 2px;
+    border-bottom: 1px solid #efe5da;
+    color: #4b4037;
+    font-weight: 600;
+}
+
+.system-switch-row input {
+    width: 24px;
+    height: 24px;
+    accent-color: #ef8c2f;
+}
+
+.system-admin-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 14px 0;
+    color: #5b4d42;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.system-admin-field input,
+.system-admin-field textarea,
+.system-admin-field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #ddcbbb;
+    border-radius: 10px;
+    background: #fff;
+    color: #392f28;
+    font: inherit;
+    font-weight: 400;
+}
+
+.system-admin-field input:focus,
+.system-admin-field textarea:focus,
+.system-admin-field select:focus {
+    border-color: #ef9825;
+    outline: 3px solid rgba(239, 152, 37, 0.14);
+}
+
+.system-admin-card > .primary-button,
+.system-admin-card > .danger-button,
+.system-admin-card > .secondary-button {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.warning-button,
+.danger-button,
+.danger-outline-button {
+    min-height: 42px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.warning-button {
+    border: 1px solid #e4a24a;
+    background: #fff4df;
+    color: #96570b;
+}
+
+.danger-button {
+    border: 1px solid #ce5959;
+    background: #d96363;
+    color: #fff;
+}
+
+.danger-outline-button {
+    border: 1px solid #e2a0a0;
+    background: #fff4f4;
+    color: #a33b3b;
+}
+
+.danger-button:disabled,
+.warning-button:disabled,
+.danger-outline-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.system-role-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 14px;
+}
+
+.system-data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-height: 440px;
+    overflow: auto;
+}
+
+.system-data-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 13px 14px;
+    border: 1px solid #eee1d5;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.system-data-row > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.system-data-row strong,
+.system-data-row span,
+.system-data-row small {
+    overflow-wrap: anywhere;
+}
+
+.system-data-row span {
+    color: #685c52;
+    font-size: 13px;
+}
+
+.system-data-row small {
+    color: #94877b;
+    font-size: 12px;
+}
+
+.system-data-row code {
+    color: #9a6228;
+    font-size: 11px;
+}
+
+.system-error-text {
+    color: #b13f3f !important;
+}
+
+.system-empty,
+.system-data-list > .loading-message {
+    padding: 24px;
+    border-radius: 12px;
+    background: #faf7f3;
+    color: #8b8076;
+    text-align: center;
+}
+
+.system-protected-label {
+    flex: 0 0 auto;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f1ede8;
+    font-size: 11px !important;
+}
+
+.system-status-badge {
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.system-status-badge.is-ok { background: #e8f6ed; color: #287643; }
+.system-status-badge.is-warning { background: #fff1d8; color: #996017; }
+.system-status-badge.is-error { background: #fde7e7; color: #a43636; }
+.system-status-badge.is-unknown { background: #eeeeee; color: #666; }
+
+.restore-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 14px 0;
+    padding: 13px;
+    border: 1px solid #a7d8b6;
+    border-radius: 10px;
+    background: #eef9f1;
+    color: #316b42;
+    font-size: 12px;
+}
+
+.restore-preview[hidden] {
+    display: none;
+}
+
+.system-admin-note {
+    margin-bottom: 0 !important;
+    font-size: 11px !important;
+}
+
+.diagnostics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.diagnostic-card {
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-left-width: 5px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.diagnostic-card.is-ok { border-left-color: #51a96d; }
+.diagnostic-card.is-warning { border-left-color: #e3a13d; }
+.diagnostic-card.is-error { border-left-color: #d85a5a; }
+.diagnostic-card.is-unknown { border-left-color: #999; }
+
+.diagnostic-card > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.diagnostic-card p,
+.diagnostic-card small {
+    display: block;
+    margin: 8px 0 0;
+    color: #74685f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .system-admin-grid,
+    .diagnostics-grid,
+    .system-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .system-admin-grid,
+    .diagnostics-grid,
+    .system-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .system-admin-card-wide {
+        grid-column: auto;
+    }
+
+    .system-admin-card {
+        padding: 16px;
+    }
+
+    .system-admin-card-header,
+    .system-data-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .system-role-actions {
+        display: grid;
+    }
+
+    .system-data-row button {
+        width: 100%;
+    }
+}
+
+/* 最高管理者導線 */
+.system-management-settings-entry {
+    margin-top: 28px;
+    border-top: 1px solid #eadfd4;
+}
+
+.system-management-settings-entry .settings-item-content > span {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.system-management-settings-entry small {
+    color: #96897e;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+/* アクセス制御 */
+.system-access-control-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.system-access-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #efe5da;
+}
+
+.system-access-control-row > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+}
+
+.system-access-control-row > button {
+    flex: 0 0 auto;
+}
+
+.system-maintenance-state {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: #faf4ed;
+}
+
+.system-maintenance-state span {
+    color: #82756a;
+    font-size: 12px;
+}
+
+.system-maintenance-state strong {
+    color: #3d332b;
+}
+
+/* 取消済み注文
+   カード本体は注文画面と同じ active-order-* / order-history-cancelled を使用 */
+#cancelledOrderList {
+    max-height: none;
+    gap: 6px;
+}
+
+#cancelledOrderList .active-order-item {
+    flex: 0 0 auto;
+}
+
+/* 取消済み注文の詳細は既存の注文詳細モーダルを流用 */
+.system-cancelled-shortage {
+    margin-top: 12px;
+    padding: 10px 12px;
+    color: #7a5b20;
+    background: #fff8df;
+    border: 1px solid #ead9a4;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .system-access-control-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .system-access-control-row > button,
+    .system-order-detail-actions > button {
+        width: 100%;
+    }
+
+    .system-order-detail-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .system-order-detail-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* 復元ボタン */
+.order-restore-button,
+.order-restore-button:hover,
+.order-restore-button:active,
+.order-restore-button:focus {
+    color: #2f6f44;
+    background: #e8f6ed;
+    border: 1px solid #b9ddc5;
+    box-shadow: none;
+    background-image: none;
+    transform: none;
+}
+
+.order-restore-button:disabled,
+.order-restore-button:disabled:hover,
+.order-restore-button:disabled:active {
+    color: #668873;
+    background: #edf5f0;
+    border-color: #cdded3;
+    box-shadow: none;
+    background-image: none;
+    transform: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* システム管理 見出しアイコン */
+.system-admin-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.system-admin-title > img {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    object-fit: contain;
+}
+
+/* システム状態 */
+.system-summary-grid > div.is-ok {
+    background: #e8f6ed;
+    border: 1px solid #c6e6d1;
+}
+
+.system-summary-grid > div.is-ok strong {
+    color: #287643;
+}
+
+.system-summary-grid > div.is-error {
+    background: #fde7e7;
+    border: 1px solid #f0c4c4;
+}
+
+.system-summary-grid > div.is-error strong {
+    color: #a43636;
+}
+
+/* メンテナンス状態 */
+.system-maintenance-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 10px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.system-maintenance-status.is-ok {
+    color: #287643;
+    background: #e8f6ed;
+    border: 1px solid #c6e6d1;
+}
+
+.system-maintenance-status.is-error {
+    color: #a43636;
+    background: #fde7e7;
+    border: 1px solid #f0c4c4;
+}
+
+/* バックアップファイル選択 */
+.system-file-field input[type="file"] {
+    padding: 7px;
+    background: #fffaf5;
+    border: 1px solid #ddcbbb;
+    border-radius: 11px;
+    color: #6d5d50;
+    cursor: pointer;
+}
+
+.system-file-field input[type="file"]::file-selector-button {
+    min-height: 36px;
+    margin-right: 11px;
+    padding: 7px 13px;
+    color: #8a541e;
+    background: #fff0df;
+    border: 1px solid #edc69d;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.system-file-field input[type="file"]::-webkit-file-upload-button {
+    min-height: 36px;
+    margin-right: 11px;
+    padding: 7px 13px;
+    color: #8a541e;
+    background: #fff0df;
+    border: 1px solid #edc69d;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.system-file-field input[type="file"]:hover::file-selector-button {
+    background: #ffe7cf;
+}
+
+/* システム診断：データベース容量 */
+.diagnostic-storage-card {
+    grid-column: 1 / -1;
+}
+
+.diagnostic-storage-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.diagnostic-storage-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.035);
+}
+
+.diagnostic-storage-summary span {
+    font-size: 11px;
+    color: #777;
+}
+
+.diagnostic-storage-summary strong {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.diagnostic-storage-meter {
+    width: 100%;
+    height: 8px;
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.diagnostic-storage-meter > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+    transition: width 0.25s ease;
+}
+
+.diagnostic-storage-tables {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.diagnostic-storage-tables > strong {
+    font-size: 12px;
+}
+
+.diagnostic-storage-tables > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.diagnostic-storage-tables > div > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.diagnostic-storage-tables > div > strong {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767px) {
+    .diagnostic-storage-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
