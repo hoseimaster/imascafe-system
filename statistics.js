@@ -2,6 +2,10 @@ import { supabase } from "./supabase.js";
 import {
     APP_CONFIG
 } from "./config.js";
+import {
+    getDateScope,
+    setupDateScopeControls
+} from "./date-scope.js";
 
 
 let statisticsInitialized = false;
@@ -19,6 +23,26 @@ export function initializeStatistics() {
     }
 
     statisticsInitialized = true;
+
+    const header = document.querySelector("#statisticsScreen .screen-header");
+    if (header && !document.getElementById("statisticsDateMode")) {
+        header.insertAdjacentHTML("afterend", `
+            <div class="date-scope-control statistics-date-scope">
+                <select id="statisticsDateMode" aria-label="統計期間">
+                    <option value="all">すべて</option>
+                    <option value="date">指定日</option>
+                </select>
+                <input id="statisticsTargetDate" type="date" aria-label="統計日">
+            </div>
+        `);
+    }
+
+    setupDateScopeControls({
+        modeElement: document.getElementById("statisticsDateMode"),
+        dateElement: document.getElementById("statisticsTargetDate"),
+        defaultMode: "all",
+        onChange: () => loadStatistics()
+    });
 
     document.addEventListener(
         "app:screenchange",
@@ -53,17 +77,16 @@ export async function loadStatistics(
 
     try {
 
-        const date =
-            targetDate ||
-            getTodayJST();
+        const scope = getDateScope("all");
+        const date = targetDate || (scope.mode === "date" ? scope.date : null);
 
         await Promise.all([
             loadDailySales(date),
             loadHourlySales(date),
-            loadProductSales(),
-            loadProductDailySales(),
-            loadVisitorStatistics(),
-            loadKPI()
+            loadProductSales(date),
+            loadProductDailySales(date),
+            loadVisitorStatistics(date),
+            loadKPI(date)
         ]);
 
     } catch (error) {
@@ -89,10 +112,7 @@ async function loadDailySales(
     targetDate
 ) {
 
-    const {
-        data,
-        error
-    } = await supabase
+    let query = supabase
         .from("daily_sales_summary")
         .select("*")
         .order(
@@ -137,22 +157,19 @@ async function loadHourlySales(
     targetDate
 ) {
 
-    const {
-        data,
-        error
-    } = await supabase
+    let query = supabase
         .from("hourly_sales_summary")
         .select("*")
-        .eq(
-            "order_date",
-            targetDate
-        )
         .order(
             "hour",
             {
                 ascending: true
             }
         );
+
+    if (targetDate) query = query.eq("order_date", targetDate);
+
+    const { data, error } = await query;
 
 
     if (error) {
@@ -180,13 +197,10 @@ async function loadHourlySales(
    商品別売上
 ======================================== */
 
-async function loadProductSales() {
+async function loadProductSales(targetDate = null) {
 
-    const {
-        data,
-        error
-    } = await supabase
-        .from("product_sales_summary")
+    let query = supabase
+        .from(targetDate ? "product_daily_sales_summary" : "product_sales_summary")
         .select("*")
         .order(
             "sales_amount",
@@ -194,6 +208,9 @@ async function loadProductSales() {
                 ascending: false
             }
         );
+
+    if (targetDate) query = query.eq("order_date", targetDate);
+    const { data, error } = await query;
 
 
     if (error) {
@@ -221,12 +238,9 @@ async function loadProductSales() {
    商品別日別売上
 ======================================== */
 
-async function loadProductDailySales() {
+async function loadProductDailySales(targetDate = null) {
 
-    const {
-        data,
-        error
-    } = await supabase
+    let query = supabase
         .from("product_daily_sales_summary")
         .select("*")
         .order(
@@ -235,6 +249,9 @@ async function loadProductDailySales() {
                 ascending: false
             }
         );
+
+    if (targetDate) query = query.eq("order_date", targetDate);
+    const { data, error } = await query;
 
 
     if (error) {
@@ -262,14 +279,15 @@ async function loadProductDailySales() {
    来客統計
 ======================================== */
 
-async function loadVisitorStatistics() {
+async function loadVisitorStatistics(targetDate = null) {
 
     const [
         dailyResult,
         eventResult
     ] = await Promise.all([
 
-        supabase
+        (() => {
+            let query = supabase
             .from("daily_visitor_summary")
             .select("*")
             .order(
@@ -277,7 +295,10 @@ async function loadVisitorStatistics() {
                 {
                     ascending: true
                 }
-            ),
+            );
+            if (targetDate) query = query.eq("order_date", targetDate);
+            return query;
+        })(),
 
         supabase
             .from("event_visitor_summary")
@@ -317,7 +338,43 @@ async function loadVisitorStatistics() {
    KPI
 ======================================== */
 
-async function loadKPI() {
+async function loadKPI(targetDate = null) {
+
+    if (targetDate) {
+        const [salesResult, expenseResult] = await Promise.all([
+            supabase
+                .from("daily_sales_summary")
+                .select("sales_amount,order_count,visitor_count")
+                .eq("order_date", targetDate)
+                .maybeSingle(),
+            supabase
+                .from("expenses")
+                .select("amount")
+                .eq("expense_date", targetDate)
+        ]);
+
+        if (salesResult.error || expenseResult.error) {
+            console.error("日付別KPI取得エラー:", salesResult.error || expenseResult.error);
+            renderEmpty("kpiContainer");
+            return;
+        }
+
+        const sales = Number(salesResult.data?.sales_amount) || 0;
+        const orders = Number(salesResult.data?.order_count) || 0;
+        const visitors = Number(salesResult.data?.visitor_count) || 0;
+        const expenses = (expenseResult.data || []).reduce(
+            (total, item) => total + (Number(item.amount) || 0),
+            0
+        );
+
+        renderKPI({
+            average_order_amount: orders ? sales / orders : 0,
+            sales_per_visitor: visitors ? sales / visitors : 0,
+            visitors_per_order: orders ? visitors / orders : 0,
+            total_profit: sales - expenses
+        });
+        return;
+    }
 
     const {
         data,
