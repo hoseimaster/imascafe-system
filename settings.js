@@ -16,6 +16,8 @@ import {
     refreshEventDays
 } from "./event-days.js";
 
+import { confirmLogout } from "./confirm-modal.js";
+
 
 let initialized = false;
 
@@ -63,9 +65,7 @@ function setupSettingsEvents() {
             async () => {
 
                 const confirmed =
-                    window.confirm(
-                        "ログアウトしますか？"
-                    );
+                    await confirmLogout();
 
 
                 if (!confirmed) {
