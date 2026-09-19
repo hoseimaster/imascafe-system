@@ -946,4 +946,4 @@ if (
 } else {
 
     initializeApp();
-｝
+} 
