@@ -47,7 +47,10 @@ const SCREEN_TITLES = {
         "支出管理",
 
     outputScreen:
-        "データ出力"
+        "データ出力",
+
+    systemManagementScreen:
+        "システム管理"
 };
 
 
@@ -58,54 +61,68 @@ const SCREEN_TITLES = {
 const SCREEN_PERMISSIONS = {
 
     dashboardScreen: [
+        "super_admin",
         "admin",
         "staff",
         "viewer"
     ],
 
     statisticsScreen: [
+        "super_admin",
         "admin",
         "staff",
         "viewer"
     ],
 
     ordersScreen: [
+        "super_admin",
         "admin",
         "staff"
     ],
 
     orderHistoryScreen: [
+        "super_admin",
         "admin",
         "staff"
     ],
 
     inventoryScreen: [
+        "super_admin",
         "admin",
         "staff"
     ],
 
     historyScreen: [
+        "super_admin",
         "admin",
         "staff"
     ],
 
     settingsScreen: [
+        "super_admin",
         "admin",
         "staff",
         "viewer"
     ],
 
     productSettingsScreen: [
+        "super_admin",
         "admin"
     ],
 
     expensesScreen: [
+        "super_admin",
         "admin"
     ],
 
     outputScreen: [
+        "super_admin",
         "admin",
         "staff"
+    ],
+
+    systemManagementScreen: [
+        "super_admin"
     ]
 };
 
