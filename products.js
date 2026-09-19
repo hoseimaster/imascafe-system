@@ -6,6 +6,8 @@ import {
     getTerminalId
 } from "./auth.js";
 
+import { confirmProductDeletion } from "./confirm-modal.js";
+
 
 let initialized = false;
 let productsLoading = false;
@@ -1457,23 +1459,6 @@ async function toggleProduct(
         );
 
 
-    const actionText =
-        nextActive
-            ? "販売を再開"
-            : "販売を停止";
-
-
-    const confirmed =
-        window.confirm(
-            `${product.name} の${actionText}を行いますか？`
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
     const {
         data,
         error
@@ -1553,9 +1538,7 @@ async function deleteProduct(
 
 
     const confirmed =
-        window.confirm(
-            `「${product.name}」を削除しますか？\n\nこの操作は元に戻せません。`
-        );
+        await confirmProductDeletion(product.name);
 
 
     if (!confirmed) {
