@@ -48,8 +48,8 @@ export function initializePresence() {
 
     window.addEventListener(
         "app:logout",
-        async () => {
-            await stopPresence();
+        () => {
+            cleanupPresenceState();
         }
     );
 
@@ -306,6 +306,9 @@ async function checkForcedLogout() {
 
     await markOffline();
 
+    cachedUserId = null;
+    cachedTerminal = null;
+
     sessionStorage.removeItem(
         LOGIN_STARTED_KEY
     );
@@ -370,11 +373,25 @@ export async function markOffline() {
    停止
 ======================================== */
 
-export async function stopPresence() {
+export async function prepareForLogout() {
 
     stopTimers();
 
     await markOffline();
+}
+
+
+export async function stopPresence() {
+
+    await prepareForLogout();
+
+    cleanupPresenceState();
+}
+
+
+function cleanupPresenceState() {
+
+    stopTimers();
 
     sessionStorage.removeItem(
         LOGIN_STARTED_KEY
@@ -955,3 +972,12 @@ function escapeHtml(value) {
             "&#039;"
         );
 }
+
+window.hoseimasterPresence = {
+    startPresence,
+    stopPresence,
+    prepareForLogout,
+    markOffline,
+    heartbeat,
+    loadOnlineUsers
+};
