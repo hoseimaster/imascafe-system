@@ -1325,15 +1325,19 @@ function renderProducts() {
                                             data-category="${escapeHtml(
                                                 category
                                             )}"
+                                            data-sold-out="${soldOut
+                                                ? "true"
+                                                : "false"
+                                            }"
+                                            aria-disabled="${soldOut
+                                                ? "true"
+                                                : "false"
+                                            }"
                                             aria-label="${escapeHtml(
                                                 soldOut
                                                     ? `${product.name} 売り切れ`
                                                     : `${product.name} ${formatYen(product.price)}を追加`
                                             )}"
-                                            ${soldOut
-                                                ? "disabled"
-                                                : ""
-                                            }
                                         >
 
                                         <span class="product-button-body">
@@ -1343,15 +1347,6 @@ function renderProducts() {
                                                         product.name
                                                     )}
                                             </span>
-
-                                            ${soldOut
-                                                ? `
-                                                    <span class="product-button-sold-out">
-                                                        売り切れ
-                                                    </span>
-                                                `
-                                                : ""
-                                            }
 
                                         </span>
 
@@ -1457,6 +1452,21 @@ function renderProducts() {
                         if (
                             button.disabled
                         ) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            button.dataset.soldOut ===
+                            "true"
+                        ) {
+
+                            showToast(
+                                "売り切れ商品です",
+                                "error"
+                            );
 
                             return;
 
@@ -4087,7 +4097,8 @@ function getSupabaseErrorMessage(
 ======================================== */
 
 function showToast(
-    message
+    message,
+    type = "default"
 ) {
 
     const toast =
@@ -4111,6 +4122,26 @@ function showToast(
         message;
 
 
+    toast.hidden =
+        false;
+
+
+    toast.classList.remove(
+        "is-error"
+    );
+
+
+    if (
+        type === "error"
+    ) {
+
+        toast.classList.add(
+            "is-error"
+        );
+
+    }
+
+
     toast.classList.add(
         "is-visible"
     );
@@ -4126,8 +4157,13 @@ function showToast(
             () => {
 
                 toast.classList.remove(
-                    "is-visible"
+                    "is-visible",
+                    "is-error"
                 );
+
+
+                toast.hidden =
+                    true;
 
             },
             3000
