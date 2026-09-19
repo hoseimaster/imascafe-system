@@ -51,13 +51,17 @@ function setupExpenseEvents() {
         );
 
 
-    if (
-        dateInput &&
-        !dateInput.value
-    ) {
+    if (dateInput) {
+        dateInput.value = "";
 
-        dateInput.value =
-            getTodayJST();
+        const filter =
+            dateInput.closest(
+                ".expense-filter"
+            );
+
+        if (filter) {
+            filter.hidden = true;
+        }
     }
 
 
@@ -162,42 +166,6 @@ function setupExpenseEvents() {
     }
 
 
-    const clearButton =
-        document.getElementById(
-            "expenseDateClear"
-        );
-
-
-    if (clearButton) {
-
-        clearButton.addEventListener(
-            "click",
-            () => {
-
-                if (dateInput) {
-
-                    dateInput.value =
-                        "";
-                }
-
-                loadExpenses();
-            }
-        );
-    }
-
-
-    if (dateInput) {
-
-        dateInput.addEventListener(
-            "change",
-            () => {
-
-                loadExpenses();
-            }
-        );
-    }
-
-
     document.addEventListener(
         "click",
         handleExpenseAction
@@ -239,20 +207,7 @@ export async function loadExpenses() {
 
     try {
 
-        const dateInput =
-            document.getElementById(
-                "expenseDate"
-            );
-
-
-        const selectedDate =
-            String(
-                dateInput?.value ||
-                ""
-            ).trim();
-
-
-        let query =
+        const query =
             supabase
                 .from("expenses")
                 .select("*")
@@ -270,16 +225,6 @@ export async function loadExpenses() {
                             false
                     }
                 );
-
-
-        if (selectedDate) {
-
-            query =
-                query.eq(
-                    "expense_date",
-                    selectedDate
-                );
-        }
 
 
         const {
