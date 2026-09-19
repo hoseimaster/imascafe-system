@@ -9,6 +9,8 @@ import {
     canManageOrders
 } from "./auth.js";
 
+import { confirmOrderCancellation } from "./confirm-modal.js";
+
 
 let initialized = false;
 
@@ -1329,9 +1331,7 @@ async function cancelOrder(
 
 
     const confirmed =
-        window.confirm(
-            `${orderId} の注文を取り消しますか？\n\n取り消した注文は売上集計から除外され、使用した在庫が復元されます。`
-        );
+        await confirmOrderCancellation(orderId);
 
 
     if (!confirmed) {
