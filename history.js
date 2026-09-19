@@ -8,6 +8,31 @@ let initialized = false;
 let historyLoading = false;
 let historyRows = [];
 
+const HISTORY_OPERATION_OPTIONS = [
+    ["", "すべての操作"],
+    ["login", "ログイン"],
+    ["logout", "ログアウト"],
+    ["order_create", "注文登録"],
+    ["order_cancel", "注文取消"],
+    ["order_datetime_update", "注文情報変更"],
+    ["inventory_add", "在庫入庫"],
+    ["inventory_update", "在庫修正"],
+    ["product_create", "商品登録"],
+    ["product_update", "商品変更"],
+    ["product_delete", "商品削除"],
+    ["product_stop", "販売停止"],
+    ["event_day_create", "開催日登録"],
+    ["event_day_update", "開催日変更"],
+    ["event_day_activate", "開催日有効化"],
+    ["event_day_deactivate", "開催日無効化"],
+    ["settings_update", "設定変更"],
+    ["expense_create", "支出登録"],
+    ["expense_update", "支出変更"],
+    ["expense_delete", "支出削除"],
+    ["accounting_adjustment", "会計調整"],
+    ["reset", "リセット"]
+];
+
 
 /* ========================================
    初期化
@@ -72,6 +97,10 @@ function setupHistoryFilters() {
 
 
     if (typeSelect) {
+
+        setupHistoryOperationOptions(
+            typeSelect
+        );
 
         typeSelect.addEventListener(
             "change",
@@ -453,6 +482,12 @@ function normalizeOperationType(
         inventory_add:
             "inventory_add",
 
+        inventory_updated:
+            "inventory_update",
+
+        inventory_update:
+            "inventory_update",
+
 
         product_created:
             "product_create",
@@ -467,6 +502,18 @@ function normalizeOperationType(
         product_update:
             "product_update",
 
+        product_deleted:
+            "product_delete",
+
+        product_delete:
+            "product_delete",
+
+        product_stopped:
+            "product_stop",
+
+        product_stop:
+            "product_stop",
+
 
         event_day_created:
             "event_day_create",
@@ -480,6 +527,12 @@ function normalizeOperationType(
 
         event_day_update:
             "event_day_update",
+
+        event_day_activated:
+            "event_day_activate",
+
+        event_day_activate:
+            "event_day_activate",
 
 
         event_day_deactivated:
@@ -509,6 +562,21 @@ function normalizeOperationType(
         expense_update:
             "expense_update",
 
+        expense_deleted:
+            "expense_delete",
+
+        expense_delete:
+            "expense_delete",
+
+        login:
+            "login",
+
+        logout:
+            "logout",
+
+        reset:
+            "reset",
+
 
         accounting_adjusted:
             "accounting_adjustment",
@@ -535,6 +603,12 @@ function normalizeOperationType(
         在庫追加:
             "inventory_add",
 
+        在庫入庫:
+            "inventory_add",
+
+        在庫修正:
+            "inventory_update",
+
         商品追加:
             "product_create",
 
@@ -543,6 +617,9 @@ function normalizeOperationType(
 
         商品変更:
             "product_update",
+
+        商品削除:
+            "product_delete",
 
         販売停止:
             "product_stop",
@@ -559,6 +636,12 @@ function normalizeOperationType(
         開催日変更:
             "event_day_update",
 
+        開催日有効化:
+            "event_day_activate",
+
+        開催日無効化:
+            "event_day_deactivate",
+
         リセット:
             "reset",
 
@@ -567,6 +650,15 @@ function normalizeOperationType(
 
         経費変更:
             "expense_update",
+
+        支出登録:
+            "expense_create",
+
+        支出変更:
+            "expense_update",
+
+        支出削除:
+            "expense_delete",
 
         会計調整:
             "accounting_adjustment",
@@ -1560,11 +1652,17 @@ function getHistoryDescription(
         inventory_add:
             "在庫を追加しました",
 
+        inventory_update:
+            "在庫数を修正しました",
+
         product_create:
             "商品を登録しました",
 
         product_update:
             "商品情報を変更しました",
+
+        product_delete:
+            "商品を削除しました",
 
         product_stop:
             "商品の販売を停止しました",
@@ -1574,6 +1672,9 @@ function getHistoryDescription(
 
         event_day_update:
             "開催日を変更しました",
+
+        event_day_activate:
+            "開催日を有効にしました",
 
         event_day_deactivate:
             "開催日を無効にしました",
@@ -1589,6 +1690,9 @@ function getHistoryDescription(
 
         expense_update:
             "経費を変更しました",
+
+        expense_delete:
+            "支出を削除しました",
 
         accounting_adjustment:
             "会計を調整しました",
@@ -1664,13 +1768,19 @@ function getOperationLabel(
             "注文情報変更",
 
         inventory_add:
-            "在庫追加",
+            "在庫入庫",
+
+        inventory_update:
+            "在庫修正",
 
         product_create:
             "商品登録",
 
         product_update:
             "商品変更",
+
+        product_delete:
+            "商品削除",
 
         product_stop:
             "販売停止",
@@ -1680,6 +1790,9 @@ function getOperationLabel(
 
         event_day_update:
             "開催日変更",
+
+        event_day_activate:
+            "開催日有効化",
 
         event_day_deactivate:
             "開催日無効化",
@@ -1691,10 +1804,13 @@ function getOperationLabel(
             "リセット",
 
         expense_create:
-            "経費登録",
+            "支出登録",
 
         expense_update:
-            "経費変更",
+            "支出変更",
+
+        expense_delete:
+            "支出削除",
 
         accounting_adjustment:
             "会計調整",
@@ -2136,4 +2252,28 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
+}
+
+
+function setupHistoryOperationOptions(
+    select
+) {
+
+    const selectedValue =
+        normalizeOperationType(
+            select.value
+        );
+
+
+    select.replaceChildren(
+        ...HISTORY_OPERATION_OPTIONS.map(
+            ([value, label]) =>
+                new Option(
+                    label,
+                    value,
+                    false,
+                    value === selectedValue
+                )
+        )
+    );
 }
