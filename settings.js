@@ -12,11 +12,8 @@ import {
     refreshProducts
 } from "./products.js";
 
-import {
-    refreshEventDays
-} from "./event-days.js";
-
 import { confirmLogout } from "./confirm-modal.js";
+import { showConfirmModal } from "./confirm-modal.js";
 
 
 let initialized = false;
@@ -36,6 +33,7 @@ export function initializeSettings() {
 
     setupSettingsEvents();
     renderSettingsPermissions();
+    setupOrderAcceptanceControl();
 
 }
 
@@ -155,19 +153,6 @@ function setupSettingsEvents() {
 
             }
 
-
-            if (
-                screen ===
-                "eventDaySettingsScreen"
-            ) {
-
-                if (!isAdmin()) {
-                    return;
-                }
-
-                await refreshEventDays();
-
-            }
 
         }
     );
@@ -762,8 +747,7 @@ export async function refreshSettings() {
 
     return Promise.all([
         loadSystemSettings(),
-        refreshProducts(),
-        refreshEventDays()
+        refreshProducts()
     ]);
 
 }
@@ -885,4 +869,105 @@ function escapeHtml(
             "&#039;"
         );
 
+}
+
+
+async function setupOrderAcceptanceControl() {
+
+    if (!isAdmin()) {
+        return;
+    }
+
+    const list =
+        document.querySelector(
+            "#settingsScreen .settings-list"
+        );
+
+    if (!list) {
+        return;
+    }
+
+    let item =
+        document.getElementById(
+            "orderAcceptanceSetting"
+        );
+
+    if (!item) {
+        item = document.createElement("div");
+        item.id = "orderAcceptanceSetting";
+        item.className = "settings-item admin-only order-acceptance-setting";
+        item.innerHTML = `
+            <span class="settings-item-content">
+                <span>
+                    <strong class="order-acceptance-title">注文受付</strong>
+                    <small class="order-acceptance-status">確認中</small>
+                </span>
+            </span>
+            <button type="button" class="button button-secondary" data-order-acceptance-toggle disabled>確認中</button>
+        `;
+        list.prepend(item);
+    }
+
+    const status = item.querySelector(".order-acceptance-status");
+    const button = item.querySelector("[data-order-acceptance-toggle]");
+
+    const refresh = async () => {
+        const { data, error } = await supabase
+            .from("system_settings")
+            .select("value")
+            .eq("key", "order_accepting")
+            .maybeSingle();
+
+        if (error || !data) {
+            status.textContent = "DB設定が必要です";
+            button.textContent = "利用不可";
+            button.disabled = true;
+            return;
+        }
+
+        const accepting = data.value === true;
+        item.dataset.accepting = String(accepting);
+        status.textContent = accepting ? "現在受付中" : "現在停止中";
+        button.textContent = accepting ? "受付を停止" : "受付を開始";
+        button.classList.toggle("danger-button", accepting);
+        button.disabled = false;
+    };
+
+    if (!button.dataset.bound) {
+        button.dataset.bound = "true";
+        button.addEventListener("click", async () => {
+            const accepting = item.dataset.accepting === "true";
+            const confirmed = await showConfirmModal(
+                accepting
+                    ? "停止中はすべての端末から新しい注文を登録できません。"
+                    : "すべての端末で注文登録を再開します。",
+                {
+                    title: accepting ? "注文受付を停止しますか？" : "注文受付を開始しますか？",
+                    confirmText: accepting ? "受付を停止" : "受付を開始",
+                    tone: accepting ? "danger" : "stock"
+                }
+            );
+
+            if (!confirmed) return;
+
+            button.disabled = true;
+            const { error } = await supabase.rpc("update_system_setting", {
+                p_key: "order_accepting",
+                p_value: !accepting,
+                p_operator_name: getOperatorName(),
+                p_terminal: getTerminalId()
+            });
+
+            if (error) {
+                console.error("注文受付状態変更エラー:", error);
+                showToast(getErrorMessage(error));
+            } else {
+                showToast(accepting ? "注文受付を停止しました。" : "注文受付を開始しました。");
+            }
+
+            await refresh();
+        });
+    }
+
+    await refresh();
 }
