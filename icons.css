@@ -208,3 +208,50 @@
         padding-right: 38px;
     }
 }
+
+
+
+/* アイコンと文字の縦位置を統一 */
+.title-icon,
+.section-icon,
+.action-icon,
+.date-icon,
+.settings-icon,
+.settings-account-icon,
+.global-refresh-icon,
+.category-icon,
+.navigation-icon,
+.bottom-navigation-icon,
+.product-category-icon {
+    vertical-align: middle;
+}
+
+.screen-title,
+.page-title,
+.section-title,
+.dashboard-section-title,
+.statistics-section h2,
+.management-screen-header h1,
+.screen-header h1,
+.settings-item-content,
+.nav-button,
+.bottom-nav-button {
+    align-items: center;
+}
+
+.management-screen-header h1,
+.screen-header h1 {
+    display: flex;
+    align-items: center;
+}
+
+.title-icon,
+.section-icon,
+.action-icon,
+.date-icon,
+.settings-icon,
+.settings-account-icon,
+.global-refresh-icon,
+.category-icon {
+    align-self: center;
+}
