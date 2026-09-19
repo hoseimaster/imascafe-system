@@ -1017,3 +1017,382 @@
         background-position-y: center;
     }
 }
+
+/* Smartphone: title logo inside login card */
+@media (max-width: 767px) {
+ #loginScreen.login-screen{align-items:stretch;padding:max(10px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));overflow:hidden;}
+ #loginScreen .login-container{display:flex;flex-direction:column;justify-content:flex-end;width:100%;height:100%;max-height:none;margin:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+ #loginScreen .login-container::before,#loginScreen .login-container::after{position:absolute;z-index:-1;top:1.5vh;bottom:auto;width:55vw;height:43dvh;transform:none;background-size:contain;background-position-y:center;opacity:1;pointer-events:none;}
+ #loginScreen .login-container::before{left:-6vw;right:auto;background-position-x:left;}
+ #loginScreen .login-container::after{left:auto;right:-6vw;background-position-x:right;}
+ #loginScreen .app-logo{order:1;width:100%;height:clamp(82px,11.5vh,108px);margin:0;padding:18px 22px 6px;box-sizing:border-box;background-color:rgba(255,255,255,.94);background-size:calc(100% - 44px) auto;background-position:center;background-repeat:no-repeat;border:1px solid rgba(255,255,255,.90);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -8px 28px rgba(75,55,40,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+ #loginScreen .app-logo::after{display:none;}
+ #loginScreen .login-form{order:2;gap:clamp(10px,1.4vh,13px);width:100%;margin:0;padding:8px 20px 20px;box-sizing:border-box;background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.90);border-top:0;border-radius:0 0 18px 18px;box-shadow:0 18px 42px rgba(75,55,40,.10);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+ #loginScreen #operatorName,#loginScreen #loginPassword{height:clamp(48px,6.3vh,56px);padding-left:54px;font-size:14px;}
+ #loginScreen #loginButton{min-height:clamp(48px,6.3vh,56px);margin-top:4px;font-size:15px;}
+}
+@media (max-width:767px) and (max-height:700px){#loginScreen .login-container::before,#loginScreen .login-container::after{top:0;width:52vw;height:34dvh;}#loginScreen .app-logo{height:72px;padding-top:10px;padding-bottom:2px;background-size:calc(100% - 50px) auto;}#loginScreen .login-form{gap:8px;padding:6px 16px 14px;}#loginScreen #operatorName,#loginScreen #loginPassword,#loginScreen #loginButton{height:44px;min-height:44px;}}
+@media (max-width:390px){#loginScreen.login-screen{padding-right:12px;padding-left:12px;}#loginScreen .app-logo{height:78px;padding-right:18px;padding-left:18px;background-size:calc(100% - 36px) auto;border-radius:16px 16px 0 0;}#loginScreen .login-form{padding-right:16px;padding-left:16px;border-radius:0 0 16px 16px;}}
+
+/* ========================================
+   Smartphone Login Card - Final
+======================================== */
+
+@media (max-width: 767px) {
+
+    #loginScreen.login-screen {
+        align-items: stretch;
+
+        padding:
+            max(10px, env(safe-area-inset-top))
+            14px
+            max(12px, env(safe-area-inset-bottom));
+
+        overflow: hidden;
+    }
+
+
+    /* ========================================
+       全体
+    ======================================== */
+
+    #loginScreen .login-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        width: 100%;
+        height: 100%;
+        max-height: none;
+
+        margin: 0;
+        padding: 0;
+
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+
+    /* ========================================
+       イラスト
+    ======================================== */
+
+    #loginScreen .login-container::before,
+    #loginScreen .login-container::after {
+        position: absolute;
+        z-index: -1;
+
+        top: 1vh;
+        bottom: auto;
+
+        width: 55vw;
+        height: 43dvh;
+
+        transform: none;
+
+        background-size: contain;
+        background-position-y: center;
+
+        opacity: 1;
+
+        pointer-events: none;
+    }
+
+    #loginScreen .login-container::before {
+        left: -6vw;
+        right: auto;
+
+        background-position-x: left;
+    }
+
+    #loginScreen .login-container::after {
+        left: auto;
+        right: -6vw;
+
+        background-position-x: right;
+    }
+
+
+    /* ========================================
+       タイトルロゴ部分
+    ======================================== */
+
+    #loginScreen .app-logo {
+        order: 1;
+
+        width: 100%;
+        height: clamp(135px, 18vh, 165px);
+
+        /*
+         * カード全体を上方向へ広げる。
+         * イラストとの空白も小さくする。
+         */
+        margin: 0;
+
+        padding:
+            18px
+            24px
+            8px;
+
+        box-sizing: border-box;
+
+        background-color:
+            rgba(255, 255, 255, 0.94);
+
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        border:
+            1px solid
+            rgba(255, 255, 255, 0.90);
+
+        border-bottom: 0;
+
+        border-radius:
+            20px
+            20px
+            0
+            0;
+
+        box-shadow:
+            0 -10px 30px
+            rgba(75, 55, 40, 0.06);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        flex: 0 0 auto;
+    }
+
+
+    #loginScreen .app-logo::after {
+        display: none;
+    }
+
+
+    /* ========================================
+       フォーム
+    ======================================== */
+
+    #loginScreen .login-form {
+        order: 2;
+
+        width: 100%;
+
+        margin: 0;
+
+        padding:
+            8px
+            20px
+            20px;
+
+        gap: 12px;
+
+        box-sizing: border-box;
+
+        background:
+            rgba(255, 255, 255, 0.94);
+
+        border:
+            1px solid
+            rgba(255, 255, 255, 0.90);
+
+        border-top: 0;
+
+        border-radius:
+            0
+            0
+            20px
+            20px;
+
+        box-shadow:
+            0 18px 42px
+            rgba(75, 55, 40, 0.10);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        flex: 0 0 auto;
+    }
+
+
+    /* ========================================
+       入力欄
+    ======================================== */
+
+    #loginScreen #operatorName,
+    #loginScreen #loginPassword {
+        height: 56px;
+
+        padding-left: 54px;
+
+        font-size: 14px;
+    }
+
+
+    /* ========================================
+       ログインボタン
+    ======================================== */
+
+    #loginScreen #loginButton {
+        min-height: 56px;
+
+        margin-top: 4px;
+
+        font-size: 15px;
+    }
+}
+
+
+/* ========================================
+   小型スマートフォン
+======================================== */
+
+@media (max-width: 390px) {
+
+    #loginScreen.login-screen {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    #loginScreen .login-container::before,
+    #loginScreen .login-container::after {
+        height: 41dvh;
+    }
+
+    #loginScreen .app-logo {
+        height: 125px;
+
+        padding:
+            14px
+            18px
+            6px;
+
+        border-radius:
+            18px
+            18px
+            0
+            0;
+    }
+
+    #loginScreen .login-form {
+        padding:
+            7px
+            16px
+            16px;
+
+        border-radius:
+            0
+            0
+            18px
+            18px;
+    }
+}
+
+
+/* ========================================
+   高さが低いスマートフォン
+======================================== */
+
+@media (max-width: 767px) and (max-height: 700px) {
+
+    #loginScreen .login-container::before,
+    #loginScreen .login-container::after {
+        top: 0;
+
+        height: 34dvh;
+    }
+
+    #loginScreen .app-logo {
+        height: 110px;
+
+        padding:
+            10px
+            20px
+            5px;
+    }
+
+    #loginScreen .login-form {
+        gap: 8px;
+
+        padding:
+            5px
+            16px
+            14px;
+    }
+
+    #loginScreen #operatorName,
+    #loginScreen #loginPassword,
+    #loginScreen #loginButton {
+        height: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 767px) {
+
+    /* カード上部＝タイトルロゴ領域 */
+    #loginScreen .app-logo {
+        order: 1;
+
+        width: 100%;
+        height: clamp(180px, 23vh, 220px);
+
+        margin: 0;
+        padding: 24px 24px 10px;
+
+        box-sizing: border-box;
+
+        background-color: rgba(255, 255, 255, 0.94);
+        background-image: url("./titleーlogo-login.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: calc(100% - 48px) auto;
+
+        border: 1px solid rgba(255, 255, 255, 0.90);
+        border-bottom: 0;
+        border-radius: 20px 20px 0 0;
+
+        box-shadow: 0 -10px 30px rgba(75, 55, 40, 0.06);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        flex: 0 0 auto;
+    }
+
+    #loginScreen .app-logo::after {
+        display: none;
+    }
+
+    /* フォームとロゴを完全に一体化 */
+    #loginScreen .login-form {
+        order: 2;
+
+        width: 100%;
+        margin: 0;
+        padding: 0 20px 20px;
+
+        gap: 12px;
+
+        box-sizing: border-box;
+
+        background: rgba(255, 255,255, 0.94);
+
+        border: 1px solid rgba(255, 255, 255, 0.90);
+        border-top: 0;
+        border-radius: 0 0 20px 20px;
+
+        box-shadow: 0 18px 42px rgba(75, 55, 40, 0.10);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        flex: 0 0 auto;
+    }
+}
