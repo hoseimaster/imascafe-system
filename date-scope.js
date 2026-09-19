@@ -33,7 +33,7 @@ export function setDateScope(mode, date) {
     return scope;
 }
 
-export function setupDateScopeControls({ modeElement, dateElement, defaultMode = "all", onChange }) {
+export function setupDateScopeControls({ modeElement, dateElement, defaultMode = "all", initialScope = null, onChange }) {
     if (!modeElement || !dateElement) return;
 
     const apply = (scope) => {
@@ -43,7 +43,7 @@ export function setupDateScopeControls({ modeElement, dateElement, defaultMode =
         dateElement.disabled = scope.mode === "all";
     };
 
-    apply(getDateScope(defaultMode));
+    apply(initialScope || getDateScope(defaultMode));
 
     modeElement.addEventListener("change", () => {
         const scope = setDateScope(modeElement.value, dateElement.value);
