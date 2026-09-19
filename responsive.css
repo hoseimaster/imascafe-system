@@ -1647,3 +1647,163 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ========================================
+   Smartphone Statistics Chart Scroll
+======================================== */
+
+.statistics-chart-scroll {
+    width: 100%;
+    max-width: 100%;
+}
+
+.statistics-svg-chart {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 767px) {
+
+    .statistics-chart-box {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .statistics-chart-scroll {
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+
+        scrollbar-width: thin;
+    }
+
+    /*
+     * statistics.js のSVGは viewBox 720px幅で生成されるため、
+     * スマホでは720pxを維持して横スクロールさせる。
+     */
+    .statistics-chart-scroll .statistics-svg-chart {
+        width: 720px;
+        min-width: 720px;
+        max-width: none;
+        height: auto;
+        flex: 0 0 720px;
+    }
+
+    .statistics-chart-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .statistics-chart-scroll::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: rgba(130, 130, 130, 0.32);
+    }
+
+    .statistics-chart-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
+
+
+
+
+/* ========================================
+   UI Detail Responsive Override
+======================================== */
+@media (max-width: 767px) {
+    /* 共通指定の「ヘッダーボタン全幅」を管理画面では解除 */
+    .management-screen-header .secondary-button,
+    .management-screen-header .primary-button {
+        width: auto;
+    }
+
+    .management-screen-header .screen-header-back > div {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .management-screen-header .screen-header-back h1 {
+        min-width: 0;
+    }
+
+    /* 在庫カード間にわずかな余白 */
+    .inventory-list {
+        row-gap: 12px;
+        column-gap: 12px;
+    }
+}
+
+
+/* ========================================
+   2026-09-18 smartphone precision adjustments
+======================================== */
+
+@media (max-width: 767px) {
+
+    /* 固定ヘッダー直下の余分な18pxを削除 */
+    .main-content {
+        padding-top:
+            calc(
+                var(--header-height) +
+                env(safe-area-inset-top)
+            );
+    }
+
+    /* 注文履歴・在庫・通常履歴の上下間隔 */
+    .active-orders-list,
+    .order-history-list,
+    .history-list {
+        gap: 10px;
+        row-gap: 10px;
+    }
+
+    .inventory-list {
+        row-gap: 10px;
+    }
+
+    /* 日付と「すべて」をスマホでも同じ行に維持 */
+    .order-history-filter {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    .order-history-filter .form-group {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .order-history-filter .secondary-button {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 64px;
+        min-height: var(--control-height);
+    }
+
+    /* 数量ボタンだけ小さく。文字サイズは継承 */
+    .order-cart-item-controls .order-quantity-button {
+        width: 30px;
+        min-width: 30px;
+        max-width: 30px;
+        height: 30px;
+        min-height: 30px;
+        max-height: 30px;
+        padding: 0;
+    }
+
+    /* 商品カードはタップ時に拡大縮小しない */
+    .product-grid > button:active,
+    .product-button:active {
+        transform: none;
+        background: var(--primary-soft);
+        border-color: var(--primary-light);
+    }
+}
