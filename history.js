@@ -2,6 +2,10 @@ import { supabase } from "./supabase.js";
 import {
     APP_CONFIG
 } from "./config.js";
+import {
+    getDateScope,
+    setupDateScopeControls
+} from "./date-scope.js";
 
 
 let initialized = false;
@@ -84,16 +88,25 @@ function setupHistoryFilters() {
             "historyOperationType"
         );
 
-
-    if (dateInput) {
-
-        dateInput.addEventListener(
-            "change",
-            () => {
-                loadHistory();
-            }
+    let dateMode =
+        document.getElementById(
+            "historyDateMode"
         );
+
+    if (dateInput && !dateMode) {
+        dateMode = document.createElement("select");
+        dateMode.id = "historyDateMode";
+        dateMode.setAttribute("aria-label", "履歴期間");
+        dateMode.innerHTML = '<option value="date">指定日</option><option value="all">すべて</option>';
+        dateInput.before(dateMode);
     }
+
+    setupDateScopeControls({
+        modeElement: dateMode,
+        dateElement: dateInput,
+        defaultMode: "all",
+        onChange: () => loadHistory()
+    });
 
 
     if (typeSelect) {
@@ -300,8 +313,13 @@ export async function loadHistory() {
             );
 
 
+        const dateScope =
+            getDateScope("all");
+
         const selectedDate =
-            dateInput?.value || "";
+            dateScope.mode === "date"
+                ? dateScope.date
+                : "";
 
         const selectedType =
             normalizeOperationType(
