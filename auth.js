@@ -1,5 +1,11 @@
 import { supabase } from "./supabase.js";
 import { APP_CONFIG } from "./config.js";
+import {
+    getSystemAccessState,
+    isRoleAllowed,
+    showAccessDenied,
+    showAccountDisabled
+} from "./system-access.js";
 
 
 /* ========================================
@@ -7,6 +13,7 @@ import { APP_CONFIG } from "./config.js";
 ======================================== */
 
 const AUTH_ACCOUNTS = {
+    super_admin: "super-admin@hoseimaster-web.com",
     admin: "admin@hoseimaster-web.com",
     staff: "staff@hoseimaster-web.com",
     viewer: "viewer@hoseimaster-web.com"
@@ -16,6 +23,9 @@ const AUTH_ACCOUNTS = {
 /* ========================================
    権限
 ======================================== */
+
+const ROLE_SUPER_ADMIN =
+    APP_CONFIG?.ROLES?.SUPER_ADMIN || "super_admin";
 
 const ROLE_ADMIN =
     APP_CONFIG?.ROLES?.ADMIN || "admin";
@@ -28,6 +38,9 @@ const ROLE_VIEWER =
 
 
 const ROLE_LABELS = {
+    [ROLE_SUPER_ADMIN]:
+        APP_CONFIG?.ROLE_LABELS?.super_admin || "最高管理者",
+
     [ROLE_ADMIN]:
         APP_CONFIG?.ROLE_LABELS?.admin || "管理者",
 
@@ -112,7 +125,12 @@ function getMainApp() {
    初期化
 ======================================== */
 
-export async function initializeAuth() {
+export async function initializeAuth(options = {}) {
+
+    const onServerConnected =
+        typeof options.onServerConnected === "function"
+            ? options.onServerConnected
+            : null;
 
     if (initialized) {
         return isAuthenticated();
@@ -130,6 +148,10 @@ export async function initializeAuth() {
             data,
             error
         } = await supabase.auth.getSession();
+
+        if (!error) {
+            onServerConnected?.();
+        }
 
 
         if (error) {
@@ -163,6 +185,8 @@ export async function initializeAuth() {
 
             showLoginScreen();
 
+            await getSystemAccessState();
+
             return false;
         }
 
@@ -185,6 +209,19 @@ export async function initializeAuth() {
         }
 
 
+        if (profile.active === false) {
+
+            await forceSignOut();
+
+            showAccountDisabled();
+            showLoginError(
+                "このアカウントは無効化されています。最高管理者に確認してください。"
+            );
+
+            return false;
+        }
+
+
         if (!isValidRole(profile.role)) {
 
             await forceSignOut();
@@ -193,6 +230,15 @@ export async function initializeAuth() {
                 "このアカウントには利用権限がありません。"
             );
 
+            return false;
+        }
+
+        const accessState =
+            await getSystemAccessState();
+
+        if (!isRoleAllowed(accessState, profile.role)) {
+            await forceSignOut();
+            showAccessDenied(accessState, profile.role);
             return false;
         }
 
@@ -403,6 +449,20 @@ async function handleLogin(event) {
         }
 
 
+        if (profile.active === false) {
+
+            await safeSignOut();
+
+            currentSession = null;
+            currentProfile = null;
+            clearAuthInformation();
+            showLoginScreen();
+            showAccountDisabled();
+
+            return;
+        }
+
+
         if (!isValidRole(profile.role)) {
 
             await safeSignOut();
@@ -427,6 +487,21 @@ async function handleLogin(event) {
             throw new Error(
                 "アカウントの権限設定が正しくありません。"
             );
+        }
+
+        const accessState =
+            await getSystemAccessState();
+
+        if (!isRoleAllowed(accessState, profile.role)) {
+            await safeSignOut();
+
+            currentSession = null;
+            currentProfile = null;
+            clearAuthInformation();
+            showLoginScreen();
+            showAccessDenied(accessState, profile.role);
+
+            return;
         }
 
 
@@ -591,6 +666,10 @@ async function authenticateByPassword(
 
     const accountEntries = [
         {
+            role: ROLE_SUPER_ADMIN,
+            email: AUTH_ACCOUNTS.super_admin
+        },
+        {
             role: ROLE_ADMIN,
             email: AUTH_ACCOUNTS.admin
         },
@@ -717,6 +796,7 @@ async function loadProfile(
 function isValidRole(role) {
 
     return (
+        role === ROLE_SUPER_ADMIN ||
         role === ROLE_ADMIN ||
         role === ROLE_STAFF ||
         role === ROLE_VIEWER
@@ -736,7 +816,16 @@ export function getUserRole() {
 export function isAdmin() {
 
     return (
+        getUserRole() === ROLE_SUPER_ADMIN ||
         getUserRole() === ROLE_ADMIN
+    );
+}
+
+
+export function isSuperAdmin() {
+
+    return (
+        getUserRole() === ROLE_SUPER_ADMIN
     );
 }
 
@@ -749,6 +838,7 @@ export function isStaff() {
 
     return (
         role === ROLE_STAFF ||
+        role === ROLE_SUPER_ADMIN ||
         role === ROLE_ADMIN
     );
 }
@@ -856,7 +946,10 @@ export function getCurrentProfile() {
 export function isAuthenticated() {
 
     return Boolean(
-        currentSession?.user
+        currentSession?.user &&
+        currentProfile?.id &&
+        currentProfile?.active !== false &&
+        isValidRole(currentProfile?.role)
     );
 }
 
@@ -1420,28 +1513,22 @@ function setupAuthStateListener() {
                 session
             ) {
 
-                currentSession =
-                    session;
-
+                /*
+                 * SIGNED_IN はパスワード認証が通っただけの段階。
+                 * profile / active / system access の検査完了前に
+                 * アプリを認証済み扱いにしない。
+                 */
                 return;
             }
 
 
             if (
-                event === "TOKEN_REFRESHED" &&
-                session
-            ) {
-
-                currentSession =
-                    session;
-
-                return;
-            }
-
-
-            if (
-                event === "USER_UPDATED" &&
-                session
+                (
+                    event === "TOKEN_REFRESHED" ||
+                    event === "USER_UPDATED"
+                ) &&
+                session &&
+                currentProfile?.id
             ) {
 
                 currentSession =
@@ -1542,6 +1629,7 @@ function updateUserDisplay() {
             (element) => {
 
                 if (
+                    role === ROLE_SUPER_ADMIN ||
                     role === ROLE_ADMIN
                 ) {
 
@@ -1571,6 +1659,7 @@ function updateUserDisplay() {
             (element) => {
 
                 if (
+                    role === ROLE_SUPER_ADMIN ||
                     role === ROLE_ADMIN ||
                     role === ROLE_STAFF
                 ) {
@@ -1601,6 +1690,7 @@ function updateUserDisplay() {
             (element) => {
 
                 if (
+                    role === ROLE_SUPER_ADMIN ||
                     role === ROLE_ADMIN ||
                     role === ROLE_STAFF ||
                     role === ROLE_VIEWER
@@ -1634,6 +1724,23 @@ function updateUserDisplay() {
                 const requiredRole =
                     element.dataset.role;
 
+                if (
+                    requiredRole ===
+                    ROLE_SUPER_ADMIN
+                ) {
+
+                    const allowed =
+                        role === ROLE_SUPER_ADMIN;
+
+                    element.hidden = !allowed;
+                    element.classList.toggle(
+                        "hidden",
+                        !allowed
+                    );
+
+                    return;
+                }
+
 
                 if (
                     requiredRole ===
@@ -1641,6 +1748,7 @@ function updateUserDisplay() {
                 ) {
 
                     const allowed =
+                        role === ROLE_SUPER_ADMIN ||
                         role === ROLE_ADMIN;
 
                     element.hidden =
@@ -1661,6 +1769,7 @@ function updateUserDisplay() {
                 ) {
 
                     const allowed =
+                        role === ROLE_SUPER_ADMIN ||
                         role === ROLE_ADMIN ||
                         role === ROLE_STAFF;
 
@@ -1682,6 +1791,7 @@ function updateUserDisplay() {
                 ) {
 
                     const allowed =
+                        role === ROLE_SUPER_ADMIN ||
                         role === ROLE_ADMIN ||
                         role === ROLE_STAFF ||
                         role === ROLE_VIEWER;
@@ -1912,6 +2022,8 @@ window.hoseimasterAuth = {
     getUserRoleLabel,
 
     isAdmin,
+
+    isSuperAdmin,
 
     isStaff,
 
