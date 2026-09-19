@@ -122,6 +122,18 @@ async function loadDailySales(
             }
         );
 
+    if (targetDate) {
+        query = query.eq(
+            "order_date",
+            targetDate
+        );
+    }
+
+    const {
+        data,
+        error
+    } = await query;
+
 
     if (error) {
 
