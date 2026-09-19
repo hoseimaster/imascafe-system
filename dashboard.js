@@ -2,6 +2,10 @@ import { supabase } from "./supabase.js";
 import {
     APP_CONFIG
 } from "./config.js";
+import {
+    getDateScope,
+    setupDateScopeControls
+} from "./date-scope.js";
 
 
 let dashboardLoading = false;
@@ -14,6 +18,13 @@ let dashboardLoading = false;
 export function initializeDashboard() {
 
     renderDashboardBase();
+
+    setupDateScopeControls({
+        modeElement: document.getElementById("dashboardDateMode"),
+        dateElement: document.getElementById("dashboardTargetDate"),
+        defaultMode: "all",
+        onChange: () => loadDashboard()
+    });
 
     loadDashboard();
 
@@ -68,6 +79,14 @@ function renderDashboardBase() {
                 >
                 </div>
 
+                <div class="date-scope-control">
+                    <select id="dashboardDateMode" aria-label="集計期間">
+                        <option value="date">指定日</option>
+                        <option value="all">すべて</option>
+                    </select>
+                    <input id="dashboardTargetDate" type="date" aria-label="集計日">
+                </div>
+
             </div>
 
             <button
@@ -84,7 +103,7 @@ function renderDashboardBase() {
         <div class="dashboard-today-card">
 
             <div class="dashboard-card-label">
-                今日の売上
+                対象期間の売上
             </div>
 
             <div
@@ -103,7 +122,7 @@ function renderDashboardBase() {
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    累計売上
+                    売上
                 </div>
 
                 <div
@@ -119,7 +138,7 @@ function renderDashboardBase() {
             <div class="dashboard-summary-card">
 
                 <div class="dashboard-summary-label">
-                    累計支出
+                    支出
                 </div>
 
                 <div
@@ -170,7 +189,7 @@ function renderDashboardBase() {
         <div class="dashboard-profit-card">
 
             <div class="dashboard-profit-label">
-                累計利益
+                利益
             </div>
 
             <div
@@ -331,12 +350,17 @@ export async function loadDashboard() {
 
     try {
 
-        const today =
-            getTodayJST();
+        const scope =
+            getDateScope("all");
+
+        const targetDate =
+            scope.mode === "date"
+                ? scope.date
+                : null;
 
 
         setDashboardDate(
-            today
+            targetDate
         );
 
 
@@ -344,18 +368,13 @@ export async function loadDashboard() {
            今日の売上
         ==================================== */
 
-        const todayData =
-            await getSalesData(
-                today
+        const totalData =
+            await getTotalSalesData(
+                targetDate
             );
 
-
-        /* ====================================
-           累計売上
-        ==================================== */
-
-        const totalData =
-            await getTotalSalesData();
+        const todayData =
+            totalData;
 
 
         /* ====================================
@@ -363,7 +382,9 @@ export async function loadDashboard() {
         ==================================== */
 
         const expenseData =
-            await getExpenseData();
+            await getExpenseData(
+                targetDate
+            );
 
 
         if (
@@ -604,12 +625,11 @@ async function getSalesData(
    累計売上取得
 ======================================== */
 
-async function getTotalSalesData() {
+async function getTotalSalesData(
+    targetDate = null
+) {
 
-    const {
-        data: orders,
-        error: ordersError
-    } = await supabase
+    let ordersQuery = supabase
         .from("orders")
         .select(`
             id,
@@ -619,6 +639,15 @@ async function getTotalSalesData() {
             "status",
             "cancelled"
         );
+
+    if (targetDate) {
+        ordersQuery = ordersQuery.eq("order_date", targetDate);
+    }
+
+    const {
+        data: orders,
+        error: ordersError
+    } = await ordersQuery;
 
 
     if (ordersError) {
@@ -721,17 +750,25 @@ async function getTotalSalesData() {
    支出取得
 ======================================== */
 
-async function getExpenseData() {
+async function getExpenseData(
+    targetDate = null
+) {
 
-    const {
-        data,
-        error
-    } = await supabase
+    let expenseQuery = supabase
         .from("expenses")
         .select(`
             id,
             amount
         `);
+
+    if (targetDate) {
+        expenseQuery = expenseQuery.eq("expense_date", targetDate);
+    }
+
+    const {
+        data,
+        error
+    } = await expenseQuery;
 
 
     if (error) {
@@ -1033,9 +1070,9 @@ function setDashboardDate(
 
     setText(
         "dashboardDate",
-        formatDateJapanese(
-            date
-        )
+        date
+            ? formatDateJapanese(date)
+            : "すべての期間"
     );
 
 }
