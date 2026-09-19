@@ -1090,6 +1090,20 @@
     background: var(--stock-normal);
 }
 
+.inventory-item[data-stock-level="critical"] {
+    border-color: color-mix(in srgb, var(--danger) 38%, var(--border));
+    background: color-mix(in srgb, var(--danger) 5%, var(--surface));
+}
+
+.inventory-item[data-stock-level="warning"] {
+    border-color: color-mix(in srgb, var(--warning) 38%, var(--border));
+    background: color-mix(in srgb, var(--warning) 5%, var(--surface));
+}
+
+.inventory-item[data-stock-level="normal"] {
+    border-color: color-mix(in srgb, var(--stock-normal) 24%, var(--border));
+}
+
 .inventory-item[data-stock-level="critical"] .inventory-item-stock {
     color: var(--danger);
 }
