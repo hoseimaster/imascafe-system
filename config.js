@@ -94,9 +94,9 @@ export const APP_CONFIG = {
 
         BREAK_EVEN_CALCULATION: true,
 
-        EVENT_DAY_MANAGEMENT: true,
+        EVENT_DAY_MANAGEMENT: false,
 
-        EVENT_DAY_CLOSING: true,
+        EVENT_DAY_CLOSING: false,
 
         REALTIME_UPDATE: true,
 
