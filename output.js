@@ -502,9 +502,7 @@ async function getInventoryCSVData() {
             "更新日時"
         ],
 
-        ...(data || []).filter(
-            row => matchesOutputDate(row.event_date)
-        ).map(
+        ...(data || []).map(
             item => [
 
                 item.product_id,
@@ -575,7 +573,12 @@ async function getHistoryCSVData() {
             "営業日"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            row => matchesOutputDate(
+                row.event_date ||
+                getDateJSTFromTimestamp(row.operated_at)
+            )
+        ).map(
             row => [
 
                 row.id,
@@ -988,6 +991,7 @@ export async function exportPDF() {
 async function getPDFData() {
 
     const today = getTodayJST();
+    const scope = getDateScope("all");
 
     const {
         data: orders,
@@ -1179,9 +1183,11 @@ async function getPDFData() {
             : 0;
 
     return {
-        date: getDateScope("all").mode === "date"
-            ? getDateScope("all").date
+        date: scope.mode === "date"
+            ? scope.date
             : "すべての期間",
+        generatedDate: today,
+        isDateSpecified: scope.mode === "date",
         sales,
         expenses: totalExpenses,
         profit,
@@ -1456,9 +1462,16 @@ body {
                 出力日：
                 ${escapeHTML(
                     formatDateJapanese(
-                        data.date
+                        data.generatedDate
                     )
                 )}
+            </div>
+
+            <div>
+                集計対象：
+                ${data.isDateSpecified
+                    ? `${escapeHTML(formatDateJapanese(data.date))}のデータのみ`
+                    : "すべての期間"}
             </div>
 
             <div>
@@ -1470,6 +1483,12 @@ body {
 
 
     <section class="section">
+
+        <p class="note">
+            ${data.isDateSpecified
+                ? `※ 本報告書は${escapeHTML(formatDateJapanese(data.date))}のデータのみを集計しています。`
+                : "※ 本報告書はすべての期間のデータを集計しています。"}
+        </p>
 
         <h2 class="section-title">
             1. 集計概要
@@ -1760,8 +1779,14 @@ function createFilename(
     prefix
 ) {
 
+    const scope = getDateScope("all");
+    const target = scope.mode === "date"
+        ? scope.date
+        : "すべて";
+
     return (
         `${prefix}_` +
+        `${target}_` +
         `${getTodayJST()}.csv`
     );
 
@@ -1826,4 +1851,19 @@ export function refreshOutput() {
 function matchesOutputDate(date) {
     const scope = getDateScope("all");
     return scope.mode === "all" || String(date || "") === String(scope.date || "");
+}
+
+
+function getDateJSTFromTimestamp(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return new Intl.DateTimeFormat("sv-SE", {
+        timeZone: APP_CONFIG.TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(date);
 }
