@@ -378,6 +378,7 @@ function renderAccountInformation() {
     if (roleElement) {
 
         const roleLabels = {
+            super_admin: "最高管理者",
             admin: "管理者",
             staff: "スタッフ",
             viewer: "閲覧者"
