@@ -88,21 +88,26 @@ import {
 import "./confirm-modal.js";
 
 let initialized = false;
+let initializing = false;
 
 
 /* ========================================
    アプリ起動
 ======================================== */
 
-async function initializeApp() {
+async function initializeApp(options = {}) {
 
-    showStartupScreen();
-    updateStartupStep("page", "done");
-    updateStartupStep("system", "active");
+    const showStartup =
+        options.showStartup !== false;
+
+    if (initializing) {
+        return;
+    }
 
     if (initialized) {
         if (isAuthenticated()) {
             await initializeSuperAdmin();
+
             initializeAccessMonitor({
                 getRole: getUserRole,
                 onBlocked: async (state, role) => {
@@ -111,125 +116,130 @@ async function initializeApp() {
                 }
             });
         }
+
+        if (showStartup) {
+            finishStartupScreen();
+        }
+
         return;
+    }
+
+    initializing = true;
+
+    if (showStartup) {
+        showStartupScreen();
+        updateStartupStep("page", "done");
+        updateStartupStep("system", "active");
     }
 
     try {
 
-        updateStartupStep("system", "done");
-        updateStartupStep("server", "active");
+        if (showStartup) {
+            updateStartupStep("system", "done");
+            updateStartupStep("server", "active");
+        }
 
         await initializeAuth({
             onServerConnected: () => {
+                if (!showStartup) {
+                    return;
+                }
+
                 updateStartupStep("server", "done");
                 updateStartupStep("session", "active");
             }
         });
 
-        updateStartupStep("session", "done");
-
-        if (!isAuthenticated()) {
-            finishStartupScreen();
-            return;
+        if (showStartup) {
+            updateStartupStep("session", "done");
         }
 
-        initialized = true;
+        if (!isAuthenticated()) {
+            if (showStartup) {
+                finishStartupScreen();
+            }
+            return;
+        }
 
         await initializeModule(
             "super-admin",
             initializeSuperAdmin
         );
 
-
         await initializeModule(
             "navigation",
             initializeNavigation
         );
-
 
         await initializeModule(
             "dashboard",
             initializeDashboard
         );
 
-
         await initializeModule(
             "statistics",
             initializeStatistics
         );
-
 
         await initializeModule(
             "orders",
             initializeOrders
         );
 
-
         await initializeModule(
             "order-history",
             initializeOrderHistory
         );
-
 
         await initializeModule(
             "inventory",
             initializeInventory
         );
 
-
         await initializeModule(
             "history",
             initializeHistory
         );
-
 
         await initializeModule(
             "products",
             initializeProducts
         );
 
-
         await initializeModule(
             "expenses",
             initializeExpenses
         );
-
 
         await initializeModule(
             "settings",
             initializeSettings
         );
 
-
         await initializeModule(
             "output",
             initializeOutput
         );
-
 
         await initializeModule(
             "reset",
             initializeReset
         );
 
-
         await initializeModule(
             "staff-switch",
             initializeStaffSwitch
         );
-
 
         await initializeModule(
             "presence",
             initializePresence
         );
 
-
         await initializeModule(
             "realtime",
             initializeRealtime
         );
-
 
         setupRealtimeRefresh();
         setupManualRefresh();
@@ -244,7 +254,11 @@ async function initializeApp() {
             }
         });
 
-        finishStartupScreen();
+        initialized = true;
+
+        if (showStartup) {
+            finishStartupScreen();
+        }
 
     } catch (error) {
 
@@ -253,12 +267,19 @@ async function initializeApp() {
             error
         );
 
-
-        failStartupScreen("システムの初期化に失敗しました。ページを再読み込みしてください。");
+        if (showStartup) {
+            failStartupScreen(
+                "システムの初期化に失敗しました。ページを再読み込みしてください。"
+            );
+        }
 
         showGlobalError(
             "システムの初期化に失敗しました。ページを再読み込みしてください。"
         );
+
+    } finally {
+
+        initializing = false;
 
     }
 
@@ -985,7 +1006,9 @@ function showGlobalError(
 window.addEventListener(
     "app:login",
     () => {
-        void initializeApp();
+        void initializeApp({
+            showStartup: false
+        });
     }
 );
 
