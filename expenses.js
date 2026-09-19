@@ -11,6 +11,8 @@ import {
     canManageExpenses
 } from "./auth.js";
 
+import { confirmExpenseDeletion } from "./confirm-modal.js";
+
 
 let initialized = false;
 let loading = false;
@@ -1256,9 +1258,7 @@ async function deleteExpense(
 
 
     const confirmed =
-        window.confirm(
-            "この支出を削除しますか？"
-        );
+        await confirmExpenseDeletion();
 
 
     if (!confirmed) {
