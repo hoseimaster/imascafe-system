@@ -158,7 +158,7 @@ function injectSystemManagementScreen() {
 
             <section class="system-admin-card system-admin-card-wide">
                 <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_29.png" alt="" aria-hidden="true">システム診断</h2><p>DB・権限・注文・在庫・同期状態を確認します。</p></div><button type="button" id="runSystemDiagnostics" class="primary-button">診断を実行</button></div>
-                <div id="systemDiagnostics" class="diagnostics-grid"></div>
+                <div id="systemDiagnostics" class="diagnostics-results"></div>
                 <button type="button" id="exportDiagnostics" class="secondary-button" disabled>診断結果をファイル出力</button>
             </section>
         </div>
@@ -840,75 +840,163 @@ function renderDiagnostics(data) {
     const container = document.getElementById("systemDiagnostics");
     const badge = document.getElementById("systemOverallBadge");
     if (!container) return;
+
     const groups = Array.isArray(data.groups) ? data.groups : [];
+    const storageGroup = groups.find((group) => group?.key === "database_storage") || null;
+    const normalGroups = groups.filter((group) => group?.key !== "database_storage");
+    const storage = data.databaseStorage || data.database_storage || storageGroup?.details || storageGroup || null;
     const overall = data.status || "unknown";
+
     if (badge) {
         badge.className = `system-status-badge is-${overall}`;
         badge.textContent = statusLabel(overall);
     }
-    container.innerHTML = groups.map((group) => {
-        if (group.key === "database_storage") {
-            return renderDatabaseStorageDiagnostic(group, data.databaseStorage || group.details || {});
-        }
 
-        return `
-            <article class="diagnostic-card is-${escapeHtml(group.status || "unknown")}">
-                <div><strong>${escapeHtml(group.label)}</strong><span>${statusLabel(group.status)}</span></div>
-                <p>${escapeHtml(group.summary || "")}</p>
-                ${(group.issues || []).map((issue) => `<small>${escapeHtml(issue)}</small>`).join("")}
-            </article>
-        `;
-    }).join("") + `
+    const normalHtml = normalGroups.map((group) => `
+        <article class="diagnostic-card is-${escapeHtml(group.status || "unknown")}">
+            <div><strong>${escapeHtml(group.label)}</strong><span>${statusLabel(group.status)}</span></div>
+            <p>${escapeHtml(group.summary || "")}</p>
+            ${(group.issues || []).map((issue) => `<small>${escapeHtml(issue)}</small>`).join("")}
+        </article>
+    `).join("") + `
         <article class="diagnostic-card is-${data.client?.online ? "ok" : "error"}">
             <div><strong>ブラウザ・端末</strong><span>${data.client?.online ? "正常" : "異常"}</span></div>
             <p>応答 ${Number(data.client?.responseMs || 0)}ms／暗号化 ${data.client?.crypto ? "対応" : "非対応"}／ファイル ${data.client?.fileApi ? "対応" : "非対応"}</p>
         </article>
     `;
-}
 
-function renderDatabaseStorageDiagnostic(group, storage) {
-    const usagePercent = Math.max(0, Math.min(100, Number(storage.usagePercent || 0)));
-    const topTables = Array.isArray(storage.topTables) ? storage.topTables : [];
-
-    return `
-        <article class="diagnostic-card diagnostic-storage-card is-${escapeHtml(group.status || storage.status || "unknown")}">
-            <div>
-                <strong>${escapeHtml(group.label || "データベース容量")}</strong>
-                <span>${statusLabel(group.status || storage.status)}</span>
-            </div>
-
-            <p>${escapeHtml(group.summary || "")}</p>
-
-            <div class="diagnostic-storage-summary">
-                <div><span>使用済み</span><strong>${escapeHtml(storage.used || "-")}</strong></div>
-                <div><span>想定上限</span><strong>${escapeHtml(storage.limit || "-")}</strong></div>
-                <div><span>残り</span><strong>${escapeHtml(storage.remaining || "-")}</strong></div>
-                <div><span>使用率</span><strong>${usagePercent.toFixed(2)}%</strong></div>
-            </div>
-
-            <div class="diagnostic-storage-meter" role="progressbar" aria-label="データベース使用率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${usagePercent}">
-                <span style="width:${usagePercent}%"></span>
-            </div>
-
-            ${topTables.length ? `
-                <div class="diagnostic-storage-tables">
-                    <strong>容量上位</strong>
-                    ${topTables.map((table) => `
-                        <div>
-                            <span>${escapeHtml(tableLabel(table.table))}</span>
-                            <strong>${escapeHtml(table.size || "-")}</strong>
-                        </div>
-                    `).join("")}
-                </div>
-            ` : ""}
-
-            ${(group.issues || []).map((issue) => `<small>${escapeHtml(issue)}</small>`).join("")}
-        </article>
+    container.innerHTML = `
+        <div class="diagnostics-grid">
+            ${normalHtml}
+        </div>
+        ${renderDatabaseStorage(storage, storageGroup)}
     `;
 }
 
-function tableLabel(name) {
-    return ({
+function renderDatabaseStorage(storage, group) {
+    if (!storage) return "";
+
+    const usedBytes = diagnosticNumber(storage.usedBytes ?? storage.used_bytes ?? storage.used);
+    const limitBytes = diagnosticNumber(storage.limitBytes ?? storage.limit_bytes ?? storage.assumedLimitBytes ?? storage.assumed_limit_bytes ?? storage.limit);
+    const remainingBytes = diagnosticNumber(storage.remainingBytes ?? storage.remaining_bytes ?? storage.remaining);
+    const suppliedPercent = diagnosticNumber(storage.usagePercent ?? storage.usage_percent ?? storage.percent);
+    const usagePercent = Number.isFinite(suppliedPercent)
+        ? suppliedPercent
+        : (Number.isFinite(usedBytes) && Number.isFinite(limitBytes) && limitBytes > 0
+            ? (usedBytes / limitBytes) * 100
+            : 0);
+    const safePercent = Math.max(0, Math.min(100, usagePercent || 0));
+    const status = storage.status || group?.status || "unknown";
+    const topTables = Array.isArray(storage.topTables)
+        ? storage.topTables
+        : Array.isArray(storage.top_tables)
+            ? storage.top_tables
+            : [];
+    const issues = Array.isArray(storage.issues)
+        ? storage.issues
+        : Array.isArray(group?.issues)
+            ? group.issues
+            : [];
+
+    return `
+        <section class="database-storage-section">
+            <div class="database-storage-heading">
+                <div>
+                    <span class="database-storage-eyebrow">DATABASE</span>
+                    <h3>データベース使用状況</h3>
+                </div>
+                <span class="system-status-badge is-${escapeHtml(status)}">${statusLabel(status)}</span>
+            </div>
+
+            <article class="database-storage-card is-${escapeHtml(status)}">
+                <div class="database-storage-primary">
+                    <span>現在の使用量</span>
+                    <strong>${escapeHtml(formatDiagnosticBytes(usedBytes, storage.usedFormatted ?? storage.used_formatted))}</strong>
+                    <small>${escapeHtml(formatDiagnosticBytes(limitBytes, storage.limitFormatted ?? storage.limit_formatted))} 中</small>
+                </div>
+
+                <div class="database-storage-progress-block">
+                    <div class="database-storage-progress-meta">
+                        <span>使用率</span>
+                        <strong>${escapeHtml(formatDiagnosticPercent(usagePercent))}</strong>
+                    </div>
+                    <div class="database-storage-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(safePercent)}">
+                        <span style="width: ${safePercent}%"></span>
+                    </div>
+                </div>
+
+                <div class="database-storage-stats">
+                    <div>
+                        <span>残り容量</span>
+                        <strong>${escapeHtml(formatDiagnosticBytes(remainingBytes, storage.remainingFormatted ?? storage.remaining_formatted))}</strong>
+                    </div>
+                    <div>
+                        <span>容量上限</span>
+                        <strong>${escapeHtml(formatDiagnosticBytes(limitBytes, storage.limitFormatted ?? storage.limit_formatted))}</strong>
+                    </div>
+                </div>
+
+                ${topTables.length ? `
+                    <div class="database-storage-tables">
+                        <div class="database-storage-subheading">容量を多く使用しているデータ</div>
+                        <div class="database-storage-table-list">
+                            ${topTables.slice(0, 5).map((table) => `
+                                <div class="database-storage-table-row">
+                                    <span>${escapeHtml(databaseTableLabel(table.name ?? table.table ?? table.table_name ?? ""))}</span>
+                                    <strong>${escapeHtml(formatDiagnosticBytes(
+                                        diagnosticNumber(table.totalBytes ?? table.total_bytes ?? table.bytes ?? table.size_bytes),
+                                        table.totalSize ?? table.total_size ?? table.size
+                                    ))}</strong>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                ` : ""}
+
+                ${issues.length ? `
+                    <div class="database-storage-issues">
+                        ${issues.map((issue) => `<small>${escapeHtml(issue)}</small>`).join("")}
+                    </div>
+                ` : ""}
+            </article>
+        </section>
+    `;
+}
+
+function diagnosticNumber(value) {
+    if (typeof value === "number") return Number.isFinite(value) ? value : NaN;
+    if (typeof value !== "string") return NaN;
+    const normalized = value.replace(/,/g, "").trim();
+    const direct = Number(normalized);
+    if (Number.isFinite(direct)) return direct;
+    const match = normalized.match(/^([0-9.]+)\s*(B|KB|kB|MB|GB|TB)$/i);
+    if (!match) return NaN;
+    const unit = match[2].toUpperCase();
+    const scale = { B: 1, KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3, TB: 1024 ** 4 }[unit] || 1;
+    return Number(match[1]) * scale;
+}
+
+function formatDiagnosticBytes(bytes, fallback = "") {
+    if (!Number.isFinite(bytes)) return String(fallback || "確認不能");
+    if (bytes < 1024) return `${Math.round(bytes)} B`;
+    const units = ["kB", "MB", "GB", "TB"];
+    let value = bytes / 1024;
+    let index = 0;
+    while (value >= 1024 && index < units.length - 1) {
+        value /= 1024;
+        index += 1;
+    }
+    const digits = value >= 100 ? 0 : value >= 10 ? 1 : 2;
+    return `${Number(value.toFixed(digits))} ${units[index]}`;
+}
+
+function formatDiagnosticPercent(value) {
+    if (!Number.isFinite(value)) return "確認不能";
+    return `${Number(value.toFixed(2))}%`;
+}
+
+function databaseTableLabel(name) {
+    const labels = {
         operation_history: "操作履歴",
         inventory_history: "在庫履歴",
         orders: "注文",
@@ -917,15 +1005,13 @@ function tableLabel(name) {
         order_items: "注文明細",
         inventory: "在庫",
         products: "商品",
-        event_days: "営業日",
-        accounting_adjustments: "会計補正",
+        event_days: "開催日",
         profiles: "アカウント",
         system_settings: "システム設定",
-        system_access_control: "アクセス制御",
-        log_product_change: "商品変更履歴",
-        reset_codes: "リセットコード",
-        user_sessions: "ユーザーセッション"
-    })[name] || name || "不明";
+        system_access_control: "アクセス制御"
+    };
+    const key = String(name || "").trim();
+    return labels[key] || key || "不明";
 }
 
 function exportDiagnostics() {
