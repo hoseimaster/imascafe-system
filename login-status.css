@@ -752,17 +752,6 @@ body.staff-switch-open {
     box-sizing: border-box;
 }
 
-.login-presence-section::before {
-    content: "";
-    position: absolute;
-    top: 12px;
-    bottom: 12px;
-    left: 0;
-    width: 4px;
-    background: var(--primary-light);
-    border-radius: 0 999px 999px 0;
-}
-
 .login-presence-header {
     display: flex;
     align-items: center;
@@ -1075,4 +1064,3 @@ body.staff-switch-open {
         gap: 3px;
     }
 }
-
