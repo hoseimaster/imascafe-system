@@ -34,7 +34,11 @@ export function getAccessDeniedMessage(state, role) {
         return "システムのアクセス状態を確認できないためログインできません。時間をおいて再度お試しください。";
     }
 
-    if (state?.access_allowed === false && !state?.current_role && !state?.maintenance_enabled) {
+    if (
+        state?.access_allowed === false &&
+        !state?.current_role &&
+        !state?.maintenance_enabled
+    ) {
         return "このアカウントは無効化されています。最高管理者に確認してください。";
     }
 
@@ -48,11 +52,16 @@ export function getAccessDeniedMessage(state, role) {
         staff: "スタッフ",
         viewer: "閲覧者"
     };
+
     return `${labels[role] || "この権限"}からのログインは現在停止されています。`;
 }
 
 export function showAccessDenied(state, role) {
-    renderLoginAccessNotice(state, getAccessDeniedMessage(state, role), true);
+    renderLoginAccessNotice(
+        state,
+        getAccessDeniedMessage(state, role),
+        true
+    );
 }
 
 export function showAccountDisabled() {
@@ -68,10 +77,13 @@ export function initializeAccessMonitor({ getRole, onBlocked }) {
 
     const check = async () => {
         if (monitorRunning) return;
+
         monitorRunning = true;
+
         try {
             const state = await getSystemAccessState();
             const role = getRole?.();
+
             if (role && !isRoleAllowed(state, role)) {
                 stopAccessMonitor();
                 await onBlocked?.(state, role);
@@ -82,7 +94,11 @@ export function initializeAccessMonitor({ getRole, onBlocked }) {
     };
 
     void check();
-    monitorTimer = window.setInterval(check, 10000);
+
+    monitorTimer = window.setInterval(
+        check,
+        10000
+    );
 }
 
 export function stopAccessMonitor() {
@@ -92,55 +108,69 @@ export function stopAccessMonitor() {
     }
 }
 
-function renderLoginAccessNotice(state, forcedMessage = "", denied = false) {
-    const loginContainer = document.querySelector("#loginScreen .login-container");
+function renderLoginAccessNotice(
+    state,
+    forcedMessage = "",
+    denied = false
+) {
+    const loginContainer = document.querySelector(
+        "#loginScreen .login-container"
+    );
+
     if (!loginContainer) return;
 
-    const loginScreen = document.getElementById("loginScreen");
+    const loginScreen = document.getElementById(
+        "loginScreen"
+    );
+
     loginScreen?.classList.toggle(
         "is-maintenance-mode",
         Boolean(state?.maintenance_enabled)
     );
 
-    let notice = document.getElementById("systemAccessNotice");
+    let notice = document.getElementById(
+        "systemAccessNotice"
+    );
+
     if (!notice) {
         notice = document.createElement("div");
         notice.id = "systemAccessNotice";
         notice.className = "system-access-notice";
-        const form = document.getElementById("loginForm");
-        loginContainer.insertBefore(notice, form || null);
+
+        const form = document.getElementById(
+            "loginForm"
+        );
+
+        loginContainer.insertBefore(
+            notice,
+            form || null
+        );
     }
 
-    if (!state?.maintenance_enabled && !forcedMessage) {
+    if (
+        !state?.maintenance_enabled &&
+        !forcedMessage
+    ) {
         notice.hidden = true;
         notice.textContent = "";
         return;
     }
 
-    const message = forcedMessage || state.maintenance_message ||
+    const message =
+        forcedMessage ||
+        state?.maintenance_message ||
         "現在、システムメンテナンスを実施しています。";
-    const endText = state.maintenance_end_at
-        ? `\n終了予定：${formatDateTime(state.maintenance_end_at)}`
-        : "";
 
-    notice.textContent = state.maintenance_enabled
-        ? `システムメンテナンス中\n${message}${endText}\n最高管理者のみログインできます。`
-        : `${message}${endText}`;
-    notice.classList.toggle("is-denied", denied);
+    notice.textContent = state?.maintenance_enabled
+        ? `システムメンテナンス中\n${message}\n最高管理者のみログインできます。`
+        : message;
+
+    notice.classList.toggle(
+        "is-denied",
+        denied
+    );
+
     notice.hidden = false;
-}
-
-function formatDateTime(value) {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "未定";
-    return new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-    }).format(date);
 }
 
 export function getCachedSystemAccessState() {
