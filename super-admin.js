@@ -16,6 +16,7 @@ let decryptedBackup = null;
 let backupFileHash = "";
 let currentAccessState = null;
 let cancelledOrderRows = [];
+let currentAuditLogs = [];
 
 export async function initializeSuperAdmin() {
     if (!isSuperAdmin()) return;
@@ -190,6 +191,7 @@ function bindEvents() {
         if (target.dataset.cancelledOrderDetail) openCancelledOrderDetail(target.dataset.cancelledOrderDetail);
         if (target.dataset.restoreOrder) await restoreOrder(target.dataset.restoreOrder);
         if (target.id === "refreshAuditLogs") await loadAuditLogs();
+        if (target.dataset.auditDetail) openAuditLogDetail(target.dataset.auditDetail);
         if (target.id === "createSystemBackup") await createBackup();
         if (target.id === "inspectBackupFile") await inspectBackup();
         if (target.id === "restoreSystemBackup") await restoreBackup();
@@ -312,6 +314,11 @@ async function loadControlState() {
         if (badge) {
             badge.textContent = enabled ? "ログイン許可" : "ログイン停止中";
             badge.className = `system-status-badge ${enabled ? "is-ok" : "is-error"}`;
+        }
+        const accessRow = button?.closest(".system-access-control-row");
+        if (accessRow) {
+            accessRow.classList.toggle("is-allowed", enabled);
+            accessRow.classList.toggle("is-blocked", !enabled);
         }
         if (button) {
             button.textContent = enabled ? "ログインを停止" : "ログインを許可";
@@ -679,16 +686,69 @@ async function loadAuditLogs() {
         .select("id,operated_at,operator_name,actor_role,operation_type,target,description,reason")
         .in("operation_type", systemOnlyTypes)
         .order("operated_at", { ascending: false })
-        .limit(100);
-    if (error) return renderError(container, "操作ログを取得できませんでした。");
-    if (!data?.length) return renderEmpty(container, "操作ログはありません。");
+        .limit(100);    if (error) return renderError(container, "操作ログを取得できませんでした。");
+    if (!data?.length) {
+        currentAuditLogs = [];
+        return renderEmpty(container, "操作ログはありません。");
+    }
+
+    currentAuditLogs = data;
+
     container.innerHTML = data.map((row) => `
-        <article class="system-data-row">
-            <div><strong>${escapeHtml(row.description || row.operation_type)}</strong><span>${escapeHtml(row.operator_name)}／${roleLabel(row.actor_role)}</span><small>${formatDateTime(row.operated_at)}${row.reason ? `／理由：${escapeHtml(row.reason)}` : ""}</small></div>
-            <code>${escapeHtml(row.operation_type)}</code>
+        <article class="system-data-row system-audit-row">
+            <strong class="system-audit-title">${escapeHtml(row.description || row.operation_type)}</strong>
+            <button type="button" class="secondary-button system-audit-detail-button" data-audit-detail="${row.id}">詳細</button>
         </article>
     `).join("");
 }
+
+
+function openAuditLogDetail(id) {
+    const row = currentAuditLogs.find((item) => String(item.id) === String(id));
+    if (!row) {
+        showToast("操作ログの詳細を取得できませんでした。", "error");
+        return;
+    }
+
+    document.getElementById("systemAuditDetailOverlay")?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "systemAuditDetailOverlay";
+    overlay.className = "system-audit-detail-overlay";
+    overlay.innerHTML = `
+        <div class="system-audit-detail-modal" role="dialog" aria-modal="true" aria-labelledby="systemAuditDetailTitle">
+            <div class="system-audit-detail-header">
+                <div>
+                    <span class="system-audit-detail-label">操作ログ</span>
+                    <h3 id="systemAuditDetailTitle">${escapeHtml(row.description || row.operation_type)}</h3>
+                </div>
+                <button type="button" class="system-audit-detail-close" data-close-audit-detail aria-label="閉じる">×</button>
+            </div>
+
+            <div class="system-audit-detail-grid">
+                <div><span>操作日時</span><strong>${formatDateTime(row.operated_at)}</strong></div>
+                <div><span>担当者</span><strong>${escapeHtml(row.operator_name || "不明")}</strong></div>
+                <div><span>権限</span><strong>${escapeHtml(roleLabel(row.actor_role))}</strong></div>
+                <div><span>操作種別</span><strong>${escapeHtml(row.operation_type || "－")}</strong></div>
+                <div class="system-audit-detail-wide"><span>対象</span><strong>${escapeHtml(row.target || "－")}</strong></div>
+                <div class="system-audit-detail-wide"><span>理由</span><strong>${escapeHtml(row.reason || "－")}</strong></div>
+            </div>
+
+            <div class="system-audit-detail-actions">
+                <button type="button" class="secondary-button" data-close-audit-detail>閉じる</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay || event.target.closest("[data-close-audit-detail]")) {
+            overlay.remove();
+        }
+    });
+}
+
 
 async function createBackup() {
     const password = valueOf("backupPassword");
