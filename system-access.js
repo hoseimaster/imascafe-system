@@ -53,7 +53,7 @@ export function getAccessDeniedMessage(state, role) {
         viewer: "閲覧者"
     };
 
-    return `${labels[role] || "この権限"}からのログインは現在停止されています。`;
+    return `${labels[role] || "この権限"}からのログインは現在停止されています。停止解除については最高管理者に確認してください。`;
 }
 
 export function showAccessDenied(state, role) {
