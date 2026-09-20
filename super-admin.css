@@ -902,3 +902,282 @@
     color: #666666;
     background: #eeeeee;
 }
+
+
+/* ========================================
+   システム管理：アクセス制御 改良
+======================================== */
+
+.system-access-control-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+.system-access-control-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 68px;
+    padding: 11px 12px 11px 15px;
+    overflow: hidden;
+    border: 1px solid #e8e0d9;
+    border-radius: 13px;
+    background: #faf9f7;
+}
+
+.system-access-control-row::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: #b8b1aa;
+}
+
+.system-access-control-row.is-allowed {
+    border-color: #cfe5d5;
+    background: #f5fbf7;
+}
+
+.system-access-control-row.is-allowed::before {
+    background: #67ad7b;
+}
+
+.system-access-control-row.is-blocked {
+    border-color: #edcccc;
+    background: #fff7f7;
+}
+
+.system-access-control-row.is-blocked::before {
+    background: #d66b6b;
+}
+
+.system-access-control-row > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+}
+
+.system-access-control-row > div > strong {
+    color: #40372f;
+    font-size: 13px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.system-access-control-row .system-status-badge {
+    min-height: 25px;
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+.system-access-control-row > button {
+    width: auto;
+    min-width: 106px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    box-shadow: none;
+    background-image: none;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.system-access-control-row.is-allowed > button {
+    color: #9b5d18;
+    border: 1px solid #efd0a8;
+    background: #fff8ee;
+}
+
+.system-access-control-row.is-blocked > button {
+    color: #2f7446;
+    border: 1px solid #bfdfc9;
+    background: #edf8f0;
+}
+
+/* ========================================
+   システム管理：操作ログ
+======================================== */
+
+.system-audit-list {
+    gap: 8px;
+}
+
+.system-audit-row {
+    min-height: 54px;
+    padding: 10px 12px 10px 14px;
+    flex-direction: row;
+    align-items: center;
+    border-color: #ece4dc;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: none;
+}
+
+.system-audit-title {
+    min-width: 0;
+    flex: 1 1 auto;
+    color: #40372f;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.system-audit-detail-button {
+    width: auto !important;
+    flex: 0 0 auto;
+    min-width: 58px;
+    margin-left: auto;
+    box-shadow: none;
+}
+
+.system-audit-detail-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(39, 32, 27, 0.42);
+    backdrop-filter: blur(2px);
+}
+
+.system-audit-detail-modal {
+    width: min(620px, 100%);
+    max-height: min(760px, calc(100vh - 40px));
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 20px;
+    border: 1px solid #eadfd4;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 18px 50px rgba(48, 37, 28, 0.16);
+}
+
+.system-audit-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.system-audit-detail-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #a06c39;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.system-audit-detail-header h3 {
+    margin: 0;
+    color: #332c27;
+    font-size: 17px;
+    line-height: 1.45;
+}
+
+.system-audit-detail-close {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid #e7dfd8;
+    border-radius: 9px;
+    background: #fff;
+    color: #766b62;
+    box-shadow: none;
+    font-size: 20px;
+}
+
+.system-audit-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.system-audit-detail-grid > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+    padding: 11px 12px;
+    border: 1px solid #eee6df;
+    border-radius: 11px;
+    background: #faf8f6;
+}
+
+.system-audit-detail-grid span {
+    color: #978a7f;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.system-audit-detail-grid strong {
+    color: #433a33;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.system-audit-detail-wide {
+    grid-column: 1 / -1;
+}
+
+.system-audit-detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+    .system-access-control-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 10px 10px 13px;
+    }
+
+    .system-access-control-row > div {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .system-access-control-row > button {
+        width: auto;
+        min-width: 92px;
+    }
+
+    .system-audit-row {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .system-audit-detail-modal {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .system-audit-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .system-audit-detail-wide {
+        grid-column: auto;
+    }
+}
+
