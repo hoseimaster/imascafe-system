@@ -17,12 +17,160 @@
 }
 
 #loginScreen.is-maintenance-mode .system-access-notice {
-    border-color: #e0a05f;
-    background: #fff3e5;
-    color: #70431e;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #edc18f;
+    border-radius: 16px;
+    background: #fffaf4;
+    color: #503a28;
+    box-shadow: 0 10px 28px rgba(105, 70, 38, 0.10);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.6;
+    text-align: left;
+    white-space: normal;
+}
+
+.maintenance-notice-heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 17px 18px 15px;
+    background: linear-gradient(135deg, #fff1df 0%, #fff7ed 100%);
+    border-bottom: 1px solid #f1d7b8;
+}
+
+.maintenance-notice-mark {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 50%;
+    background: #e9a45f;
+    box-shadow: 0 5px 14px rgba(180, 104, 39, 0.20);
+}
+
+.maintenance-notice-mark::before,
+.maintenance-notice-mark::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 4px;
+    border-radius: 999px;
+    background: #ffffff;
+    transform: translateX(-50%);
+}
+
+.maintenance-notice-mark::before {
+    top: 9px;
+    height: 13px;
+}
+
+.maintenance-notice-mark::after {
+    bottom: 8px;
+    height: 4px;
+}
+
+.maintenance-notice-title {
+    display: block;
+    color: #7b431b;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.maintenance-notice-lead {
+    margin: 3px 0 0;
+    color: #8a674a;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.maintenance-notice-details {
+    display: grid;
+    gap: 10px;
+    padding: 14px 18px 10px;
+}
+
+.maintenance-notice-row,
+.maintenance-notice-message {
+    padding: 11px 12px;
+    border: 1px solid #eee1d4;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.maintenance-notice-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.maintenance-notice-row span,
+.maintenance-notice-message > span {
+    color: #9a806b;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.maintenance-notice-row strong {
+    color: #5b4433;
+    font-size: 13px;
+    text-align: right;
+}
+
+.maintenance-notice-message p {
+    margin: 4px 0 0;
+    color: #5f4b3b;
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+
+.maintenance-notice-admin {
+    margin: 0;
+    padding: 0 18px 14px;
+    color: #a5652f;
+    font-size: 11px;
+    font-weight: 700;
     text-align: center;
+}
+
+#loginScreen.is-maintenance-mode #loginButton[data-access-blocked="true"]:disabled {
+    border-color: #aeb4ba !important;
+    background: #aeb4ba !important;
+    color: #f4f5f6 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(1);
+    transform: none !important;
+}
+
+@media (max-width: 520px) {
+    .maintenance-notice-heading {
+        padding: 14px;
+    }
+
+    .maintenance-notice-details {
+        padding: 12px 14px 9px;
+    }
+
+    .maintenance-notice-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .maintenance-notice-row strong {
+        text-align: left;
+    }
+
+    .maintenance-notice-admin {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
 }
 
 .system-management-screen {
@@ -244,8 +392,186 @@
     font-size: 11px;
 }
 
+.system-account-actions {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px !important;
+}
+
+.system-account-actions button {
+    width: auto;
+    min-height: 38px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.backup-log-section {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #eee1d5;
+}
+
+.backup-log-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+}
+
+.backup-log-heading > strong {
+    color: #51463f;
+    font-size: 13px;
+}
+
+.backup-log-heading .secondary-button {
+    width: auto;
+    min-height: 32px;
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 11px;
+}
+
+.backup-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.backup-log-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 10px;
+    border: 1px solid #eee1d5;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.backup-log-row > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.backup-log-row strong {
+    overflow: hidden;
+    color: #51463f;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.backup-log-row span,
+.backup-log-row small {
+    color: #94877b;
+    font-size: 10px;
+}
+
+.backup-log-list > .loading-message,
+.backup-log-list > .system-empty,
+.backup-log-list > .system-error-text {
+    padding: 12px;
+    font-size: 11px;
+}
+
+.system-password-modal .system-admin-field {
+    margin: 11px 0;
+    text-align: left;
+}
+
+.system-role-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    padding: 3px 7px;
+    border: 1px solid #dfd5cc;
+    border-radius: 999px;
+    background: #f5f1ed;
+    color: #62574e;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.system-role-badge.is-super-admin {
+    border-color: #edc695;
+    background: #fff0dc;
+    color: #925512;
+}
+
+.system-role-badge.is-admin {
+    border-color: #c9d9ee;
+    background: #edf5ff;
+    color: #3f6591;
+}
+
+.system-role-badge.is-staff {
+    border-color: #b9dfe7;
+    background: #eaf8fb;
+    color: #2d7180;
+}
+
+.system-role-badge.is-viewer {
+    border-color: #ded5e8;
+    background: #f6f1fa;
+    color: #705a84;
+}
+
+.system-account-meta,
+.system-session-meta {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.system-account-meta > span:not(.system-role-badge),
+.system-session-meta > span:not(.system-role-badge) {
+    color: #7f7369;
+    font-size: 11px;
+}
+
+.system-access-control-row > div > .system-role-badge {
+    min-width: 68px;
+    min-height: 25px;
+    padding: 4px 9px;
+    font-size: 11px;
+}
+
+.system-audit-detail-grid strong > .system-role-badge {
+    vertical-align: middle;
+}
+
 .system-error-text {
     color: #b13f3f !important;
+}
+
+@media (max-width: 640px) {
+    .system-data-row {
+        align-items: stretch;
+    }
+
+    .system-account-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .system-account-actions button {
+        flex: 1 1 0;
+        min-width: 0;
+        font-size: 11px;
+    }
 }
 
 .system-empty,
