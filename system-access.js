@@ -266,7 +266,7 @@ function renderMaintenanceModal(state) {
                 <p></p>
             </div>
         </div>
-        <p class="maintenance-notice-admin">最高管理者のみログインできます。</p>
+        <p class="maintenance-notice-admin">※メンテナンス中はすべての機能が利用できません</p>
             </section>
         `;
 
