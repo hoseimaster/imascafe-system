@@ -7,11 +7,6 @@ let loginRoleListenerInitialized = false;
 let maintenanceModalDismissed = false;
 let maintenanceModalStateKey = "";
 
-window.addEventListener("app:login-screen-shown", () => {
-    maintenanceModalDismissed = false;
-    void getSystemAccessState();
-});
-
 export async function getSystemAccessState() {
     const { data, error } = await supabase.rpc(
         "get_system_access_state"
@@ -31,8 +26,6 @@ export function isRoleAllowed(state, role) {
     if (!state || !role) return false;
     if (role === "super_admin") return true;
     if (state.maintenance_enabled) return false;
-    if (state.access_allowed === false && !state.current_role) return false;
-
     const key = `${role}_login_enabled`;
     return state[key] === true;
 }
@@ -42,17 +35,9 @@ export function getAccessDeniedMessage(state, role) {
         return "システムのアクセス状態を確認できないためログインできません。時間をおいて再度お試しください。";
     }
 
-    if (
-        state?.access_allowed === false &&
-        !state?.current_role &&
-        !state?.maintenance_enabled
-    ) {
-        return "このアカウントは無効化されています。最高管理者に確認してください。";
-    }
-
     if (state?.maintenance_enabled) {
         return state.maintenance_message ||
-            "現在、システムメンテナンスを実施しています。終了までログインできません。";
+            "現在、システムメンテナンスを実施しています。ログインできません。";
     }
 
     const labels = {
@@ -193,7 +178,6 @@ function renderLoginAccessNotice(
 
 function renderMaintenanceModal(state) {
     const stateKey = JSON.stringify({
-        endAt: state?.maintenance_end_at || "",
         message: state?.maintenance_message || ""
     });
 
@@ -221,10 +205,6 @@ function renderMaintenanceModal(state) {
             </div>
         </div>
         <div class="maintenance-notice-details">
-            <div class="maintenance-notice-row">
-                <span>終了予定</span>
-                <strong class="maintenance-notice-end"></strong>
-            </div>
             <div class="maintenance-notice-message" hidden>
                 <span>お知らせ</span>
                 <p></p>
@@ -254,10 +234,7 @@ function renderMaintenanceModal(state) {
     overlay.querySelector(".maintenance-notice-title").textContent =
         "現在メンテナンス中";
     overlay.querySelector(".maintenance-notice-lead").textContent =
-        "メンテナンス終了後に再度アクセスしてください。";
-    overlay.querySelector(".maintenance-notice-end").textContent =
-        formatMaintenanceEndAt(state?.maintenance_end_at);
-
+        "現在、システムを利用できません。";
     const message = String(state?.maintenance_message || "").trim();
     const messageBox = overlay.querySelector(".maintenance-notice-message");
 
@@ -282,24 +259,6 @@ function closeMaintenanceModal(dismissed) {
         maintenanceModalDismissed = false;
         maintenanceModalStateKey = "";
     }
-}
-
-function formatMaintenanceEndAt(value) {
-    if (!value) return "終了時間は未定です";
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "終了時間は未定です";
-
-    return new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-    }).format(date);
 }
 
 function setupLoginRoleListener() {
