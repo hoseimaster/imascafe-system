@@ -40,6 +40,77 @@
     border-bottom: 1px solid #f1d7b8;
 }
 
+.maintenance-notice-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background: rgba(47, 38, 31, 0.58);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+.maintenance-notice-overlay[hidden] {
+    display: none !important;
+}
+
+body.maintenance-notice-open {
+    overflow: hidden;
+}
+
+.maintenance-notice-modal {
+    position: relative;
+    width: min(100%, 480px);
+    max-height: min(88vh, 680px);
+    overflow: auto;
+    border: 1px solid #edc18f;
+    border-radius: 20px;
+    background: #fffaf4;
+    box-shadow: 0 24px 70px rgba(39, 27, 18, 0.28);
+}
+
+.maintenance-notice-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(131, 79, 37, 0.16);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    color: #765037;
+    font-size: 22px;
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(91, 61, 30, 0.10);
+}
+
+.maintenance-notice-close:hover,
+.maintenance-notice-close:focus-visible {
+    background: #ffffff;
+    border-color: #d79c68;
+    outline: none;
+}
+
+.maintenance-notice-modal .maintenance-notice-heading {
+    padding: 24px 58px 20px 22px;
+}
+
+.maintenance-notice-modal .maintenance-notice-details {
+    padding: 18px 22px 12px;
+}
+
+.maintenance-notice-modal .maintenance-notice-admin {
+    padding: 0 22px 20px;
+}
+
 .maintenance-notice-mark {
     position: relative;
     width: 38px;
@@ -149,12 +220,31 @@
 }
 
 @media (max-width: 520px) {
+    .maintenance-notice-overlay {
+        align-items: flex-end;
+        padding: 12px;
+    }
+
+    .maintenance-notice-modal {
+        width: 100%;
+        max-height: 90vh;
+        border-radius: 18px;
+    }
+
     .maintenance-notice-heading {
         padding: 14px;
     }
 
+    .maintenance-notice-modal .maintenance-notice-heading {
+        padding: 20px 52px 17px 17px;
+    }
+
     .maintenance-notice-details {
         padding: 12px 14px 9px;
+    }
+
+    .maintenance-notice-modal .maintenance-notice-details {
+        padding: 14px 17px 10px;
     }
 
     .maintenance-notice-row {
