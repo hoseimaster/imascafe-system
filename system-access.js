@@ -7,6 +7,33 @@ let loginRoleListenerInitialized = false;
 let maintenanceModalDismissed = false;
 let maintenanceModalStateKey = "";
 
+window.addEventListener("app:login-screen-shown", () => {
+    maintenanceModalDismissed = false;
+    void refreshPublicMaintenanceState();
+});
+
+async function refreshPublicMaintenanceState() {
+    const { data, error } = await supabase.rpc(
+        "get_public_system_status"
+    );
+
+    if (error) {
+        console.error("メンテナンス状態取得エラー:", error);
+        return null;
+    }
+
+    const publicState = {
+        maintenance_enabled: data?.maintenance_enabled === true,
+        maintenance_end_at: data?.maintenance_end_at || null,
+        maintenance_message: String(data?.maintenance_message || ""),
+        public_status: true
+    };
+
+    cachedState = publicState;
+    renderLoginAccessNotice(publicState);
+    return publicState;
+}
+
 export async function getSystemAccessState() {
     const { data, error } = await supabase.rpc(
         "get_system_access_state"
@@ -128,10 +155,14 @@ function renderLoginAccessNotice(
         "systemAccessNotice"
     );
 
-    if (
+    const selectedRole = document.getElementById("loginRole")?.value || "";
+    const maintenanceModalRequired = Boolean(
         state?.maintenance_enabled &&
+        selectedRole !== "super_admin" &&
         state?.current_role !== "super_admin"
-    ) {
+    );
+
+    if (maintenanceModalRequired) {
         if (notice) {
             notice.hidden = true;
             notice.textContent = "";
@@ -178,6 +209,7 @@ function renderLoginAccessNotice(
 
 function renderMaintenanceModal(state) {
     const stateKey = JSON.stringify({
+        endAt: state?.maintenance_end_at || "",
         message: state?.maintenance_message || ""
     });
 
@@ -205,12 +237,16 @@ function renderMaintenanceModal(state) {
             </div>
         </div>
         <div class="maintenance-notice-details">
+            <div class="maintenance-notice-row">
+                <span>終了予定</span>
+                <strong class="maintenance-notice-end"></strong>
+            </div>
             <div class="maintenance-notice-message" hidden>
                 <span>お知らせ</span>
                 <p></p>
             </div>
         </div>
-        <p class="maintenance-notice-admin">※メンテナンス中はすべての機能を利用できません</p>
+        <p class="maintenance-notice-admin">最高管理者のみログインできます。</p>
             </section>
         `;
 
@@ -234,7 +270,13 @@ function renderMaintenanceModal(state) {
     overlay.querySelector(".maintenance-notice-title").textContent =
         "現在メンテナンス中";
     overlay.querySelector(".maintenance-notice-lead").textContent =
-        "現在、システムを利用できません。";
+        "メンテナンス終了後に再度アクセスしてください。";
+
+    const endElement = overlay.querySelector(".maintenance-notice-end");
+    if (endElement) {
+        endElement.textContent = formatMaintenanceEndAt(state?.maintenance_end_at);
+    }
+
     const message = String(state?.maintenance_message || "").trim();
     const messageBox = overlay.querySelector(".maintenance-notice-message");
 
@@ -261,6 +303,24 @@ function closeMaintenanceModal(dismissed) {
     }
 }
 
+function formatMaintenanceEndAt(value) {
+    if (!value) return "未定";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "未定";
+
+    return new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    }).format(date);
+}
+
 function setupLoginRoleListener() {
     if (loginRoleListenerInitialized) return;
 
@@ -270,6 +330,7 @@ function setupLoginRoleListener() {
     loginRoleListenerInitialized = true;
 
     roleSelect.addEventListener("change", () => {
+        maintenanceModalDismissed = false;
         renderLoginAccessNotice(cachedState);
     });
 }
