@@ -96,6 +96,11 @@ function getOperatorNameInput() {
 }
 
 
+function getLoginRoleSelect() {
+    return getElement("loginRole");
+}
+
+
 function getLoginPasswordInput() {
     return getElement("loginPassword");
 }
@@ -184,6 +189,8 @@ export async function initializeAuth(options = {}) {
             clearAuthInformation();
 
             showLoginScreen();
+
+            await getSystemAccessState();
 
             return false;
         }
@@ -359,12 +366,18 @@ async function handleLogin(event) {
     const operatorNameInput =
         getOperatorNameInput();
 
+    const roleSelect =
+        getLoginRoleSelect();
+
     const passwordInput =
         getLoginPasswordInput();
 
 
     const operatorName =
         operatorNameInput?.value.trim() || "";
+
+    const selectedRole =
+        roleSelect?.value || "";
 
     const password =
         passwordInput?.value || "";
@@ -382,6 +395,18 @@ async function handleLogin(event) {
     }
 
 
+    if (!isValidRole(selectedRole)) {
+
+        showLoginError(
+            "権限を選択してください。"
+        );
+
+        roleSelect?.focus();
+
+        return;
+    }
+
+
     if (!password) {
 
         showLoginError(
@@ -390,6 +415,18 @@ async function handleLogin(event) {
 
         passwordInput?.focus();
 
+        return;
+    }
+
+
+    const preLoginAccessState =
+        await getSystemAccessState();
+
+    if (!isRoleAllowed(preLoginAccessState, selectedRole)) {
+        showAccessDenied(
+            preLoginAccessState,
+            selectedRole
+        );
         return;
     }
 
@@ -403,7 +440,8 @@ async function handleLogin(event) {
 
         const authResult =
             await authenticateByPassword(
-                password
+                password,
+                selectedRole
             );
 
 
@@ -412,7 +450,7 @@ async function handleLogin(event) {
             await safeSignOut();
 
             throw new Error(
-                "名前またはパスワードが正しくありません。"
+                "選択した権限またはパスワードが正しくありません。"
             );
         }
 
@@ -659,55 +697,34 @@ async function recordAuthHistory(
 ======================================== */
 
 async function authenticateByPassword(
-    password
+    password,
+    role
 ) {
-
-    const accountEntries = [
-        {
-            role: ROLE_SUPER_ADMIN,
-            email: AUTH_ACCOUNTS.super_admin
-        },
-        {
-            role: ROLE_ADMIN,
-            email: AUTH_ACCOUNTS.admin
-        },
-        {
-            role: ROLE_STAFF,
-            email: AUTH_ACCOUNTS.staff
-        },
-        {
-            role: ROLE_VIEWER,
-            email: AUTH_ACCOUNTS.viewer
-        }
-    ];
-
-
-    for (
-        const account
-        of accountEntries
-    ) {
-
-        const result =
-            await signIn(
-                account.email,
-                password
-            );
-
-
-        if (result) {
-
-            return {
-                ...result,
-                role: account.role
-            };
-        }
-
-
-        await safeSignOut();
+    if (!isValidRole(role)) {
+        return null;
     }
 
+    const email =
+        AUTH_ACCOUNTS[role];
 
-    return null;
+    if (!email) {
+        return null;
+    }
+
+    const result =
+        await signIn(
+            email,
+            password
+        );
+
+    if (!result) {
+        return null;
+    }
+
+    return {
+        ...result,
+        role
+    };
 }
 
 
@@ -1994,8 +2011,16 @@ function setLoginButtonState(
     }
 
 
+    const accessBlocked =
+        loginButton.dataset.accessBlocked === "true";
+
     loginButton.disabled =
-        isLoading;
+        isLoading || accessBlocked;
+
+    loginButton.setAttribute(
+        "aria-disabled",
+        String(isLoading || accessBlocked)
+    );
 
 
     if (isLoading) {
