@@ -1,0 +1,53 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # 毎日 日本時間3:00に実行
+    - cron: "0 18 * * *"
+
+  # GitHub画面から手動実行可能
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    name: Supabase Database Ping
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Call database RPC
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          response_file="$(mktemp)"
+
+          status_code="$(
+            curl \
+              --silent \
+              --show-error \
+              --location \
+              --output "$response_file" \
+              --write-out "%{http_code}" \
+              --request POST \
+              "${SUPABASE_URL}/rest/v1/rpc/get_system_access_state" \
+              --header "apikey: ${SUPABASE_ANON_KEY}" \
+              --header "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              --header "Content-Type: application/json" \
+              --data '{}'
+          )"
+
+          if [ "$status_code" -lt 200 ] || [ "$status_code" -ge 300 ]; then
+            echo "Supabaseへのアクセスに失敗しました。HTTP: $status_code"
+            sed -E \
+              's/("access_token"|"refresh_token"|"apikey")[[:space:]]*:[[:space:]]*"[^"]*"/\1:"[REDACTED]"/g' \
+              "$response_file"
+            exit 1
+          fi
+
+          echo "Supabaseへのアクセスに成功しました。HTTP: $status_code"
