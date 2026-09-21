@@ -2253,3 +2253,25 @@
     }
 }
 
+
+/* ========================================
+   スマートフォン：上部余白 最終調整
+======================================== */
+@media (max-width: 767px) {
+    .main-content {
+        padding-top: calc(env(safe-area-inset-top) + 8px) !important;
+        margin-top: 0 !important;
+    }
+
+    .app-screen {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    .app-screen > .screen-header:first-child,
+    .app-screen > .management-screen-header:first-child,
+    .app-screen > .page-header:first-child {
+        margin-top: 0 !important;
+        padding-top: 2px !important;
+    }
+}
