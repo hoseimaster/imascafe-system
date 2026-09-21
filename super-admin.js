@@ -90,9 +90,9 @@ function injectSystemManagementScreen() {
                 <h2 class="system-admin-title"><img src="./logo_20.png" alt="" aria-hidden="true">アクセス制御</h2>
                 <p>権限ごとにログインを即時停止・再開できます。最高管理者は対象外です。</p>
                 <div class="system-access-control-list">
-                    <div class="system-access-control-row"><div><strong>管理者</strong><span id="adminAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="admin">確認中</button></div>
-                    <div class="system-access-control-row"><div><strong>スタッフ</strong><span id="staffAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="staff">確認中</button></div>
-                    <div class="system-access-control-row"><div><strong>閲覧者</strong><span id="viewerAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="viewer">確認中</button></div>
+                    <div class="system-access-control-row"><div><span class="system-role-badge is-admin">管理者</span><span id="adminAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="admin">確認中</button></div>
+                    <div class="system-access-control-row"><div><span class="system-role-badge is-staff">スタッフ</span><span id="staffAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="staff">確認中</button></div>
+                    <div class="system-access-control-row"><div><span class="system-role-badge is-viewer">閲覧者</span><span id="viewerAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="viewer">確認中</button></div>
                 </div>
             </section>
 
@@ -115,7 +115,7 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_23.png" alt="" aria-hidden="true">アカウント管理</h2><p>管理者・スタッフ・閲覧者を有効化または無効化します。</p></div><button type="button" id="refreshManagedAccounts" class="secondary-button">更新</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_23.png" alt="" aria-hidden="true">アカウント管理</h2><p>各アカウントの有効状態とパスワードを管理します。</p></div><button type="button" id="refreshManagedAccounts" class="secondary-button">更新</button></div>
                 <div id="managedAccountList" class="system-data-list"></div>
             </section>
 
@@ -144,6 +144,10 @@ function injectSystemManagementScreen() {
                 <label class="system-admin-field"><span>バックアップパスワード</span><input type="password" id="backupPassword" autocomplete="new-password" minlength="8"></label>
                 <button type="button" id="createSystemBackup" class="primary-button">バックアップファイルを作成</button>
                 <p class="system-admin-note">iPadでは共有画面から「ファイルに保存」を選択できます。</p>
+                <div class="backup-log-section">
+                    <div class="backup-log-heading"><strong>作成ログ</strong><button type="button" id="refreshBackupLogs" class="secondary-button">更新</button></div>
+                    <div id="backupCreationLog" class="backup-log-list"></div>
+                </div>
             </section>
 
             <section class="system-admin-card">
@@ -185,6 +189,7 @@ function bindEvents() {
         if (target.dataset.forceRole) await forceLogoutRole(target.dataset.forceRole);
         if (target.dataset.forceUser) await forceLogoutTerminal(target);
         if (target.id === "refreshManagedAccounts") await loadManagedAccounts();
+        if (target.dataset.passwordAccountId) await changeAccountPassword(target);
         if (target.dataset.accountId) await toggleAccount(target);
         if (target.id === "executeEmergencyInventory") await emergencyAdjustInventory();
         if (target.id === "refreshCancelledOrders") await loadCancelledOrders();
@@ -193,6 +198,7 @@ function bindEvents() {
         if (target.id === "refreshAuditLogs") await loadAuditLogs();
         if (target.dataset.auditDetail) openAuditLogDetail(target.dataset.auditDetail);
         if (target.id === "createSystemBackup") await createBackup();
+        if (target.id === "refreshBackupLogs") await loadBackupCreationLog();
         if (target.id === "inspectBackupFile") await inspectBackup();
         if (target.id === "restoreSystemBackup") await restoreBackup();
         if (target.id === "runSystemDiagnostics") await runDiagnostics();
@@ -209,6 +215,7 @@ async function refreshSuperAdmin() {
         loadEmergencyProducts(),
         loadCancelledOrders(),
         loadAuditLogs(),
+        loadBackupCreationLog(),
         runDiagnostics(false)
     ]);
 }
@@ -217,15 +224,51 @@ async function loadManagedAccounts() {
     const container = document.getElementById("managedAccountList");
     if (!container) return;
     container.innerHTML = loadingText();
-    const { data, error } = await supabase.rpc("get_manageable_accounts");
+    const { data, error } = await supabase.rpc("get_password_manageable_accounts");
     if (error) return renderError(container, "アカウントを取得できませんでした。");
     if (!data?.length) return renderEmpty(container, "管理対象のアカウントはありません。");
     container.innerHTML = data.map((row) => `
         <article class="system-data-row">
-            <div><strong>${escapeHtml(row.display_name)}</strong><span>${roleLabel(row.role)}／${row.active ? "有効" : "無効"}</span><small>最終利用 ${formatDateTime(row.last_seen_at)}</small></div>
-            <button type="button" class="${row.active ? "danger-outline-button" : "primary-button"}" data-account-id="${escapeHtml(row.id)}" data-account-active="${row.active ? "true" : "false"}">${row.active ? "無効化" : "有効化"}</button>
+            <div><strong>${escapeHtml(row.display_name)}</strong><span class="system-account-meta">${roleBadge(row.role)}<span>${row.active ? "有効" : "無効"}</span></span><small>最終利用 ${formatDateTime(row.last_seen_at)}</small></div>
+            <div class="system-account-actions">
+                <button type="button" class="secondary-button" data-password-account-id="${escapeHtml(row.id)}" data-password-account-name="${escapeHtml(row.display_name)}">パスワード変更</button>
+                ${row.role === "super_admin"
+                    ? '<span class="system-protected-label">保護対象</span>'
+                    : `<button type="button" class="${row.active ? "danger-outline-button" : "primary-button"}" data-account-id="${escapeHtml(row.id)}" data-account-active="${row.active ? "true" : "false"}">${row.active ? "無効化" : "有効化"}</button>`}
+            </div>
         </article>
     `).join("");
+}
+
+async function changeAccountPassword(button) {
+    const accountId = button.dataset.passwordAccountId;
+    const accountName = button.dataset.passwordAccountName || "選択したアカウント";
+    const password = await requestPasswordModal(accountName);
+    if (!password) return;
+
+    const confirmed = await showConfirmModal(
+        `${accountName}のログインパスワードを変更します。`,
+        { title: "パスワードを変更しますか？", confirmText: "変更", tone: "warning", operation: "account-password-update" }
+    );
+    if (!confirmed) return;
+
+    const { error } = await supabase.rpc("change_managed_account_password", {
+        p_user_id: accountId,
+        p_new_password: password
+    });
+    if (error) return showError("パスワードを変更できませんでした。", error);
+
+    await supabase.rpc("record_auth_history", {
+        p_operation_type: "account_password_update",
+        p_operator_name: getOperatorName(),
+        p_terminal: getTerminalId(),
+        p_description: `${accountName}のパスワードを変更`,
+        p_before_value: null,
+        p_after_value: { user_id: accountId }
+    });
+
+    showToast(`${accountName}のパスワードを変更しました。`, "success");
+    await loadAuditLogs();
 }
 
 async function toggleAccount(button) {
@@ -424,7 +467,7 @@ async function loadSessions() {
 
     container.innerHTML = data.map((row) => `
         <article class="system-data-row">
-            <div><strong>${escapeHtml(row.operator_name)}</strong><span>${roleLabel(row.role)}／${escapeHtml(row.terminal)}</span><small>最終確認 ${formatDateTime(row.last_seen_at)}</small></div>
+            <div><strong>${escapeHtml(row.operator_name)}</strong><span class="system-session-meta">${roleBadge(row.role)}<span>${escapeHtml(row.terminal)}</span></span><small>最終確認 ${formatDateTime(row.last_seen_at)}</small></div>
             ${row.role === "super_admin" ? '<span class="system-protected-label">保護対象</span>' : `<button type="button" class="danger-outline-button" data-force-user="${escapeHtml(row.user_id)}" data-force-terminal="${escapeHtml(row.terminal)}">強制ログアウト</button>`}
         </article>
     `).join("");
@@ -673,6 +716,7 @@ async function loadAuditLogs() {
     container.innerHTML = loadingText();
     const systemOnlyTypes = [
         "account_active_update",
+        "account_password_update",
         "system_access_update",
         "order_restore",
         "force_logout_role",
@@ -698,6 +742,28 @@ async function loadAuditLogs() {
         <article class="system-data-row system-audit-row">
             <strong class="system-audit-title">${escapeHtml(row.description || row.operation_type)}</strong>
             <button type="button" class="secondary-button system-audit-detail-button" data-audit-detail="${row.id}">詳細</button>
+        </article>
+    `).join("");
+}
+
+async function loadBackupCreationLog() {
+    const container = document.getElementById("backupCreationLog");
+    if (!container) return;
+    container.innerHTML = loadingText();
+
+    const { data, error } = await supabase.from("operation_history")
+        .select("id,operated_at,operator_name,target,description")
+        .eq("operation_type", "backup_file_created")
+        .order("operated_at", { ascending: false })
+        .limit(3);
+
+    if (error) return renderError(container, "作成ログを取得できませんでした。");
+    if (!data?.length) return renderEmpty(container, "作成履歴はありません。");
+
+    container.innerHTML = data.map((row) => `
+        <article class="backup-log-row">
+            <div><strong>${escapeHtml(row.target || row.description || "バックアップファイル")}</strong><span>${formatDateTime(row.operated_at)}</span></div>
+            <small>${escapeHtml(row.operator_name || "担当者不明")}</small>
         </article>
     `).join("");
 }
@@ -728,7 +794,7 @@ function openAuditLogDetail(id) {
             <div class="system-audit-detail-grid">
                 <div><span>操作日時</span><strong>${formatDateTime(row.operated_at)}</strong></div>
                 <div><span>担当者</span><strong>${escapeHtml(row.operator_name || "不明")}</strong></div>
-                <div><span>権限</span><strong>${escapeHtml(roleLabel(row.actor_role))}</strong></div>
+                <div><span>権限</span><strong>${roleBadge(row.actor_role)}</strong></div>
                 <div><span>操作種別</span><strong>${escapeHtml(row.operation_type || "－")}</strong></div>
                 <div class="system-audit-detail-wide"><span>対象</span><strong>${escapeHtml(row.target || "－")}</strong></div>
                 <div class="system-audit-detail-wide"><span>理由</span><strong>${escapeHtml(row.reason || "－")}</strong></div>
@@ -794,6 +860,7 @@ async function createBackup() {
         if (recordError) console.error("バックアップ記録エラー:", recordError);
         setValue("backupPassword", "");
         showToast("バックアップファイルを作成しました。", "success");
+        await Promise.all([loadBackupCreationLog(), loadAuditLogs()]);
     } catch (cryptoError) {
         showError("バックアップの暗号化に失敗しました。", cryptoError);
     }
@@ -1200,6 +1267,62 @@ function requestTextModal(title, description, operation) {
     });
 }
 
+function requestPasswordModal(accountName) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "custom-confirm-overlay";
+        overlay.dataset.operation = "account-password-change";
+        overlay.innerHTML = `
+            <div class="custom-confirm-modal is-warning system-password-modal" role="dialog" aria-modal="true" aria-labelledby="systemPasswordModalTitle">
+                <div class="custom-confirm-heading">
+                    <span class="custom-confirm-mark" aria-hidden="true"></span>
+                    <h2 id="systemPasswordModalTitle" class="custom-confirm-title">パスワード変更</h2>
+                </div>
+                <p class="custom-confirm-message">${escapeHtml(accountName)}の新しいパスワードを入力してください。</p>
+                <label class="system-admin-field"><span>新しいパスワード</span><input type="password" data-new-password minlength="8" autocomplete="new-password"></label>
+                <label class="system-admin-field"><span>新しいパスワード（確認）</span><input type="password" data-confirm-password minlength="8" autocomplete="new-password"></label>
+                <p class="custom-confirm-error" role="alert" hidden></p>
+                <div class="custom-confirm-actions">
+                    <button type="button" class="custom-confirm-button custom-confirm-cancel">キャンセル</button>
+                    <button type="button" class="custom-confirm-button custom-confirm-ok">確認へ進む</button>
+                </div>
+            </div>
+        `;
+        const password = overlay.querySelector("[data-new-password]");
+        const confirmation = overlay.querySelector("[data-confirm-password]");
+        const error = overlay.querySelector(".custom-confirm-error");
+        const cancel = overlay.querySelector(".custom-confirm-cancel");
+        const submit = overlay.querySelector(".custom-confirm-ok");
+        const finish = (value) => {
+            overlay.remove();
+            document.body.classList.remove("is-custom-confirm-open");
+            resolve(value);
+        };
+        const validate = () => {
+            if (password.value.length < 8) return "パスワードは8文字以上で入力してください。";
+            if (password.value !== confirmation.value) return "確認用パスワードが一致しません。";
+            return "";
+        };
+        cancel.addEventListener("click", () => finish(null));
+        submit.addEventListener("click", () => {
+            const message = validate();
+            if (message) {
+                error.textContent = message;
+                error.hidden = false;
+                return;
+            }
+            finish(password.value);
+        });
+        overlay.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") finish(null);
+            if (event.key === "Enter") submit.click();
+        });
+        document.body.appendChild(overlay);
+        document.body.classList.add("is-custom-confirm-open");
+        password.focus();
+    });
+}
+
 function loadingText() { return '<div class="loading-message">読み込んでいます</div>'; }
 function renderEmpty(element, message) { element.innerHTML = `<div class="system-empty">${escapeHtml(message)}</div>`; }
 function renderError(element, message) { element.innerHTML = `<div class="system-error-text">${escapeHtml(message)}</div>`; }
@@ -1211,5 +1334,9 @@ function toLocalInput(value) { if (!value) return ""; const date = new Date(valu
 function formatDateTime(value) { if (!value) return "-"; const date = new Date(value); return Number.isNaN(date.getTime()) ? String(value) : new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(date); }
 function formatCurrency(value) { return `¥${Number(value || 0).toLocaleString("ja-JP")}`; }
 function roleLabel(role) { return ({ super_admin: "最高管理者", admin: "管理者", staff: "スタッフ", viewer: "閲覧者" })[role] || "不明"; }
+function roleBadge(role) {
+    const safeRole = ["super_admin", "admin", "staff", "viewer"].includes(role) ? role : "unknown";
+    return `<span class="system-role-badge is-${safeRole.replace("_", "-")}">${escapeHtml(roleLabel(role))}</span>`;
+}
 function statusLabel(status) { return ({ ok: "正常", warning: "注意", error: "異常", unknown: "確認不能" })[status] || "確認不能"; }
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]); }
