@@ -1597,3 +1597,59 @@ body.maintenance-notice-open {
     }
 }
 
+
+
+/* パスワード表示切替 */
+.login-password-toggle {
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    color: #7d746d !important;
+    box-shadow: none !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+.login-password-toggle:hover,
+.login-password-toggle:focus-visible {
+    background: #f6f1ec !important;
+    color: #4e443d !important;
+}
+
+.login-password-toggle:focus-visible {
+    outline: 2px solid rgba(239, 140, 47, 0.35) !important;
+    outline-offset: 1px !important;
+}
+
+.login-password-toggle:active {
+    transform: translateY(-50%) !important;
+}
+
+.login-password-eye-icon {
+    width: 20px !important;
+    height: 20px !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 1.8 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    pointer-events: none !important;
+}
+
+.login-password-toggle-wrapper #loginPassword,
+.login-password-field #loginPassword {
+    padding-right: 52px !important;
+}
