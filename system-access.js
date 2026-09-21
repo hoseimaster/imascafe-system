@@ -143,6 +143,29 @@ function renderLoginAccessNotice(
         "loginScreen"
     );
 
+    const selectedRole =
+        document.getElementById("loginRole")?.value || "";
+
+    if (selectedRole === "super_admin") {
+        closeMaintenanceModal(false);
+
+        const existingNotice =
+            document.getElementById("systemAccessNotice");
+
+        if (existingNotice) {
+            existingNotice.hidden = true;
+            existingNotice.textContent = "";
+            existingNotice.classList.remove("is-denied");
+        }
+
+        loginScreen?.classList.remove(
+            "is-maintenance-mode"
+        );
+
+        updateLoginButtonAccess(state);
+        return;
+    }
+
     loginScreen?.classList.toggle(
         "is-maintenance-mode",
         Boolean(state?.maintenance_enabled)
@@ -155,7 +178,6 @@ function renderLoginAccessNotice(
         "systemAccessNotice"
     );
 
-    const selectedRole = document.getElementById("loginRole")?.value || "";
     const maintenanceModalRequired = Boolean(
         state?.maintenance_enabled &&
         selectedRole !== "super_admin" &&
@@ -188,16 +210,14 @@ function renderLoginAccessNotice(
         );
     }
 
-    if (
-        !state?.maintenance_enabled &&
-        !forcedMessage
-    ) {
+    if (!forcedMessage) {
         notice.hidden = true;
         notice.textContent = "";
+        notice.classList.remove("is-denied");
         return;
     }
 
-    notice.textContent = forcedMessage || "現在ログインできません。";
+    notice.textContent = forcedMessage;
 
     notice.classList.toggle(
         "is-denied",
