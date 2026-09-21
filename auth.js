@@ -1894,6 +1894,13 @@ function showLoginScreen() {
     document.body.classList.remove(
         "is-authenticated"
     );
+
+
+    window.dispatchEvent(
+        new CustomEvent(
+            "app:login-screen-shown"
+        )
+    );
 }
 
 
