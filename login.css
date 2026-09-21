@@ -233,15 +233,20 @@
     pointer-events: none;
 }
 
-#loginScreen .form-group:first-child::before {
+#loginScreen .login-operator-group::before {
     background-image: url("./logo_6.png");
 }
 
-#loginScreen .form-group:nth-child(2)::before {
+#loginScreen .login-role-group::before {
+    background-image: url("./logo_23.png");
+}
+
+#loginScreen .login-password-group::before {
     background-image: url("./logo_18.png");
 }
 
 #loginScreen #operatorName,
+#loginScreen #loginRole,
 #loginScreen #loginPassword {
     display: block;
 
@@ -270,6 +275,21 @@
         background 0.16s ease;
 }
 
+#loginScreen #loginRole {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 48px;
+    cursor: pointer;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #8a969f 50%),
+        linear-gradient(135deg, #8a969f 50%, transparent 50%);
+    background-position:
+        calc(100% - 23px) 50%,
+        calc(100% - 17px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
 #loginScreen #operatorName::placeholder,
 #loginScreen #loginPassword::placeholder {
     color: #9aa5af;
@@ -277,6 +297,7 @@
 }
 
 #loginScreen #operatorName:focus,
+#loginScreen #loginRole:focus,
 #loginScreen #loginPassword:focus {
     background: #ffffff;
     border-color: #f3a66f;
@@ -484,6 +505,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword {
         height: 58px;
         padding-left: 54px;
@@ -530,6 +552,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword {
         height: 54px;
     }
@@ -575,6 +598,7 @@
 }
 
 #loginScreen #operatorName,
+#loginScreen #loginRole,
 #loginScreen #loginPassword {
     height: clamp(48px, 7vh, 58px);
 }
@@ -609,6 +633,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword,
     #loginScreen #loginButton {
         height: 48px;
@@ -658,6 +683,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword {
         height: clamp(46px, 6.5vh, 56px);
     }
@@ -690,6 +716,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword,
     #loginScreen #loginButton {
         height: 44px;
@@ -1028,10 +1055,10 @@
  #loginScreen .app-logo{order:1;width:100%;height:clamp(82px,11.5vh,108px);margin:0;padding:18px 22px 6px;box-sizing:border-box;background-color:rgba(255,255,255,.94);background-size:calc(100% - 44px) auto;background-position:center;background-repeat:no-repeat;border:1px solid rgba(255,255,255,.90);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -8px 28px rgba(75,55,40,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
  #loginScreen .app-logo::after{display:none;}
  #loginScreen .login-form{order:2;gap:clamp(10px,1.4vh,13px);width:100%;margin:0;padding:8px 20px 20px;box-sizing:border-box;background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.90);border-top:0;border-radius:0 0 18px 18px;box-shadow:0 18px 42px rgba(75,55,40,.10);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
- #loginScreen #operatorName,#loginScreen #loginPassword{height:clamp(48px,6.3vh,56px);padding-left:54px;font-size:14px;}
+ #loginScreen #operatorName,#loginScreen #loginRole,#loginScreen #loginPassword{height:clamp(48px,6.3vh,56px);padding-left:54px;font-size:14px;}
  #loginScreen #loginButton{min-height:clamp(48px,6.3vh,56px);margin-top:4px;font-size:15px;}
 }
-@media (max-width:767px) and (max-height:700px){#loginScreen .login-container::before,#loginScreen .login-container::after{top:0;width:52vw;height:34dvh;}#loginScreen .app-logo{height:72px;padding-top:10px;padding-bottom:2px;background-size:calc(100% - 50px) auto;}#loginScreen .login-form{gap:8px;padding:6px 16px 14px;}#loginScreen #operatorName,#loginScreen #loginPassword,#loginScreen #loginButton{height:44px;min-height:44px;}}
+@media (max-width:767px) and (max-height:700px){#loginScreen .login-container::before,#loginScreen .login-container::after{top:0;width:52vw;height:34dvh;}#loginScreen .app-logo{height:72px;padding-top:10px;padding-bottom:2px;background-size:calc(100% - 50px) auto;}#loginScreen .login-form{gap:8px;padding:6px 16px 14px;}#loginScreen #operatorName,#loginScreen #loginRole,#loginScreen #loginPassword,#loginScreen #loginButton{height:44px;min-height:44px;}}
 @media (max-width:390px){#loginScreen.login-screen{padding-right:12px;padding-left:12px;}#loginScreen .app-logo{height:78px;padding-right:18px;padding-left:18px;background-size:calc(100% - 36px) auto;border-radius:16px 16px 0 0;}#loginScreen .login-form{padding-right:16px;padding-left:16px;border-radius:0 0 16px 16px;}}
 
 /* ========================================
@@ -1226,6 +1253,7 @@
     ======================================== */
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword {
         height: 56px;
 
@@ -1327,6 +1355,7 @@
     }
 
     #loginScreen #operatorName,
+    #loginScreen #loginRole,
     #loginScreen #loginPassword,
     #loginScreen #loginButton {
         height: 44px;
@@ -1395,4 +1424,13 @@
 
         flex: 0 0 auto;
     }
+}
+
+#loginScreen #loginRole:invalid {
+    color: #9aa5af;
+}
+
+#loginScreen #loginRole option {
+    color: #38434c;
+    background: #ffffff;
 }
