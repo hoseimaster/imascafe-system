@@ -347,48 +347,80 @@ function setupLoginEvents() {
 
 function setupPasswordVisibilityToggle() {
 
-    const passwordInput =
-        getLoginPasswordInput();
+    const passwordInput = getLoginPasswordInput();
 
-    if (!passwordInput || passwordInput.dataset.visibilityReady === "true") {
+    if (!passwordInput) {
         return;
     }
 
-    passwordInput.dataset.visibilityReady = "true";
+    let wrapper = passwordInput.closest(".login-password-visibility");
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "login-password-visibility";
+    if (!wrapper) {
+        wrapper = document.createElement("div");
+        wrapper.className = "login-password-visibility";
+        passwordInput.parentNode.insertBefore(wrapper, passwordInput);
+        wrapper.appendChild(passwordInput);
+    }
 
-    passwordInput.parentNode.insertBefore(wrapper, passwordInput);
-    wrapper.appendChild(passwordInput);
+    wrapper.querySelectorAll(".login-password-toggle").forEach((button, index) => {
+        if (index > 0) {
+            button.remove();
+        }
+    });
 
-    const toggleButton = document.createElement("button");
-    toggleButton.type = "button";
-    toggleButton.className = "login-password-toggle";
-    toggleButton.setAttribute("aria-label", "パスワードを表示");
-    toggleButton.setAttribute("aria-pressed", "false");
-    toggleButton.textContent = "表示";
+    let toggleButton = wrapper.querySelector(".login-password-toggle");
 
-    wrapper.appendChild(toggleButton);
+    if (!toggleButton) {
+        toggleButton = document.createElement("button");
+        toggleButton.type = "button";
+        toggleButton.className = "login-password-toggle";
+        wrapper.appendChild(toggleButton);
+    }
 
-    toggleButton.addEventListener("click", () => {
-        const showing = passwordInput.type === "text";
+    const eyeIcon = `
+        <svg class="login-password-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+            <circle cx="12" cy="12" r="2.75"></circle>
+        </svg>
+    `;
 
-        passwordInput.type = showing ? "password" : "text";
-        toggleButton.textContent = showing ? "表示" : "非表示";
+    const eyeOffIcon = `
+        <svg class="login-password-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 3l18 18"></path>
+            <path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a16.7 16.7 0 0 1-2.3 3"></path>
+            <path d="M6.2 6.2C3.8 8 2.5 12 2.5 12s3.5 6 9.5 6a10.8 10.8 0 0 0 3.2-.5"></path>
+            <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path>
+        </svg>
+    `;
+
+    const renderState = () => {
+        const visible = passwordInput.type === "text";
+        toggleButton.innerHTML = visible ? eyeOffIcon : eyeIcon;
         toggleButton.setAttribute(
             "aria-label",
-            showing ? "パスワードを表示" : "パスワードを非表示"
+            visible ? "パスワードを非表示" : "パスワードを表示"
         );
-        toggleButton.setAttribute(
-            "aria-pressed",
-            String(!showing)
-        );
+        toggleButton.setAttribute("aria-pressed", String(visible));
+        toggleButton.title = visible ? "パスワードを非表示" : "パスワードを表示";
+    };
 
-        passwordInput.focus({ preventScroll: true });
-        const length = passwordInput.value.length;
-        passwordInput.setSelectionRange?.(length, length);
-    });
+    if (toggleButton.dataset.visibilityBound !== "true") {
+        toggleButton.dataset.visibilityBound = "true";
+
+        toggleButton.addEventListener("click", () => {
+            passwordInput.type =
+                passwordInput.type === "password" ? "text" : "password";
+
+            renderState();
+            passwordInput.focus({ preventScroll: true });
+
+            const length = passwordInput.value.length;
+            passwordInput.setSelectionRange?.(length, length);
+        });
+    }
+
+    passwordInput.dataset.visibilityReady = "true";
+    renderState();
 
     if (!document.getElementById("loginPasswordVisibilityStyle")) {
         const style = document.createElement("style");
@@ -402,58 +434,63 @@ function setupPasswordVisibilityToggle() {
             .login-password-visibility #loginPassword {
                 width: 100%;
                 box-sizing: border-box;
-                padding-right: 68px !important;
+                padding-right: 52px !important;
             }
 
             .login-password-toggle {
                 position: absolute;
                 top: 50%;
-                right: 9px;
+                right: 10px;
                 z-index: 2;
-                min-width: 50px;
-                min-height: 30px;
-                padding: 4px 8px;
-                border: 1px solid #e5d2bf;
-                border-radius: 8px;
-                background: #fff8f1;
-                color: #8a5a32;
-                font: inherit;
-                font-size: 11px;
-                font-weight: 700;
-                line-height: 1;
-                cursor: pointer;
-                transform: translateY(-50%);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                min-height: 36px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: transparent;
+                color: #7d746d;
                 box-shadow: none;
+                transform: translateY(-50%);
+                cursor: pointer;
+                appearance: none;
+                -webkit-appearance: none;
                 -webkit-tap-highlight-color: transparent;
             }
 
             .login-password-toggle:hover,
             .login-password-toggle:focus-visible {
-                border-color: #e8a76a;
-                background: #fff1e3;
-                outline: none;
+                background: #f6f1ec;
+                color: #4e443d;
+            }
+
+            .login-password-toggle:focus-visible {
+                outline: 2px solid rgba(239, 140, 47, 0.35);
+                outline-offset: 1px;
             }
 
             .login-password-toggle:active {
                 transform: translateY(-50%);
             }
 
-            @media (max-width: 520px) {
-                .login-password-visibility #loginPassword {
-                    padding-right: 72px !important;
-                }
-
-                .login-password-toggle {
-                    min-width: 54px;
-                    min-height: 32px;
-                    right: 8px;
-                }
+            .login-password-eye-icon {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                pointer-events: none;
             }
         `;
         document.head.appendChild(style);
     }
 }
-
 
 /* ========================================
    ログイン
