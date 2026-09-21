@@ -11,6 +11,7 @@ import {
 let initialized = false;
 let historyLoading = false;
 let historyRows = [];
+let currentHistoryRole = "";
 
 const HISTORY_OPERATION_OPTIONS = [
     ["", "すべての操作"],
@@ -25,10 +26,6 @@ const HISTORY_OPERATION_OPTIONS = [
     ["product_update", "商品変更"],
     ["product_delete", "商品削除"],
     ["product_stop", "販売停止"],
-    ["event_day_create", "開催日登録"],
-    ["event_day_update", "開催日変更"],
-    ["event_day_activate", "開催日有効化"],
-    ["event_day_deactivate", "開催日無効化"],
     ["settings_update", "設定変更"],
     ["expense_create", "支出登録"],
     ["expense_update", "支出変更"],
@@ -302,6 +299,14 @@ export async function loadHistory() {
 
     try {
 
+        const roleResult = await supabase.rpc("get_current_role");
+        currentHistoryRole = roleResult.error ? "" : String(roleResult.data || "");
+
+        const operationSelect = document.getElementById("historyOperationType");
+        if (operationSelect) {
+            setupHistoryOperationOptions(operationSelect);
+        }
+
         const dateInput =
             document.getElementById(
                 "historyDate"
@@ -327,58 +332,25 @@ export async function loadHistory() {
             );
 
 
-        let query =
-            supabase
-                .from(
-                    "operation_history"
-                )
-                .select(`
-                    id,
-                    operated_at,
-                    operator_name,
-                    terminal,
-                    operation_type,
-                    order_id,
-                    target,
-                    description,
-                    before_value,
-                    after_value,
-                    event_date,
-                    created_at
-                `)
-                .order(
-                    "operated_at",
-                    {
-                        ascending: false
-                    }
-                )
-                .limit(300);
+        const {
+            data: rpcData,
+            error
+        } = await supabase.rpc(
+            "get_visible_operation_history",
+            {
+                p_limit: 300
+            }
+        );
 
+        let data = Array.isArray(rpcData) ? rpcData : [];
 
         if (selectedDate) {
-
-            query =
-                query.eq(
-                    "event_date",
-                    selectedDate
-                );
+            data = data.filter((row) => row.event_date === selectedDate);
         }
-
 
         if (selectedType) {
-
-            query =
-                query.eq(
-                    "operation_type",
-                    selectedType
-                );
+            data = data.filter((row) => row.operation_type === selectedType);
         }
-
-
-        const {
-            data,
-            error
-        } = await query;
 
 
         if (error) {
@@ -1326,6 +1298,7 @@ function createReadableDetail(
                 Object.entries(
                     parsed
                 )
+                    .filter(([key]) => key !== "product_id")
                     .map(
                         ([key, itemValue]) => {
 
@@ -1493,9 +1466,6 @@ function collectIds(
 
                 if (
                     (
-                        key ===
-                        "product_id" ||
-
                         key ===
                         "user_id" ||
 
@@ -2286,8 +2256,18 @@ function setupHistoryOperationOptions(
         );
 
 
+    const canViewAuthHistory =
+        currentHistoryRole === "super_admin" ||
+        currentHistoryRole === "admin";
+
+    const options = HISTORY_OPERATION_OPTIONS.filter(
+        ([value]) =>
+            canViewAuthHistory ||
+            !["login", "logout"].includes(value)
+    );
+
     select.replaceChildren(
-        ...HISTORY_OPERATION_OPTIONS.map(
+        ...options.map(
             ([value, label]) =>
                 new Option(
                     label,
