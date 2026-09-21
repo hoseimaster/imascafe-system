@@ -3,6 +3,7 @@ import { supabase } from "./supabase.js";
 let cachedState = null;
 let monitorTimer = null;
 let monitorRunning = false;
+let loginRoleListenerInitialized = false;
 
 export async function getSystemAccessState() {
     const { data, error } = await supabase.rpc(
@@ -53,7 +54,7 @@ export function getAccessDeniedMessage(state, role) {
         viewer: "閲覧者"
     };
 
-    return `${labels[role] || "この権限"}からのログインは現在停止されています。停止解除については最高管理者に確認してください。`;
+    return `${labels[role] || "この権限"}からのログインは現在停止されています。`;
 }
 
 export function showAccessDenied(state, role) {
@@ -128,6 +129,9 @@ function renderLoginAccessNotice(
         Boolean(state?.maintenance_enabled)
     );
 
+    setupLoginRoleListener();
+    updateLoginButtonAccess(state);
+
     let notice = document.getElementById(
         "systemAccessNotice"
     );
@@ -156,14 +160,11 @@ function renderLoginAccessNotice(
         return;
     }
 
-    const message =
-        forcedMessage ||
-        state?.maintenance_message ||
-        "現在、システムメンテナンスを実施しています。";
-
-    notice.textContent = state?.maintenance_enabled
-        ? `システムメンテナンス中\n${message}\n最高管理者のみログインできます。`
-        : message;
+    if (state?.maintenance_enabled) {
+        renderMaintenanceNotice(notice, state);
+    } else {
+        notice.textContent = forcedMessage || "現在ログインできません。";
+    }
 
     notice.classList.toggle(
         "is-denied",
@@ -171,6 +172,101 @@ function renderLoginAccessNotice(
     );
 
     notice.hidden = false;
+}
+
+function renderMaintenanceNotice(notice, state) {
+    notice.innerHTML = `
+        <div class="maintenance-notice-heading">
+            <span class="maintenance-notice-mark" aria-hidden="true"></span>
+            <div>
+                <strong class="maintenance-notice-title"></strong>
+                <p class="maintenance-notice-lead"></p>
+            </div>
+        </div>
+        <div class="maintenance-notice-details">
+            <div class="maintenance-notice-row">
+                <span>終了予定</span>
+                <strong class="maintenance-notice-end"></strong>
+            </div>
+            <div class="maintenance-notice-message" hidden>
+                <span>お知らせ</span>
+                <p></p>
+            </div>
+        </div>
+    `;
+
+    notice.querySelector(".maintenance-notice-title").textContent =
+        "現在メンテナンス中";
+    notice.querySelector(".maintenance-notice-lead").textContent =
+        "メンテナンス終了後に再度アクセスしてください。";
+    notice.querySelector(".maintenance-notice-end").textContent =
+        formatMaintenanceEndAt(state?.maintenance_end_at);
+
+    const message = String(state?.maintenance_message || "").trim();
+    const messageBox = notice.querySelector(".maintenance-notice-message");
+
+    if (message && messageBox) {
+        messageBox.querySelector("p").textContent = message;
+        messageBox.hidden = false;
+    }
+}
+
+function formatMaintenanceEndAt(value) {
+    if (!value) return "終了時間は未定です";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "終了時間は未定です";
+
+    return new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    }).format(date);
+}
+
+function setupLoginRoleListener() {
+    if (loginRoleListenerInitialized) return;
+
+    const roleSelect = document.getElementById("loginRole");
+    if (!roleSelect) return;
+
+    loginRoleListenerInitialized = true;
+
+    roleSelect.addEventListener("change", () => {
+        renderLoginAccessNotice(cachedState);
+    });
+}
+
+function updateLoginButtonAccess(state) {
+    const loginButton = document.getElementById("loginButton");
+    if (!loginButton) return;
+
+    const selectedRole = document.getElementById("loginRole")?.value || "";
+    const maintenanceBlocked = Boolean(
+        state?.maintenance_enabled &&
+        selectedRole !== "super_admin"
+    );
+
+    loginButton.dataset.accessBlocked = String(maintenanceBlocked);
+    loginButton.disabled = maintenanceBlocked;
+    loginButton.setAttribute("aria-disabled", String(maintenanceBlocked));
+
+    if (!loginButton.dataset.defaultText) {
+        loginButton.dataset.defaultText = loginButton.textContent.trim() || "ログイン";
+    }
+
+    if (maintenanceBlocked) {
+        loginButton.title = "メンテナンス中は最高管理者のみログインできます。";
+        loginButton.textContent = "メンテナンス中";
+    } else {
+        loginButton.removeAttribute("title");
+        loginButton.textContent = loginButton.dataset.defaultText;
+    }
 }
 
 export function getCachedSystemAccessState() {
