@@ -4,6 +4,13 @@ let cachedState = null;
 let monitorTimer = null;
 let monitorRunning = false;
 let loginRoleListenerInitialized = false;
+let maintenanceModalDismissed = false;
+let maintenanceModalStateKey = "";
+
+window.addEventListener("app:login-screen-shown", () => {
+    maintenanceModalDismissed = false;
+    void getSystemAccessState();
+});
 
 export async function getSystemAccessState() {
     const { data, error } = await supabase.rpc(
@@ -136,6 +143,20 @@ function renderLoginAccessNotice(
         "systemAccessNotice"
     );
 
+    if (
+        state?.maintenance_enabled &&
+        state?.current_role !== "super_admin"
+    ) {
+        if (notice) {
+            notice.hidden = true;
+            notice.textContent = "";
+        }
+        renderMaintenanceModal(state);
+        return;
+    }
+
+    closeMaintenanceModal(false);
+
     if (!notice) {
         notice = document.createElement("div");
         notice.id = "systemAccessNotice";
@@ -160,11 +181,7 @@ function renderLoginAccessNotice(
         return;
     }
 
-    if (state?.maintenance_enabled) {
-        renderMaintenanceNotice(notice, state);
-    } else {
-        notice.textContent = forcedMessage || "現在ログインできません。";
-    }
+    notice.textContent = forcedMessage || "現在ログインできません。";
 
     notice.classList.toggle(
         "is-denied",
@@ -174,12 +191,32 @@ function renderLoginAccessNotice(
     notice.hidden = false;
 }
 
-function renderMaintenanceNotice(notice, state) {
-    notice.innerHTML = `
-        <div class="maintenance-notice-heading">
+function renderMaintenanceModal(state) {
+    const stateKey = JSON.stringify({
+        endAt: state?.maintenance_end_at || "",
+        message: state?.maintenance_message || ""
+    });
+
+    if (stateKey !== maintenanceModalStateKey) {
+        maintenanceModalStateKey = stateKey;
+        maintenanceModalDismissed = false;
+    }
+
+    if (maintenanceModalDismissed) return;
+
+    let overlay = document.getElementById("maintenanceNoticeModal");
+
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "maintenanceNoticeModal";
+        overlay.className = "maintenance-notice-overlay";
+        overlay.innerHTML = `
+            <section class="maintenance-notice-modal" role="dialog" aria-modal="true" aria-labelledby="maintenanceNoticeTitle">
+                <button type="button" class="maintenance-notice-close" aria-label="メンテナンス案内を閉じる">×</button>
+                <div class="maintenance-notice-heading">
             <span class="maintenance-notice-mark" aria-hidden="true"></span>
             <div>
-                <strong class="maintenance-notice-title"></strong>
+                        <h2 id="maintenanceNoticeTitle" class="maintenance-notice-title"></h2>
                 <p class="maintenance-notice-lead"></p>
             </div>
         </div>
@@ -193,21 +230,57 @@ function renderMaintenanceNotice(notice, state) {
                 <p></p>
             </div>
         </div>
-    `;
+        <p class="maintenance-notice-admin">※メンテナンス中はすべての機能を利用できません</p>
+            </section>
+        `;
 
-    notice.querySelector(".maintenance-notice-title").textContent =
+        document.body.appendChild(overlay);
+
+        overlay.querySelector(".maintenance-notice-close")
+            ?.addEventListener("click", () => closeMaintenanceModal(true));
+
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) closeMaintenanceModal(true);
+        });
+
+        overlay.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeMaintenanceModal(true);
+        });
+    }
+
+    overlay.hidden = false;
+    document.body.classList.add("maintenance-notice-open");
+
+    overlay.querySelector(".maintenance-notice-title").textContent =
         "現在メンテナンス中";
-    notice.querySelector(".maintenance-notice-lead").textContent =
+    overlay.querySelector(".maintenance-notice-lead").textContent =
         "メンテナンス終了後に再度アクセスしてください。";
-    notice.querySelector(".maintenance-notice-end").textContent =
+    overlay.querySelector(".maintenance-notice-end").textContent =
         formatMaintenanceEndAt(state?.maintenance_end_at);
 
     const message = String(state?.maintenance_message || "").trim();
-    const messageBox = notice.querySelector(".maintenance-notice-message");
+    const messageBox = overlay.querySelector(".maintenance-notice-message");
 
-    if (message && messageBox) {
+    if (messageBox) {
+        messageBox.hidden = !message;
         messageBox.querySelector("p").textContent = message;
-        messageBox.hidden = false;
+    }
+
+    window.setTimeout(() => {
+        overlay.querySelector(".maintenance-notice-close")?.focus();
+    }, 0);
+}
+
+function closeMaintenanceModal(dismissed) {
+    const overlay = document.getElementById("maintenanceNoticeModal");
+    if (overlay) overlay.hidden = true;
+    document.body.classList.remove("maintenance-notice-open");
+
+    if (dismissed) maintenanceModalDismissed = true;
+
+    if (!cachedState?.maintenance_enabled) {
+        maintenanceModalDismissed = false;
+        maintenanceModalStateKey = "";
     }
 }
 
