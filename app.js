@@ -89,6 +89,7 @@ import "./confirm-modal.js";
 
 let initialized = false;
 let initializing = false;
+let japaneseInputObserver = null;
 
 
 /* ========================================
@@ -96,6 +97,8 @@ let initializing = false;
 ======================================== */
 
 async function initializeApp(options = {}) {
+
+    initializeJapaneseTextInputs();
 
     const showStartup =
         options.showStartup !== false;
@@ -283,6 +286,107 @@ async function initializeApp(options = {}) {
 
     }
 
+}
+
+
+/* ========================================
+   日本語文字入力
+======================================== */
+
+function initializeJapaneseTextInputs() {
+
+    applyJapaneseTextInputSettings(
+        document
+    );
+
+
+    if (japaneseInputObserver) {
+        return;
+    }
+
+
+    japaneseInputObserver =
+        new MutationObserver(
+            (mutations) => {
+
+                mutations.forEach(
+                    (mutation) => {
+
+                        mutation.addedNodes.forEach(
+                            (node) => {
+
+                                if (
+                                    node.nodeType ===
+                                    Node.ELEMENT_NODE
+                                ) {
+
+                                    applyJapaneseTextInputSettings(
+                                        node
+                                    );
+                                }
+                            }
+                        );
+                    }
+                );
+            }
+        );
+
+
+    japaneseInputObserver.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+}
+
+
+function applyJapaneseTextInputSettings(root) {
+
+    const selector = [
+        'input:not([type])',
+        'input[type="text"]',
+        'input[type="search"]',
+        "textarea"
+    ].join(",");
+
+
+    const elements = [];
+
+
+    if (root.matches?.(selector)) {
+        elements.push(root);
+    }
+
+
+    elements.push(
+        ...root.querySelectorAll?.(selector) || []
+    );
+
+
+    elements.forEach(
+        (element) => {
+
+            if (
+                element.dataset.inputLanguage ===
+                "latin"
+            ) {
+                return;
+            }
+
+
+            element.lang = "ja";
+            element.inputMode = "text";
+            element.autocapitalize = "none";
+            element.setAttribute(
+                "autocorrect",
+                "off"
+            );
+            element.spellcheck = false;
+            element.style.imeMode = "active";
+        }
+    );
 }
 
 
