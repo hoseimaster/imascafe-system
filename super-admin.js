@@ -205,6 +205,7 @@ function bindEvents() {
         if (target.id === "inspectBackupFile") await inspectBackup();
         if (target.id === "restoreSystemBackup") await restoreBackup();
         if (target.id === "runSystemDiagnostics") await runDiagnostics();
+        if (target.dataset.diagnosticStalledSessions) await openStalledSessionDetails();
         if (target.id === "exportDiagnostics") exportDiagnostics();
     });
 }
@@ -987,6 +988,9 @@ function renderDiagnostics(data) {
             <div><strong>${escapeHtml(group.label)}</strong><span>${statusLabel(group.status)}</span></div>
             <p>${escapeHtml(group.summary || "")}</p>
             ${(group.issues || []).map((issue) => `<small>${escapeHtml(issue)}</small>`).join("")}
+            ${isLoginDiagnosticsGroup(group) && getStalledSessionCount(group) > 0
+                ? '<div style="display:flex;justify-content:flex-end;margin-top:6px;"><button type="button" class="secondary-button" data-diagnostic-stalled-sessions="true" style="width:auto;min-width:0;min-height:0;padding:4px 8px;font-size:10px;line-height:1.2;">詳細</button></div>'
+                : ""}
         </article>
     `).join("") + `
         <article class="diagnostic-card is-${data.client?.online ? "ok" : "error"}">
@@ -1001,6 +1005,97 @@ function renderDiagnostics(data) {
         </div>
         ${renderDatabaseStorage(storage, storageGroup)}
     `;
+}
+
+function isLoginDiagnosticsGroup(group) {
+    const key = String(group?.key || "").toLowerCase();
+    const label = String(group?.label || "");
+    return key.includes("session") || key.includes("login") || label.includes("ログイン");
+}
+
+function getStalledSessionCount(group) {
+    const values = [
+        group?.details?.stalled,
+        group?.details?.stalled_count,
+        group?.details?.stalledCount,
+        group?.stalled,
+        group?.stalled_count,
+        group?.stalledCount
+    ];
+    for (const value of values) {
+        const count = Number(value);
+        if (Number.isFinite(count)) return count;
+    }
+    const text = [group?.summary || "", ...(Array.isArray(group?.issues) ? group.issues : [])].join(" ");
+    const match = text.match(/応答停止(?:端末)?[^0-9]*([0-9]+)/);
+    return match ? Number(match[1]) : 0;
+}
+
+async function openStalledSessionDetails() {
+    const threshold = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data, error } = await supabase
+        .from("login_presence")
+        .select("user_id,operator_name,role,terminal,logged_in_at,last_seen_at,is_online,forced_logout_at")
+        .eq("is_online", true)
+        .lt("last_seen_at", threshold)
+        .order("last_seen_at", { ascending: true });
+
+    if (error) {
+        showError("応答停止端末の詳細を取得できませんでした。", error);
+        return;
+    }
+
+    const rows = Array.isArray(data) ? data : [];
+    document.getElementById("stalledSessionDetailOverlay")?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "stalledSessionDetailOverlay";
+    overlay.className = "system-audit-detail-overlay";
+    overlay.innerHTML = `
+        <div class="system-audit-detail-modal" role="dialog" aria-modal="true" aria-labelledby="stalledSessionDetailTitle">
+            <div class="system-audit-detail-header">
+                <div>
+                    <span class="system-audit-detail-label">ログイン状態</span>
+                    <h3 id="stalledSessionDetailTitle">応答停止端末の詳細</h3>
+                </div>
+                <button type="button" class="system-audit-detail-close" data-close-stalled-session-detail aria-label="閉じる">×</button>
+            </div>
+            <div class="system-data-list">
+                ${rows.length ? rows.map((row) => `
+                    <article class="system-data-row">
+                        <div>
+                            <strong>${escapeHtml(row.operator_name || "不明")}</strong>
+                            <span class="system-session-meta">${roleBadge(row.role)}<span>${escapeHtml(row.terminal || "-")}</span></span>
+                            <small>ログイン ${formatDateTime(row.logged_in_at)}</small>
+                            <small>最終応答 ${formatDateTime(row.last_seen_at)}（${escapeHtml(formatElapsedTime(row.last_seen_at))}前）</small>
+                        </div>
+                        <span class="system-status-badge is-error">応答停止</span>
+                    </article>
+                `).join("") : '<div class="system-empty">現在、応答停止端末はありません。</div>'}
+            </div>
+            <div class="system-audit-detail-actions">
+                <button type="button" class="secondary-button" data-close-stalled-session-detail>閉じる</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay || event.target.closest("[data-close-stalled-session-detail]")) overlay.remove();
+    });
+}
+
+function formatElapsedTime(value) {
+    const time = new Date(value).getTime();
+    if (!Number.isFinite(time)) return "確認不能";
+    const seconds = Math.max(0, Math.floor((Date.now() - time) / 1000));
+    if (seconds < 60) return `${seconds}秒`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}分${seconds % 60}秒`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours < 24) return `${hours}時間${minutes}分`;
+    const days = Math.floor(hours / 24);
+    return `${days}日${hours % 24}時間`;
 }
 
 function renderDatabaseStorage(storage, group) {
