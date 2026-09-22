@@ -30,6 +30,9 @@ const HISTORY_OPERATION_OPTIONS = [
     ["expense_create", "支出登録"],
     ["expense_update", "支出変更"],
     ["expense_delete", "支出削除"],
+    ["income_create", "収入登録"],
+    ["income_update", "収入変更"],
+    ["income_delete", "収入削除"],
     ["accounting_adjustment", "会計調整"],
     ["reset", "リセット"]
 ];
@@ -558,6 +561,24 @@ function normalizeOperationType(
         expense_delete:
             "expense_delete",
 
+        income_created:
+            "income_create",
+
+        income_create:
+            "income_create",
+
+        income_updated:
+            "income_update",
+
+        income_update:
+            "income_update",
+
+        income_deleted:
+            "income_delete",
+
+        income_delete:
+            "income_delete",
+
         login:
             "login",
 
@@ -649,6 +670,15 @@ function normalizeOperationType(
 
         支出削除:
             "expense_delete",
+
+        収入登録:
+            "income_create",
+
+        収入変更:
+            "income_update",
+
+        収入削除:
+            "income_delete",
 
         会計調整:
             "accounting_adjustment",
@@ -1682,6 +1712,15 @@ function getHistoryDescription(
         expense_delete:
             "支出を削除しました",
 
+        income_create:
+            "収入を登録しました",
+
+        income_update:
+            "収入を変更しました",
+
+        income_delete:
+            "収入を削除しました",
+
         accounting_adjustment:
             "会計を調整しました",
 
@@ -1799,6 +1838,15 @@ function getOperationLabel(
 
         expense_delete:
             "支出削除",
+
+        income_create:
+            "収入登録",
+
+        income_update:
+            "収入変更",
+
+        income_delete:
+            "収入削除",
 
         accounting_adjustment:
             "会計調整",
