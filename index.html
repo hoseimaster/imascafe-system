@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="./pages.css">
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./expenses.css">
+    <link rel="stylesheet" href="./income.css">
     <link rel="stylesheet" href="./dashboard.css">
     <link rel="stylesheet" href="./output.css">
     <link rel="stylesheet" href="./login-status.css">
@@ -1307,6 +1308,35 @@
                     <button
                         type="button"
                         class="settings-item admin-only"
+                        data-settings="income"
+                        data-screen="incomeScreen"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <img
+                                src="./logo_16.png"
+                                class="settings-icon"
+                                alt=""
+                                aria-hidden="true"
+                            >
+
+                            <span>
+                                収入管理
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">
+                            ›
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item admin-only"
                         data-settings="history"
                         data-screen="historyScreen"
                     >
@@ -1589,6 +1619,129 @@
 
                     <div class="loading-message">
                         支出を読み込んでいます
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 収入管理
+            ======================================== -->
+
+            <section
+                id="incomeScreen"
+                class="app-screen settings-management-screen income-screen"
+            >
+
+                <div class="screen-header management-screen-header">
+
+                    <div class="screen-header-back">
+
+                        <button
+                            type="button"
+                            class="panel-back-button"
+                            data-screen="settingsScreen"
+                            aria-label="設定に戻る"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div>
+
+                            <h1>
+
+                                <img
+                                    src="./logo_16.png"
+                                    class="title-icon"
+                                    alt=""
+                                    aria-hidden="true"
+                                >
+
+                                <span>
+                                    収入管理
+                                </span>
+
+                            </h1>
+
+                            <p>
+                                収入の登録・変更・削除を管理します
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-screen-actions">
+
+                        <button
+                            type="button"
+                            id="incomeAddButton"
+                            class="primary-button admin-only"
+                        >
+
+                        
+                            <span>
+                                ＋ 収入を登録
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="income-filter">
+
+                    <div class="form-group">
+
+                        <label for="incomeDate">
+                            日付
+                        </label>
+
+                        <input
+                            type="date"
+                            id="incomeDate"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="incomeDateClear"
+                        class="secondary-button"
+                    >
+                        すべて
+                    </button>
+
+                </div>
+
+
+                <div class="income-summary">
+
+                    <span>
+                        収入合計
+                    </span>
+
+                    <strong id="incomeTotal">
+                        ¥0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    id="incomeList"
+                    class="income-list"
+                >
+
+                    <div class="loading-message">
+                        収入を読み込んでいます
                     </div>
 
                 </div>
@@ -2472,6 +2625,153 @@
                     <button
                         type="submit"
                         id="expenseSaveButton"
+                        class="primary-button"
+                    >
+                        保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         収入登録・編集モーダル
+    ======================================== -->
+
+    <div
+        id="incomeModalOverlay"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            id="incomeModal"
+            class="modal management-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="incomeFormTitle"
+        >
+
+            <button
+                type="button"
+                id="incomeModalCloseButton"
+                class="modal-close-button"
+                aria-label="閉じる"
+            >
+                ×
+            </button>
+
+
+            <h2
+                id="incomeFormTitle"
+                class="modal-title"
+            >
+                収入を登録
+            </h2>
+
+
+            <form id="incomeFormElement">
+
+                <input
+                    type="hidden"
+                    id="incomeId"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="incomeItem">
+                        収入項目
+                    </label>
+
+                    <input
+                        type="text"
+                        id="incomeItem"
+                        maxlength="100"
+                        placeholder="例：協賛金"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="incomeAmount">
+                        金額
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="incomeAmount"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                            required
+                        >
+
+                        <span>
+                            円
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="incomeDateInput">
+                        収入日
+                    </label>
+
+                    <input
+                        type="date"
+                        id="incomeDateInput"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="incomeMemo">
+                        メモ
+                    </label>
+
+                    <textarea
+                        id="incomeMemo"
+                        rows="3"
+                        maxlength="500"
+                        placeholder="必要に応じて入力してください"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="incomeCancelButton"
+                        class="secondary-button"
+                    >
+                        キャンセル
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="incomeSaveButton"
                         class="primary-button"
                     >
                         保存
