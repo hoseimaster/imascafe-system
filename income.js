@@ -11,8 +11,10 @@ import {
     canManageIncome
 } from "./auth.js";
 
+import { confirmIncomeDeletion as showIncomeDeletionConfirm } from "./confirm-modal.js";
+
 async function confirmIncomeDeletion() {
-    return window.confirm("この収入を削除しますか？");
+    return showIncomeDeletionConfirm();
 }
 
 
