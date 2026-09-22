@@ -60,6 +60,10 @@ import {
 } from "./expenses.js";
 
 import {
+    initializeIncome
+} from "./income.js";
+
+import {
     initializeSettings
 } from "./settings.js";
 
@@ -114,6 +118,9 @@ async function initializeApp(options = {}) {
             initializeAccessMonitor({
                 getRole: getUserRole,
                 onBlocked: async (state, role) => {
+                    if (role === "super_admin") {
+                        return;
+                    }
                     await logout();
                     showAccessDenied(state, role);
                 }
@@ -215,6 +222,11 @@ async function initializeApp(options = {}) {
         );
 
         await initializeModule(
+            "income",
+            initializeIncome
+        );
+
+        await initializeModule(
             "settings",
             initializeSettings
         );
@@ -252,6 +264,9 @@ async function initializeApp(options = {}) {
         initializeAccessMonitor({
             getRole: getUserRole,
             onBlocked: async (state, role) => {
+                if (role === "super_admin") {
+                    return;
+                }
                 await logout();
                 showAccessDenied(state, role);
             }
@@ -611,6 +626,9 @@ function getCurrentScreen() {
         expensesScreen:
             "expenses",
 
+        incomeScreen:
+            "income",
+
         outputScreen:
             "output"
 
@@ -709,6 +727,16 @@ async function refreshScreen(
             await refreshModule(
                 "./expenses.js",
                 "refreshExpenses"
+            );
+
+            break;
+
+
+        case "income":
+
+            await refreshModule(
+                "./income.js",
+                "refreshIncome"
             );
 
             break;
