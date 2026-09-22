@@ -225,7 +225,7 @@ function renderDashboardBase() {
             </div>
 
             <div class="dashboard-profit-formula">
-                累計売上 − 累計支出
+                累計売上 ＋ 累計収入 − 累計支出
             </div>
 
         </div>
@@ -394,20 +394,23 @@ export async function loadDashboard(scopeOverride = null) {
         const [
             targetData,
             cumulativeData,
-            expenseData
+            expenseData,
+            incomeData
         ] = await Promise.all([
             getTotalSalesData(targetDate),
             getTotalSalesData(),
-            getExpenseData()
+            getExpenseData(),
+            getIncomeData()
         ]);
 
 
         if (
-            expenseData.error
+            expenseData.error ||
+            incomeData.error
         ) {
 
             showDashboardError(
-                "支出情報を取得できませんでした。"
+                "収支情報を取得できませんでした。"
             );
 
 
@@ -456,7 +459,8 @@ export async function loadDashboard(scopeOverride = null) {
         ==================================== */
 
         const totalProfit =
-            cumulativeData.sales -
+            cumulativeData.sales +
+            incomeData.total -
             expenseData.total;
 
 
@@ -829,6 +833,84 @@ async function getExpenseData(
                     (
                         Number(
                             expense.amount
+                        ) || 0
+                    )
+                );
+
+            },
+            0
+        );
+
+
+    return {
+
+        total:
+            total,
+
+        error:
+            false
+
+    };
+
+}
+
+
+/* ========================================
+   収入取得
+======================================== */
+
+async function getIncomeData(
+    targetDate = null
+) {
+
+    let incomeQuery = supabase
+        .from("incomes")
+        .select(`
+            id,
+            amount
+        `);
+
+    if (targetDate) {
+        incomeQuery = incomeQuery.eq("income_date", targetDate);
+    }
+
+    const {
+        data,
+        error
+    } = await incomeQuery;
+
+
+    if (error) {
+
+        console.error(
+            "収入取得エラー:",
+            error
+        );
+
+
+        return {
+
+            total: 0,
+
+            error: true
+
+        };
+
+    }
+
+
+    const total =
+        (data || []).reduce(
+            (
+                sum,
+                income
+            ) => {
+
+                return (
+                    sum +
+                    (
+                        Number(
+                            income.amount
                         ) || 0
                     )
                 );
