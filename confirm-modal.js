@@ -152,6 +152,28 @@ export function confirmExpenseDeletion() {
     );
 }
 
+
+export function confirmIncomeDeletion() {
+    return showConfirmModal(
+        "選択した収入記録を削除します。\nこの操作は元に戻せません。",
+        { title: "収入を削除しますか？", confirmText: "収入を削除する", tone: "danger", operation: "income-delete" }
+    );
+}
+
+export function confirmForceLogout(operatorName = "この端末") {
+    return showConfirmModal(
+        `${operatorName} を強制ログアウトします。`,
+        { title: "強制ログアウトしますか？", confirmText: "強制ログアウト", tone: "danger", operation: "force-logout-terminal" }
+    );
+}
+
+export function showForceLogoutUnavailable() {
+    return showConfirmModal(
+        "最高管理者の端末は保護されているため、強制ログアウトの対象にできません。",
+        { title: "強制ログアウトできません", confirmText: "閉じる", cancelText: "閉じる", tone: "warning", operation: "force-logout-unavailable" }
+    );
+}
+
 export function confirmLogout() {
     return showConfirmModal(
         "現在のアカウントからログアウトします。",
