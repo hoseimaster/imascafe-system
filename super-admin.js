@@ -4,7 +4,9 @@ import {
     getTerminalId,
     isSuperAdmin
 } from "./auth.js";
-import { showConfirmModal } from "./confirm-modal.js";
+import { showConfirmModal,
+    showForceLogoutUnavailable
+} from "./confirm-modal.js";
 import { getSystemAccessState } from "./system-access.js";
 
 const BACKUP_FORMAT = "hoseimaster-cafe-backup";
@@ -187,6 +189,7 @@ function bindEvents() {
         if (target.id === "toggleMaintenance") await toggleMaintenance();
         if (target.id === "refreshSuperSessions") await loadSessions();
         if (target.dataset.forceRole) await forceLogoutRole(target.dataset.forceRole);
+        if (target.dataset.forceUnavailable) await showForceLogoutUnavailable();
         if (target.dataset.forceUser) await forceLogoutTerminal(target);
         if (target.id === "refreshManagedAccounts") await loadManagedAccounts();
         if (target.dataset.passwordAccountId) await changeAccountPassword(target);
@@ -468,7 +471,7 @@ async function loadSessions() {
     container.innerHTML = data.map((row) => `
         <article class="system-data-row">
             <div><strong>${escapeHtml(row.operator_name)}</strong><span class="system-session-meta">${roleBadge(row.role)}<span>${escapeHtml(row.terminal)}</span></span><small>最終確認 ${formatDateTime(row.last_seen_at)}</small></div>
-            ${row.role === "super_admin" ? '<span class="system-protected-label">保護対象</span>' : `<button type="button" class="danger-outline-button" data-force-user="${escapeHtml(row.user_id)}" data-force-terminal="${escapeHtml(row.terminal)}">強制ログアウト</button>`}
+            ${row.role === "super_admin" ? '<button type="button" class="system-protected-label" data-force-unavailable="true">強制ログアウト不可</button>' : `<button type="button" class="danger-outline-button" data-force-user="${escapeHtml(row.user_id)}" data-force-terminal="${escapeHtml(row.terminal)}">強制ログアウト</button>`}
         </article>
     `).join("");
 }
