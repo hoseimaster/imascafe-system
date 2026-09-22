@@ -371,19 +371,22 @@
 ======================================== */
 
 #productModal .input-with-unit,
-#expenseModal .input-with-unit {
+#expenseModal .input-with-unit,
+#incomeModal .input-with-unit {
     position: relative !important;
     width: 100% !important;
 }
 
 #productModal .input-with-unit input,
-#expenseModal .input-with-unit input {
+#expenseModal .input-with-unit input,
+#incomeModal .input-with-unit input {
     width: 100% !important;
     padding-right: 42px !important;
 }
 
 #productModal .input-with-unit > span,
-#expenseModal .input-with-unit > span {
+#expenseModal .input-with-unit > span,
+#incomeModal .input-with-unit > span {
     position: absolute !important;
     top: 50% !important;
     right: 13px !important;
@@ -402,7 +405,8 @@
 
 #productModal .modal-actions,
 #eventDayModal .modal-actions,
-#expenseModal .modal-actions {
+#expenseModal .modal-actions,
+#incomeModal .modal-actions {
     margin-top: 18px !important;
     padding-top: 4px !important;
 }
@@ -575,7 +579,8 @@
 /* 商品・日付・支出モーダル：項目間の余白 */
 #productModal .form-group + .form-group,
 #eventDayModal .form-group + .form-group,
-#expenseModal .form-group + .form-group {
+#expenseModal .form-group + .form-group,
+#incomeModal .form-group + .form-group {
     margin-top: 16px !important;
 }
 
