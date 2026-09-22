@@ -368,6 +368,12 @@ function setupPasswordVisibilityToggle() {
         }
     });
 
+    wrapper.querySelectorAll(".login-password-eye-icon").forEach((icon, index) => {
+        if (index > 0) {
+            icon.remove();
+        }
+    });
+
     let toggleButton = wrapper.querySelector(".login-password-toggle");
 
     if (!toggleButton) {
@@ -1047,6 +1053,10 @@ export function canManageEventDays() {
 
 export function canManageExpenses() {
 
+    return isAdmin();
+}
+
+export function canManageIncome() {
     return isAdmin();
 }
 
