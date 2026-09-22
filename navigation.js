@@ -46,6 +46,9 @@ const SCREEN_TITLES = {
     expensesScreen:
         "支出管理",
 
+    incomeScreen:
+        "収入管理",
+
     outputScreen:
         "データ出力",
 
@@ -111,6 +114,11 @@ const SCREEN_PERMISSIONS = {
     ],
 
     expensesScreen: [
+        "super_admin",
+        "admin"
+    ],
+
+    incomeScreen: [
         "super_admin",
         "admin"
     ],
@@ -817,6 +825,14 @@ export function openExpenses() {
 
     return navigateTo(
         "expensesScreen"
+    );
+}
+
+
+export function openIncome() {
+
+    return navigateTo(
+        "incomeScreen"
     );
 }
 
