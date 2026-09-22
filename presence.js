@@ -9,6 +9,8 @@ import {
     logout
 } from "./auth.js";
 
+import { confirmForceLogout } from "./confirm-modal.js";
+
 
 const HEARTBEAT_INTERVAL = 60 * 1000;
 const FORCE_CHECK_INTERVAL = 5 * 1000;
@@ -243,6 +245,13 @@ async function checkForcedLogout() {
         forcedLogoutRunning ||
         !cachedUserId ||
         !cachedTerminal
+    ) {
+        return;
+    }
+
+    if (
+        getCurrentProfile()?.role ===
+        "super_admin"
     ) {
         return;
     }
@@ -711,8 +720,8 @@ async function handlePresenceClick(
     }
 
     const confirmed =
-        window.confirm(
-            `${operatorName} を強制ログアウトしますか？`
+        await confirmForceLogout(
+            operatorName
         );
 
     if (!confirmed) {
