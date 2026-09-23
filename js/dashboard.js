@@ -75,7 +75,7 @@ function renderDashboardBase() {
             <div class="dashboard-header-main">
 
                 <div class="dashboard-title">
-                    <img src="./logo_1.png" class="title-icon" alt="" aria-hidden="true">
+                    <img src="./asset/logo_1.png" class="title-icon" alt="" aria-hidden="true">
                     <span>ホーム（総合管理画面）</span>
                 </div>
 
