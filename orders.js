@@ -30,6 +30,7 @@ let cancelLoading = false;
 
 let orderSubmitting = false;
 let orderTimeTimer = null;
+let orderTimeManual = false;
 
 
 /* ========================================
@@ -125,10 +126,19 @@ function setupOrderForm() {
 
         orderTimeTimer = setInterval(
             () => {
-                timeInput.value =
-                    getCurrentTimeJST();
+                if (!orderTimeManual) {
+                    timeInput.value =
+                        getCurrentTimeJST();
+                }
             },
             1000
+        );
+
+        timeInput.addEventListener(
+            "input",
+            () => {
+                orderTimeManual = true;
+            }
         );
 
     }
@@ -2628,6 +2638,9 @@ async function submitOrder() {
         dateInput.value =
             getTodayJST();
 
+
+        orderTimeManual =
+            false;
 
         timeInput.value =
             getCurrentTimeJST();
