@@ -831,7 +831,7 @@ async function createBackup() {
     );
     if (!confirmed) return;
 
-    const { data, error } = await supabase.rpc("create_system_backup", {
+    const { data, error } = await supabase.rpc("create_system_backup_v2", {
         p_operator_name: getOperatorName(),
         p_terminal: getTerminalId()
     });
@@ -912,7 +912,7 @@ function renderRestorePreview(payload, filename) {
         <strong>復旧可能</strong>
         <span>${escapeHtml(filename)}</span>
         <span>作成日時：${formatDateTime(payload.exportedAt)}</span>
-        <span>商品 ${Number(counts.products || 0)}件／注文 ${Number(counts.orders || 0)}件／支出 ${Number(counts.expenses || 0)}件／操作ログ ${Number(counts.operationHistory || 0)}件</span>
+        <span>商品 ${Number(counts.products || 0)}件／注文 ${Number(counts.orders || 0)}件／支出 ${Number(counts.expenses || 0)}件／収入 ${payload.data?.incomes ? Number(counts.incomes || 0) + "件" : "対象外"}／座席利用履歴 ${payload.data?.tableStayHistory ? Number(counts.tableStayHistory || 0) + "件" : "対象外"}／操作ログ ${Number(counts.operationHistory || 0)}件</span>
     `;
 }
 
@@ -923,12 +923,12 @@ async function restoreBackup() {
     if (valueOf("restoreConfirmation") !== "データを復旧する") return showToast("確認文字が一致しません。", "error");
 
     const confirmed = await showConfirmModal(
-        "現在の注文・商品・在庫・支出・操作ログを、選択したバックアップ時点へ全置換します。この操作は取り消せません。",
+        "現在の注文・商品・在庫・支出・操作ログを、選択したバックアップ時点へ全置換します。収入と座席利用履歴も、バックアップファイルに含まれる場合は全置換します。この操作は取り消せません。",
         { title: "システムデータを復旧しますか？", confirmText: "全置換復旧を実行", tone: "danger", operation: "backup-restore" }
     );
     if (!confirmed) return;
 
-    const { error } = await supabase.rpc("restore_system_backup", {
+    const { error } = await supabase.rpc("restore_system_backup_v2", {
         p_backup: decryptedBackup,
         p_file_hash: backupFileHash,
         p_reason: reason,
