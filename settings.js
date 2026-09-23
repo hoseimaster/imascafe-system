@@ -116,6 +116,25 @@ function setupSettingsEvents() {
     );
 
 
+    const operationGuideButton =
+        document.getElementById(
+            "settingsOperationGuideButton"
+        );
+
+    if (operationGuideButton) {
+        operationGuideButton.addEventListener(
+            "click",
+            () => {
+                window.open(
+                    "./manual/operation-guide.pdf",
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+            }
+        );
+    }
+
+
     document.addEventListener(
         "app:screenchange",
         async (event) => {
