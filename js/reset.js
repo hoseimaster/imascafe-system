@@ -962,7 +962,7 @@ function openResetActionModal(resetType) {
             case "all":
 
                 description.textContent =
-                    "全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除します。商品登録と操作ログは残します。";
+                    "全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除し、現在の在庫数をすべて0にします。商品登録と操作ログは残します。";
 
                 break;
 
@@ -1135,7 +1135,7 @@ async function handleResetTypeSelect(resetType) {
         if (resetType === "all") {
 
             warning =
-                `全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除します。\n\n商品登録と操作ログは残します。\n\n${warning}`;
+                `全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除し、現在の在庫数をすべて0にします。\n\n商品登録と操作ログは残します。\n\n${warning}`;
 
         }
 
