@@ -296,18 +296,18 @@
                 <button
                     type="button"
                     class="nav-button"
-                    data-screen="historyScreen"
+                    data-screen="stayTimeScreen"
                 >
 
                     <img
-                        src="./logo_4.png"
+                        src="./logo_31.png"
                         class="navigation-icon"
                         alt=""
                         aria-hidden="true"
                     >
 
                     <span>
-                        履歴
+                        座席<span id="stayTimeAlertBadge" class="stay-time-alert-badge" hidden>!</span>
                     </span>
 
                 </button>
@@ -333,6 +333,8 @@
                 </button>
 
             </nav>
+
+            <div id="sideNavigationClock" class="side-navigation-clock" aria-label="現在時刻"></div>
 
         </aside>
 
@@ -751,16 +753,6 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        id="stayTimeOpenButton"
-                        class="secondary-button stay-time-open-button"
-                        data-screen="stayTimeScreen"
-                    >
-                        滞在時間
-                        <span id="stayTimeAlertBadge" class="stay-time-alert-badge" hidden>!</span>
-                    </button>
-
                 </div>
 
 
@@ -859,7 +851,7 @@
                                     min="1"
                                     step="1"
                                     value="1"
-                                    inputmode="numeric"
+                                    inputmode="text"
                                 >
 
                             </div>
@@ -1189,7 +1181,7 @@
 
 
             <!-- ========================================
-                 座席・滞在時間管理
+                 座席
             ======================================== -->
 
             <section
@@ -1200,28 +1192,27 @@
                     <div class="stay-time-unsupported-card">
                         <h1>この機能は現在の端末では利用できません</h1>
                         <p>座席・滞在時間管理は、タブレットまたはパソコンに対応しています。<br>対応している端末で開いてください。</p>
-                        <button type="button" class="secondary-button" data-screen="ordersScreen">注文画面に戻る</button>
                     </div>
                 </div>
 
                 <div id="stayTimeDesktopContent">
                     <div class="screen-header stay-time-header">
                         <div>
-                            <h1><span>座席・滞在時間管理</span></h1>
+                            <h1><img src="./logo_31.png" class="title-icon" alt="" aria-hidden="true"><span>座席</span></h1>
                             <p>各テーブルの利用状況と滞在時間を管理します</p>
+                            <p class="stay-time-mobile-layout-note">画面サイズの関係上、実際の座席配置とは異なる配置で表示しています。</p>
                         </div>
                         <div class="stay-time-header-actions">
                             <button type="button" id="stayTimeSettingsButton" class="secondary-button">時間設定</button>
                             <button type="button" id="stayTimeResetButton" class="secondary-button">全席リセット</button>
-                            <button type="button" class="secondary-button" data-screen="ordersScreen">注文画面に戻る</button>
-                        </div>
+                            </div>
                     </div>
 
                     <div id="stayTimeSummary" class="stay-time-summary"></div>
                     <div id="stayTimeFloor" class="stay-time-floor"></div>
-                    <div class="stay-time-exit"><span>出口</span></div>
+                    <div class="stay-time-exit"><span>出入り口</span></div>
 
-                    <section class="stay-time-record-section">
+                    <section id="stayTimeRecordSection" class="stay-time-record-section" hidden>
                         <div class="section-title"><span>利用記録・統計</span></div>
                         <div class="stay-time-history-filter">
                             <div class="form-group">
@@ -1555,6 +1546,25 @@
                         <span class="settings-arrow">
                             ›
                         </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="settings-item settings-operation-guide"
+                        id="settingsOperationGuideButton"
+                    >
+
+                        <span class="settings-item-content">
+
+                            <span>
+                                操作説明
+                            </span>
+
+                        </span>
+
+                        <span class="settings-arrow">›</span>
 
                     </button>
 
@@ -2292,18 +2302,18 @@
             <button
                 type="button"
                 class="bottom-nav-button"
-                data-screen="historyScreen"
+                data-screen="stayTimeScreen"
             >
 
                 <img
-                    src="./logo_4.png"
+                    src="./logo_31.png"
                     class="bottom-navigation-icon"
                     alt=""
                     aria-hidden="true"
                 >
 
                 <span>
-                    履歴
+                    座席
                 </span>
 
             </button>
@@ -3016,6 +3026,9 @@
             <p class="modal-description">
                 リセットを実行するには管理者用コードを入力してください。
             </p>
+
+
+            <div id="resetIssuedCodes" class="reset-issued-codes" hidden></div>
 
 
             <form id="resetCodeForm">
