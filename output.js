@@ -1182,6 +1182,28 @@ async function getPDFData() {
             ? Math.round(sales / visitorCount)
             : 0;
 
+    let seatStayHistory = [];
+
+    if (scope.mode === "date" && scope.date) {
+        const start = `${scope.date}T00:00:00+09:00`;
+        const nextDate = new Date(start);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const {
+            data: stayRows,
+            error: stayError
+        } = await supabase.rpc(
+            "get_output_table_stay_data",
+            { p_target_date: scope.date }
+        );
+
+        if (stayError) {
+            throw stayError;
+        }
+
+        seatStayHistory = stayRows || [];
+    }
+
     return {
         date: scope.mode === "date"
             ? scope.date
@@ -1195,7 +1217,8 @@ async function getPDFData() {
         visitorCount,
         averageOrderAmount,
         averageCustomerAmount,
-        productSales
+        productSales,
+        seatStayHistory
     };
 }
 
@@ -1230,6 +1253,21 @@ function createPDFDocument(
                     </td>
                 </tr>
             `;
+
+    const seatStayRows =
+        data.isDateSpecified
+            ? ((data.seatStayHistory || []).length
+                ? data.seatStayHistory.map((row, index) => `
+                    <tr>
+                        <td class="number-cell">${index + 1}</td>
+                        <td>テーブル${formatNumber(row.table_number)} ${row.seat_part === "full" ? "全面" : String(row.seat_part || "").toUpperCase()}</td>
+                        <td class="number-cell">${formatNumber(row.customer_count)} 人</td>
+                        <td class="number-cell">${escapeHTML(formatPDFTime(row.started_at))}〜${escapeHTML(formatPDFTime(row.ended_at))}</td>
+                        <td class="number-cell">${formatNumber(row.duration_minutes)} 分</td>
+                    </tr>
+                `).join("")
+                : `<tr><td colspan="5" class="empty-cell">対象となる座席利用データはありません。</td></tr>`)
+            : "";
 
     return `<!DOCTYPE html>
 
@@ -1566,6 +1604,28 @@ body {
     </section>
 
 
+    ${data.isDateSpecified ? `
+    <section class="section">
+        <h2 class="section-title">
+            3. 座席利用データ
+        </h2>
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>座席</th>
+                    <th class="number-cell">人数</th>
+                    <th class="number-cell">利用時刻</th>
+                    <th class="number-cell">滞在時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${seatStayRows}
+            </tbody>
+        </table>
+    </section>
+    ` : ""}
+
     <footer class="document-footer">
         法マス喫茶 総合管理システム
     </footer>
@@ -1576,6 +1636,20 @@ body {
 
 </html>`;
 
+}
+
+
+function formatPDFTime(value) {
+    if (!value) return "-";
+    return new Intl.DateTimeFormat(
+        "ja-JP",
+        {
+            timeZone: APP_CONFIG.TIME_ZONE,
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+        }
+    ).format(new Date(value));
 }
 
 
