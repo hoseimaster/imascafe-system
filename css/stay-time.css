@@ -589,14 +589,28 @@
 @media(max-width:767px) {
     .stay-time-mobile-layout-note {
         display: block;
-        margin-top: 8px !important;
-        padding: 8px 10px;
+        max-width: 980px;
+        margin: 0 auto 8px !important;
+        padding: 0;
         color: var(--text-secondary);
-        background: var(--surface-soft);
-        border: 1px solid var(--border-light);
-        border-radius: var(--radius-small);
+        background: transparent;
+        border: 0;
+        border-radius: 0;
         font-size: 11px !important;
         line-height: 1.6;
+    }
+
+    #stayTimeScreen #stayTimeDesktopContent > .stay-time-header-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        width: 100%;
+        margin: 0 0 18px;
+    }
+
+    #stayTimeScreen #stayTimeDesktopContent > .stay-time-header-actions button {
+        width: auto;
     }
 }
 
