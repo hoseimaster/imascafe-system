@@ -683,14 +683,14 @@ function getCategoryIcon(
     category
 ) {
     if (category === "drink") {
-        return "./logo_13.png";
+        return "./asset/logo_13.png";
     }
 
     if (category === "dessert") {
-        return "./logo_14.png";
+        return "./asset/logo_14.png";
     }
 
-    return "./logo_15.png";
+    return "./asset/logo_15.png";
 }
 
 
