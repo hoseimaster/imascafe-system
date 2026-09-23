@@ -454,7 +454,7 @@ function setModalVisible(
    リセットコード入力
 ======================================== */
 
-function openResetCodeModal() {
+async function openResetCodeModal() {
 
     if (!isAdmin()) {
 
@@ -474,6 +474,46 @@ function openResetCodeModal() {
     closeResetActionModal();
 
     clearResetState();
+
+
+    const issuedCodes =
+        document.getElementById(
+            "resetIssuedCodes"
+        );
+
+    if (issuedCodes) {
+        issuedCodes.hidden = false;
+        issuedCodes.innerHTML = `<div class="loading-message">一時リセットコードを発行しています</div>`;
+    }
+
+    try {
+        const { data, error: issueError } =
+            await supabase.rpc(
+                "issue_reset_codes"
+            );
+
+        if (issueError) throw issueError;
+
+        if (issuedCodes) {
+            const rows = [
+                ["日付リセット", data?.date_code],
+                ["全データリセット", data?.all_code],
+                ["完全初期化", data?.full_code]
+            ].filter(([, code]) => code);
+
+            issuedCodes.innerHTML = rows.map(([label, code]) => `
+                <div class="reset-issued-code">
+                    <span>${label}</span>
+                    <strong>${escapeHtml(code)}</strong>
+                </div>
+            `).join("");
+        }
+    } catch (issueError) {
+        console.error("リセットコード発行エラー:", issueError);
+        if (issuedCodes) {
+            issuedCodes.innerHTML = `<div class="form-error is-visible">${escapeHtml(getErrorMessage(issueError))}</div>`;
+        }
+    }
 
 
     const modal =
