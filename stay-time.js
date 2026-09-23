@@ -303,7 +303,24 @@ function renderHistory(rows) {
     const avg = groups ? Math.round(rows.reduce((s,r) => s + Number(r.duration_minutes || 0), 0) / groups) : 0;
     const max = groups ? Math.max(...rows.map(r => Number(r.duration_minutes || 0))) : 0;
     stats.innerHTML = `<div><span>利用組数</span><strong>${groups}組</strong></div><div><span>利用人数</span><strong>${people}名</strong></div><div><span>平均滞在時間</span><strong>${avg}分</strong></div><div><span>最長滞在時間</span><strong>${max}分</strong></div>${[1,2,3,4].map(n => { const r=rows.filter(x=>x.table_number===n); const a=r.length?Math.round(r.reduce((s,x)=>s+Number(x.duration_minutes||0),0)/r.length):0; return `<div><span>テーブル${n}平均</span><strong>${a}分</strong></div>`; }).join("")}`;
-    list.innerHTML = rows.length ? rows.map(r => `<article class="stay-history-item"><div class="stay-history-main"><strong>テーブル${r.table_number} ${partLabel(r.seat_part)}</strong><span>${r.customer_count}名</span></div><div class="stay-history-time"><span>${formatTime(r.started_at)}〜${formatTime(r.ended_at)}</span><small>利用時間</small></div><b>${r.duration_minutes}分</b></article>`).join("") : '<div class="empty-state">この日の利用記録はありません</div>';
+    if (!rows.length) {
+        list.innerHTML = '<div class="empty-state">この日の利用記録はありません</div>';
+        return;
+    }
+
+    const visibleRows = historyExpanded ? rows : rows.slice(0, 3);
+    list.innerHTML = visibleRows.map(r => `<article class="stay-history-item"><div class="stay-history-main"><strong>テーブル${r.table_number} ${partLabel(r.seat_part)}</strong><span>${r.customer_count}名</span></div><div class="stay-history-time"><span>${formatTime(r.started_at)}〜${formatTime(r.ended_at)}</span><small>利用時間</small></div><b>${r.duration_minutes}分</b></article>`).join("");
+
+    if (rows.length > 3) {
+        const more = document.createElement("div");
+        more.className = "stay-history-more";
+        more.innerHTML = `<button type="button" class="secondary-button">${historyExpanded ? "閉じる" : "さらに見る"}</button>`;
+        more.querySelector("button").addEventListener("click", () => {
+            historyExpanded = !historyExpanded;
+            renderHistory(rows);
+        });
+        list.appendChild(more);
+    }
 }
 
 async function refreshAlertBadge() {
@@ -343,6 +360,7 @@ function renderAdminActions() {
     if (resetButton) resetButton.hidden = !admin;
 }
 
+let historyExpanded = false;
 let formResolver = null;
 function showFormModal({ title, body, confirmText, danger = false, onExtra, beforeConfirm }) {
     closeFormModal(false);
