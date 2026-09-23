@@ -49,6 +49,9 @@ const SCREEN_TITLES = {
     incomeScreen:
         "収入管理",
 
+    stayTimeScreen:
+        "座席・滞在時間管理",
+
     outputScreen:
         "データ出力",
 
@@ -121,6 +124,12 @@ const SCREEN_PERMISSIONS = {
     incomeScreen: [
         "super_admin",
         "admin"
+    ],
+
+    stayTimeScreen: [
+        "super_admin",
+        "admin",
+        "staff"
     ],
 
     outputScreen: [
@@ -833,6 +842,14 @@ export function openIncome() {
 
     return navigateTo(
         "incomeScreen"
+    );
+}
+
+
+export function openStayTime() {
+
+    return navigateTo(
+        "stayTimeScreen"
     );
 }
 
