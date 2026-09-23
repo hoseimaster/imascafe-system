@@ -47,7 +47,7 @@ function injectSystemManagementNavigation() {
     button.dataset.role = "super_admin";
     button.innerHTML = `
         <span class="settings-item-content">
-            <img src="./logo_30.png" class="settings-icon" alt="" aria-hidden="true">
+            <img src="./asset/logo_30.png" class="settings-icon" alt="" aria-hidden="true">
             <span>
                 <strong>システム管理</strong>
                 <small>最高管理者専用のアクセス制御・復旧・監査</small>
@@ -75,7 +75,7 @@ function injectSystemManagementScreen() {
             <div class="screen-header-back">
                 <button type="button" class="panel-back-button" data-screen="settingsScreen" aria-label="設定に戻る">‹</button>
                 <div>
-                    <h1><img src="./logo_30.png" class="title-icon" alt="" aria-hidden="true"><span>システム管理</span></h1>
+                    <h1><img src="./asset/logo_30.png" class="title-icon" alt="" aria-hidden="true"><span>システム管理</span></h1>
                     <p>最高管理者専用のアクセス制御・復旧・監査</p>
                 </div>
             </div>
@@ -84,12 +84,12 @@ function injectSystemManagementScreen() {
 
         <div class="system-admin-grid">
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><h2 class="system-admin-title"><img src="./logo_19.png" alt="" aria-hidden="true">システム状態</h2><span id="systemOverallBadge" class="system-status-badge is-unknown">確認中</span></div>
+                <div class="system-admin-card-header"><h2 class="system-admin-title"><img src="./asset/logo_19.png" alt="" aria-hidden="true">システム状態</h2><span id="systemOverallBadge" class="system-status-badge is-unknown">確認中</span></div>
                 <div id="systemStateSummary" class="system-summary-grid"></div>
             </section>
 
             <section class="system-admin-card">
-                <h2 class="system-admin-title"><img src="./logo_20.png" alt="" aria-hidden="true">アクセス制御</h2>
+                <h2 class="system-admin-title"><img src="./asset/logo_20.png" alt="" aria-hidden="true">アクセス制御</h2>
                 <p>権限ごとにログインを即時停止・再開できます。最高管理者は対象外です。</p>
                 <div class="system-access-control-list">
                     <div class="system-access-control-row"><div><span class="system-role-badge is-admin">管理者</span><span id="adminAccessStatus" class="system-status-badge is-unknown">確認中</span></div><button type="button" class="warning-button" data-access-role="admin">確認中</button></div>
@@ -99,7 +99,7 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card">
-                <h2 class="system-admin-title"><img src="./logo_21.png" alt="" aria-hidden="true">メンテナンス</h2>
+                <h2 class="system-admin-title"><img src="./asset/logo_21.png" alt="" aria-hidden="true">メンテナンス</h2>
                 <div class="system-maintenance-state"><span>現在の状態</span><strong id="maintenanceStatusText">確認中</strong></div>
                 <label class="system-admin-field"><span>終了予定</span><input type="datetime-local" id="maintenanceEndAt"></label>
                 <label class="system-admin-field"><span>案内メッセージ</span><textarea id="maintenanceMessage" rows="3" maxlength="300"></textarea></label>
@@ -107,7 +107,7 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_22.png" alt="" aria-hidden="true">ログイン中端末</h2><p>権限単位または端末単位でログアウトできます。</p></div><button type="button" id="refreshSuperSessions" class="secondary-button">更新</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./asset/logo_22.png" alt="" aria-hidden="true">ログイン中端末</h2><p>権限単位または端末単位でログアウトできます。</p></div><button type="button" id="refreshSuperSessions" class="secondary-button">更新</button></div>
                 <div class="system-role-actions">
                     <button type="button" data-force-role="admin" class="warning-button">管理者を一括ログアウト</button>
                     <button type="button" data-force-role="staff" class="warning-button">スタッフを一括ログアウト</button>
@@ -117,12 +117,12 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_23.png" alt="" aria-hidden="true">アカウント管理</h2><p>各アカウントの有効状態とパスワードを管理します。</p></div><button type="button" id="refreshManagedAccounts" class="secondary-button">更新</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./asset/logo_23.png" alt="" aria-hidden="true">アカウント管理</h2><p>各アカウントの有効状態とパスワードを管理します。</p></div><button type="button" id="refreshManagedAccounts" class="secondary-button">更新</button></div>
                 <div id="managedAccountList" class="system-data-list"></div>
             </section>
 
             <section class="system-admin-card">
-                <h2 class="system-admin-title"><img src="./logo_24.png" alt="" aria-hidden="true">在庫の緊急補充</h2>
+                <h2 class="system-admin-title"><img src="./asset/logo_24.png" alt="" aria-hidden="true">在庫の緊急補充</h2>
                 <p>通常の入庫・修正では対応できない場合のみ使用してください。</p>
                 <label class="system-admin-field"><span>商品</span><select id="emergencyInventoryProduct"></select></label>
                 <label class="system-admin-field"><span>補正後の在庫数</span><input type="number" id="emergencyInventoryQuantity" min="0" step="1" inputmode="numeric"></label>
@@ -131,17 +131,17 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_25.png" alt="" aria-hidden="true">注文履歴の復元</h2><p>在庫が足りる注文だけ復元できます。</p></div><button type="button" id="refreshCancelledOrders" class="secondary-button">更新</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./asset/logo_25.png" alt="" aria-hidden="true">注文履歴の復元</h2><p>在庫が足りる注文だけ復元できます。</p></div><button type="button" id="refreshCancelledOrders" class="secondary-button">更新</button></div>
                 <div id="cancelledOrderList" class="system-data-list"></div>
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_26.png" alt="" aria-hidden="true">操作ログ</h2><p>通常の操作履歴に表示しないシステム管理操作のみ表示します。</p></div><button type="button" id="refreshAuditLogs" class="secondary-button">更新</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./asset/logo_26.png" alt="" aria-hidden="true">操作ログ</h2><p>通常の操作履歴に表示しないシステム管理操作のみ表示します。</p></div><button type="button" id="refreshAuditLogs" class="secondary-button">更新</button></div>
                 <div id="superAuditList" class="system-data-list system-audit-list"></div>
             </section>
 
             <section class="system-admin-card">
-                <h2 class="system-admin-title"><img src="./logo_27.png" alt="" aria-hidden="true">バックアップ</h2>
+                <h2 class="system-admin-title"><img src="./asset/logo_27.png" alt="" aria-hidden="true">バックアップ</h2>
                 <p>バックアップ本体はDBへ保存されません。</p>
                 <label class="system-admin-field"><span>バックアップパスワード</span><input type="password" id="backupPassword" autocomplete="new-password" minlength="8"></label>
                 <button type="button" id="createSystemBackup" class="primary-button">バックアップファイルを作成</button>
@@ -153,7 +153,7 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card">
-                <h2 class="system-admin-title"><img src="./logo_28.png" alt="" aria-hidden="true">復旧</h2>
+                <h2 class="system-admin-title"><img src="./asset/logo_28.png" alt="" aria-hidden="true">復旧</h2>
                 <label class="system-admin-field system-file-field"><span>バックアップファイル</span><input type="file" id="restoreBackupFile" accept=".hmcbackup,application/json"></label>
                 <label class="system-admin-field"><span>バックアップパスワード</span><input type="password" id="restorePassword" autocomplete="current-password"></label>
                 <button type="button" id="inspectBackupFile" class="secondary-button">ファイルを確認</button>
@@ -164,7 +164,7 @@ function injectSystemManagementScreen() {
             </section>
 
             <section class="system-admin-card system-admin-card-wide">
-                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./logo_29.png" alt="" aria-hidden="true">システム診断</h2><p>DB・権限・注文・在庫・同期状態を確認します。</p></div><button type="button" id="runSystemDiagnostics" class="primary-button">診断を実行</button></div>
+                <div class="system-admin-card-header"><div><h2 class="system-admin-title"><img src="./asset/logo_29.png" alt="" aria-hidden="true">システム診断</h2><p>DB・権限・注文・在庫・同期状態を確認します。</p></div><button type="button" id="runSystemDiagnostics" class="primary-button">診断を実行</button></div>
                 <div id="systemDiagnostics" class="diagnostics-results"></div>
                 <button type="button" id="exportDiagnostics" class="secondary-button" disabled>診断結果をファイル出力</button>
             </section>
