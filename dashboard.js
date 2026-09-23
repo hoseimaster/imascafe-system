@@ -75,7 +75,8 @@ function renderDashboardBase() {
             <div class="dashboard-header-main">
 
                 <div class="dashboard-title">
-                    ホーム（総合管理画面）
+                    <img src="./logo_1.png" class="title-icon" alt="" aria-hidden="true">
+                    <span>ホーム（総合管理画面）</span>
                 </div>
 
                 <div
@@ -863,21 +864,16 @@ async function getIncomeData(
     targetDate = null
 ) {
 
-    let incomeQuery = supabase
-        .from("incomes")
-        .select(`
-            id,
-            amount
-        `);
-
-    if (targetDate) {
-        incomeQuery = incomeQuery.eq("income_date", targetDate);
-    }
-
     const {
         data,
         error
-    } = await incomeQuery;
+    } = await supabase.rpc(
+        "get_dashboard_income_total",
+        {
+            p_target_date:
+                targetDate
+        }
+    );
 
 
     if (error) {
@@ -899,31 +895,10 @@ async function getIncomeData(
     }
 
 
-    const total =
-        (data || []).reduce(
-            (
-                sum,
-                income
-            ) => {
-
-                return (
-                    sum +
-                    (
-                        Number(
-                            income.amount
-                        ) || 0
-                    )
-                );
-
-            },
-            0
-        );
-
-
     return {
 
         total:
-            total,
+            Number(data) || 0,
 
         error:
             false
