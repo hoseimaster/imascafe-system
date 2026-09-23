@@ -955,21 +955,21 @@ function openResetActionModal(resetType) {
             case "date":
 
                 description.textContent =
-                    "指定した開催日の注文データのみを削除します。";
+                    "対象の日付の注文履歴・座席利用履歴を削除します。";
 
                 break;
 
             case "all":
 
                 description.textContent =
-                    "すべての注文データを削除します。商品・在庫・開催日・操作履歴は残ります。";
+                    "全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除します。商品登録と操作ログは残します。";
 
                 break;
 
             case "full":
 
                 description.textContent =
-                    "注文・商品・在庫・開催日・操作履歴を含むシステム内のデータを初期化します。";
+                    "業務データをすべて削除します。認証アカウントとログインに必要なプロフィール・アクセス設定は残します。";
 
                 break;
 
@@ -1065,7 +1065,7 @@ async function handleResetTypeSelect(resetType) {
 
         const firstConfirmed =
             await showConfirmModal(
-                "注文・商品・在庫・開催日・操作履歴などのデータを初期化します。\n\n認証情報やリセットコード、注文IDの連番は維持されます。\n\nこの操作は取り消せません。",
+                "注文・商品・在庫・収支・操作ログ・座席利用履歴などの業務データをすべて削除します。\n\n認証アカウントとログインに必要なプロフィール・アクセス設定は残します。\n\nこの操作は取り消せません。",
                 {
                     title: "完全初期化を続けますか？",
                     confirmText: "確認して次へ",
@@ -1086,7 +1086,7 @@ async function handleResetTypeSelect(resetType) {
 
         const secondConfirmed =
             await showConfirmModal(
-                "完全初期化したデータを元に戻すことはできません。\n\n管理者による最終確認です。",
+                "業務データをすべて削除します。元に戻すことはできません。\n\n認証アカウントとログインに必要な設定は残します。管理者による最終確認です。",
                 {
                     title: "最終確認",
                     confirmText: "完全初期化を実行",
@@ -1127,7 +1127,7 @@ async function handleResetTypeSelect(resetType) {
         if (resetType === "date") {
 
             warning =
-                `${targetLabel}\n\n指定した日の注文データのみ削除します。\n\n${warning}`;
+                `${targetLabel}\n\n対象の日付の注文履歴・座席利用履歴を削除します。\n\n${warning}`;
 
         }
 
@@ -1135,7 +1135,7 @@ async function handleResetTypeSelect(resetType) {
         if (resetType === "all") {
 
             warning =
-                `すべての注文データを削除します。\n\n${warning}`;
+                `全注文履歴・全在庫入庫修正履歴・支出管理・収入管理・全操作履歴・全座席利用履歴を削除します。\n\n商品登録と操作ログは残します。\n\n${warning}`;
 
         }
 
@@ -1269,7 +1269,7 @@ async function selectResetDate() {
         if (!dates.length) {
 
             showToast(
-                "注文データが存在する日付がありません。"
+                "注文・座席利用履歴が存在する日付がありません。"
             );
 
             return null;
@@ -1412,7 +1412,7 @@ function showDateSelectionDialog(options) {
                             </h2>
 
                             <p>
-                                注文データが存在する日付から選択してください。
+                                注文・座席利用履歴が存在する日付から選択してください。
                             </p>
 
                         </div>
