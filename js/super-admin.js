@@ -728,7 +728,8 @@ async function loadAuditLogs() {
         "inventory_emergency_adjustment",
         "backup_export",
         "backup_file_created",
-        "backup_restore"
+        "backup_restore",
+        "reset"
     ];
     const { data, error } = await supabase.from("operation_history")
         .select("id,operated_at,operator_name,actor_role,operation_type,target,description,reason")
