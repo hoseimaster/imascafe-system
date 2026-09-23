@@ -68,6 +68,10 @@ import {
 } from "./settings.js";
 
 import {
+    initializeStayTime
+} from "./stay-time.js";
+
+import {
     initializeOutput
 } from "./output.js";
 
@@ -229,6 +233,11 @@ async function initializeApp(options = {}) {
         await initializeModule(
             "settings",
             initializeSettings
+        );
+
+        await initializeModule(
+            "stay-time",
+            initializeStayTime
         );
 
         await initializeModule(
@@ -629,6 +638,9 @@ function getCurrentScreen() {
         incomeScreen:
             "income",
 
+        stayTimeScreen:
+            "stay-time",
+
         outputScreen:
             "output"
 
@@ -737,6 +749,16 @@ async function refreshScreen(
             await refreshModule(
                 "./income.js",
                 "refreshIncome"
+            );
+
+            break;
+
+
+        case "stay-time":
+
+            await refreshModule(
+                "./stay-time.js",
+                "refreshStayTime"
             );
 
             break;
