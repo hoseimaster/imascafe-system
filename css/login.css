@@ -83,14 +83,14 @@
 #loginScreen .login-container::before {
     left: auto;
     right: calc(100% + 34px);
-    background-image: url("./login-illust-l.png");
+    background-image: url("../asset/login-illust-l.png");
     background-position: right bottom;
 }
 
 #loginScreen .login-container::after {
     left: calc(100% + 34px);
     right: auto;
-    background-image: url("./login-illust-r.png");
+    background-image: url("../asset/login-illust-r.png");
     background-position: left bottom;
 }
 
@@ -133,7 +133,7 @@
     height: 132px;
     margin: 0 auto 34px;
 
-    background-image: url("./titleーlogo-login.png");
+    background-image: url("../asset/titleーlogo-login.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -234,15 +234,15 @@
 }
 
 #loginScreen .login-operator-group::before {
-    background-image: url("./logo_6.png");
+    background-image: url("../asset/logo_6.png");
 }
 
 #loginScreen .login-role-group::before {
-    background-image: url("./logo_23.png");
+    background-image: url("../asset/logo_23.png");
 }
 
 #loginScreen .login-password-group::before {
-    background-image: url("./logo_18.png");
+    background-image: url("../asset/logo_18.png");
 }
 
 #loginScreen #operatorName,
@@ -1378,7 +1378,7 @@
         box-sizing: border-box;
 
         background-color: rgba(255, 255, 255, 0.94);
-        background-image: url("./titleーlogo-login.png");
+        background-image: url("../asset/titleーlogo-login.png");
         background-repeat: no-repeat;
         background-position: center;
         background-size: calc(100% - 48px) auto;
