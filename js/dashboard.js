@@ -225,7 +225,7 @@ function renderDashboardBase() {
                 0円
             </div>
 
-            <div class="dashboard-profit-formula">
+            <div id="dashboardProfitFormula" class="dashboard-profit-formula">
                 累計売上 ＋ 累計収入 − 累計支出
             </div>
 
@@ -432,6 +432,9 @@ export async function loadDashboard(scopeOverride = null) {
                 totalExpenses:
                     null,
 
+                totalIncome:
+                    null,
+
                 orderCount:
                     cumulativeData.orderCount,
 
@@ -529,6 +532,9 @@ export async function loadDashboard(scopeOverride = null) {
 
             totalExpenses:
                 expenseData.total,
+
+            totalIncome:
+                incomeData.total,
 
             orderCount:
                 cumulativeData.orderCount,
@@ -1024,6 +1030,14 @@ function updateDashboard(
             : formatYen(
                 data.totalProfit
             )
+    );
+
+
+    setText(
+        "dashboardProfitFormula",
+        `累計売上 ${formatYen(data.totalSales)} ＋ ` +
+        `累計収入 ${data.totalIncome === null ? "—" : formatYen(data.totalIncome)} − ` +
+        `累計支出 ${data.totalExpenses === null ? "—" : formatYen(data.totalExpenses)}`
     );
 
 
