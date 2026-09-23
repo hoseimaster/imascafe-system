@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { isAdmin, getOperatorName, getTerminalId } from "./auth.js";
+import { isAdmin, isViewer, getOperatorName, getTerminalId } from "./auth.js";
 import { showConfirmModal } from "./confirm-modal.js";
 
 let initialized = false;
@@ -13,7 +13,9 @@ export function initializeStayTime() {
     initialized = true;
 
     document.addEventListener("app:screenchange", async (event) => {
-        if (event.detail?.screen === "stayTimeScreen") await refreshStayTime();
+        if (event.detail?.screen === "stayTimeScreen") {
+            await refreshStayTime();
+        }
     });
     document.addEventListener("click", handleClick);
     document.getElementById("stayTimeHistoryDate")?.addEventListener("change", refreshHistory);
@@ -31,7 +33,7 @@ export function initializeStayTime() {
 export async function refreshStayTime() {
     renderDeviceState();
     if (isMobile()) return;
-    await Promise.all([loadSettings(), loadActiveSeats(), refreshHistory()]);
+    await Promise.all([loadSettings(), loadActiveSeats(), isAdmin() ? refreshHistory() : Promise.resolve()]);
     renderAll();
 }
 
@@ -47,6 +49,7 @@ async function handleClick(event) {
     }
     if (target.id === "stayTimeSettingsButton") return openSettingsModal();
     if (target.id === "stayTimeResetButton") return resetAllSeats();
+    if (isViewer()) return;
 
     const tableNumber = Number(target.dataset.tableNumber);
     const seatPart = target.dataset.seatPart;
@@ -120,11 +123,12 @@ function renderTable(tableNumber) {
 }
 
 function renderSeat(row, tableNumber, seatPart, label) {
-    if (!row) return `<button type="button" class="stay-seat is-empty" data-stay-seat data-table-number="${tableNumber}" data-seat-part="${seatPart}"><strong>${label}</strong><span>空席</span></button>`;
+    const disabled = isViewer() ? " disabled aria-disabled=\"true\"" : "";
+    if (!row) return `<button type="button" class="stay-seat is-empty"${disabled} data-stay-seat data-table-number="${tableNumber}" data-seat-part="${seatPart}"><strong>${label}</strong><span>空席</span></button>`;
     const elapsed = elapsedMinutes(row.started_at);
     const state = getState(row);
     const over = elapsed >= settings.stay_minutes ? `<small>時間超過 +${elapsed - settings.stay_minutes}分</small>` : `<small>残り ${Math.max(0, settings.stay_minutes - elapsed)}分</small>`;
-    return `<button type="button" class="stay-seat is-${state}" data-stay-seat data-table-number="${tableNumber}" data-seat-part="${seatPart}"><strong>${label}</strong><span>${row.customer_count}名</span><b>滞在 ${elapsed}分</b>${over}</button>`;
+    return `<button type="button" class="stay-seat is-${state}"${disabled} data-stay-seat data-table-number="${tableNumber}" data-seat-part="${seatPart}"><strong>${label}</strong><span>${row.customer_count}名</span><b>滞在 ${elapsed}分</b>${over}</button>`;
 }
 
 function getState(row) {
@@ -151,8 +155,6 @@ async function openStartModal(tableNumber, seatPart) {
     const canFull = !otherHalf;
     const defaultPart = seatPart === "full" ? "full" : seatPart;
 
-    let ignoreCapacity = false;
-
     const result = await showFormModal({
         title: `テーブル${tableNumber}の滞在を開始`,
         body: `
@@ -162,47 +164,55 @@ async function openStartModal(tableNumber, seatPart) {
                 <option value="b" ${defaultPart === "b" ? "selected" : ""} ${activeSeats.some(r => r.table_number === tableNumber && r.seat_part === "b") ? "disabled" : ""}>半面 B</option>
             </select></div>
             <div class="form-group"><label>利用人数</label><div class="stay-count-control"><button type="button" data-stay-count-minus aria-label="人数を1人減らす">−</button><input id="stayStartCount" type="number" min="1" step="1" value="1" readonly><button type="button" data-stay-count-plus aria-label="人数を1人増やす">＋</button></div></div>
-            <button type="button" class="secondary-button stay-expand-button" data-stay-ignore-capacity="true">定員を無視して登録</button>
         `,
-        confirmText: "滞在を開始",
-        onExtra: (modal) => {
-            modal.querySelector("[data-stay-ignore-capacity]")?.addEventListener("click", async () => {
-                const part = modal.querySelector("#stayStartPart")?.value;
-                const count = Number(modal.querySelector("#stayStartCount")?.value);
-                if (!part || !Number.isInteger(count) || count < 1) return;
-
-                const confirmed = await showConfirmModal(
-                    "1テーブル4名の定員を無視して登録します。",
-                    {
-                        title: "定員を無視して登録しますか？",
-                        confirmText: "無視して登録",
-                        tone: "warning",
-                        operation: "stay-ignore-capacity"
-                    }
-                );
-
-                if (!confirmed) return;
-                ignoreCapacity = true;
-                closeFormModal(modal);
-            });
-        }
+        confirmText: "滞在を開始"
     });
     if (!result) return;
     const part = result.querySelector("#stayStartPart")?.value;
     const count = Number(result.querySelector("#stayStartCount")?.value);
     if (!part || !Number.isInteger(count) || count < 1) return;
 
-    const { error } = await supabase.rpc("start_table_stay", {
+    let response = await supabase.rpc("start_table_stay", {
         p_table_number: tableNumber,
         p_seat_part: part,
         p_customer_count: count,
-        p_ignore_capacity: ignoreCapacity
+        p_ignore_capacity: false
     });
-    if (error) return showError(error);
+
+    if (response.error && isCapacityError(response.error)) {
+        const ignore = await showConfirmModal(
+            response.error.message || "この人数では通常の定員を超えます。",
+            {
+                title: "定員を超えて登録しますか？",
+                confirmText: "定員を無視して登録",
+                tone: "warning",
+                operation: "stay-ignore-capacity"
+            }
+        );
+        if (!ignore) return;
+        response = await supabase.rpc("start_table_stay", {
+            p_table_number: tableNumber,
+            p_seat_part: part,
+            p_customer_count: count,
+            p_ignore_capacity: true
+        });
+    }
+
+    if (response.error) return showError(response.error);
     await refreshStayTime();
 }
+
+function isCapacityError(error) {
+    const message = String(error?.message || "");
+    return message.includes("定員") || message.includes("3名以上") || message.includes("合計4名");
+}
+
 async function openActiveSeatModal(row) {
+    if (isViewer()) return;
+
     const elapsed = elapsedMinutes(row.started_at);
+    let cancelled = false;
+
     const confirmed = await showFormModal({
         title: `テーブル${row.table_number} ${partLabel(row.seat_part)}`,
         body: `
@@ -211,7 +221,7 @@ async function openActiveSeatModal(row) {
             <button type="button" class="secondary-button stay-expand-button" data-stay-save-count="true">人数を変更</button>
             ${row.seat_part !== "full" && !activeSeats.some(r => r.table_number === row.table_number && r.seat_part !== row.seat_part) ? '<button type="button" class="secondary-button stay-expand-button" data-stay-expand="true">全面利用へ変更</button>' : ""}
         `,
-        confirmText: "退出する",
+        confirmText: "退出",
         danger: true,
         onExtra: async (modal) => {
             const saveButton = modal.querySelector("[data-stay-save-count]");
@@ -223,12 +233,33 @@ async function openActiveSeatModal(row) {
                 closeFormModal(false);
                 await refreshStayTime();
             });
-            const button = modal.querySelector("[data-stay-expand]");
-            if (!button) return;
-            button.addEventListener("click", async () => {
+
+            const expandButton = modal.querySelector("[data-stay-expand]");
+            expandButton?.addEventListener("click", async () => {
                 const count = Number(modal.querySelector("#stayEditCount")?.value);
                 const { error } = await supabase.rpc("update_table_stay", { p_id: row.id, p_customer_count: count, p_expand_full: true });
                 if (error) return showError(error);
+                closeFormModal(false);
+                await refreshStayTime();
+            });
+
+            const actions = modal.querySelector(".stay-form-actions");
+            const exitButton = modal.querySelector("[data-stay-form-confirm]");
+            const cancelUseButton = document.createElement("button");
+            cancelUseButton.type = "button";
+            cancelUseButton.className = "secondary-button stay-cancel-use-button";
+            cancelUseButton.textContent = "取消";
+            actions?.insertBefore(cancelUseButton, exitButton);
+
+            cancelUseButton.addEventListener("click", async () => {
+                const cancelConfirmed = await showConfirmModal(
+                    "この座席利用を取り消します。利用記録には保存されません。",
+                    { title: "利用を取消しますか？", confirmText: "取消する", tone: "danger", operation: "stay-cancel" }
+                );
+                if (!cancelConfirmed) return;
+                const { error } = await supabase.rpc("cancel_table_stay", { p_id: row.id });
+                if (error) return showError(error);
+                cancelled = true;
                 closeFormModal(false);
                 await refreshStayTime();
             });
@@ -242,10 +273,8 @@ async function openActiveSeatModal(row) {
             return true;
         }
     });
-    if (!confirmed) return;
 
-    const ok = await showConfirmModal("退出すると現在の座席表示が空席に戻り、利用記録へ保存されます。", { title: "退出を確定しますか？", confirmText: "退出を確定", tone: "danger", operation: "stay-end" });
-    if (!ok) return;
+    if (cancelled || !confirmed) return;
     const { error } = await supabase.rpc("end_table_stay", { p_id: row.id });
     if (error) return showError(error);
     await refreshStayTime();
@@ -283,7 +312,7 @@ async function resetAllSeats() {
 }
 
 async function refreshHistory() {
-    if (isMobile()) return;
+    if (isMobile() || !isAdmin()) return;
     const input = document.getElementById("stayTimeHistoryDate");
     const date = input?.value || getTodayJST();
     const start = `${date}T00:00:00+09:00`;
@@ -331,10 +360,10 @@ async function refreshAlertBadge() {
         await loadActiveSeats();
         const count = activeSeats.filter(r => ["danger","over"].includes(getState(r))).length;
         badge.hidden = count === 0;
-        badge.textContent = count > 1 ? `! ${count}` : "!";
+        badge.textContent = "!";
         badge.closest("button")?.classList.toggle("has-alert", count > 0);
     } catch (error) {
-        console.error("滞在時間警告取得エラー:", error);
+        console.error("座席警告取得エラー:", error);
     }
 }
 
@@ -343,7 +372,7 @@ function subscribeRealtime() {
     channel = supabase.channel("stay-time-live")
         .on("postgres_changes", { event: "*", schema: "public", table: "table_seats" }, async () => { await loadActiveSeats(); renderAll(); })
         .on("postgres_changes", { event: "*", schema: "public", table: "stay_time_settings" }, async () => { await loadSettings(); renderAll(); })
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "table_stay_history" }, refreshHistory)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "table_stay_history" }, () => { if (isAdmin()) refreshHistory(); })
         .subscribe();
 }
 
@@ -358,6 +387,8 @@ function renderAdminActions() {
     const resetButton = document.getElementById("stayTimeResetButton");
     if (settingsButton) settingsButton.hidden = !admin;
     if (resetButton) resetButton.hidden = !admin;
+    const recordSection = document.getElementById("stayTimeRecordSection");
+    if (recordSection) recordSection.hidden = !admin;
 }
 
 let historyExpanded = false;
