@@ -62,6 +62,16 @@ function renderDeviceState() {
     const unsupported = document.getElementById("stayTimeUnsupported");
     const content = document.getElementById("stayTimeDesktopContent");
     if (!unsupported || !content) return;
+    const actions = content.querySelector(".stay-time-header-actions");
+    const header = content.querySelector(".stay-time-header");
+    const exit = content.querySelector(".stay-time-exit");
+    if (actions && header && exit) {
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            exit.after(actions);
+        } else {
+            header.append(actions);
+        }
+    }
     unsupported.hidden = true;
     content.hidden = false;
 }
