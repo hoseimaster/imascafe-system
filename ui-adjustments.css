@@ -2264,7 +2264,7 @@
 ======================================== */
 @media (max-width: 767px) {
     .main-content {
-        padding-top: calc(env(safe-area-inset-top) + 8px) !important;
+        padding-top: calc(env(safe-area-inset-top) + 12px) !important;
         margin-top: 0 !important;
     }
 
@@ -2279,4 +2279,44 @@
         margin-top: 0 !important;
         padding-top: 2px !important;
     }
+}
+
+
+/* サイドナビ：現在時刻 */
+.side-navigation-clock {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    padding: 9px 10px;
+    color: var(--text);
+    background: var(--surface-soft);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: var(--shadow-xs);
+    font-size: 16px;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: .04em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+#settingsOperationGuideButton.settings-operation-guide {
+    margin-top: 24px !important;
+}
+
+/* リセットコード表示 */
+.reset-issued-codes { display:grid; gap:8px; margin:0 0 16px; }
+.reset-issued-code { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; background:var(--surface-soft); border:1px solid var(--border-light); border-radius:var(--radius-small); }
+.reset-issued-code span { color:var(--text-secondary); font-size:12px; }
+.reset-issued-code strong { font-size:15px; font-variant-numeric:tabular-nums; letter-spacing:.06em; }
+
+/* 設定：操作説明は他の設定項目と同じ書体 */
+#settingsOperationGuideButton.settings-operation-guide,
+#settingsOperationGuideButton.settings-operation-guide .settings-item-content,
+#settingsOperationGuideButton.settings-operation-guide .settings-item-content span,
+#settingsOperationGuideButton.settings-operation-guide .settings-arrow {
+    font-family: inherit !important;
+    font-style: inherit !important;
 }
