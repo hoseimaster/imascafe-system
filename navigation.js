@@ -50,7 +50,7 @@ const SCREEN_TITLES = {
         "収入管理",
 
     stayTimeScreen:
-        "座席・滞在時間管理",
+        "座席",
 
     outputScreen:
         "データ出力",
@@ -95,13 +95,13 @@ const SCREEN_PERMISSIONS = {
     inventoryScreen: [
         "super_admin",
         "admin",
-        "staff"
+        "staff",
+        "viewer"
     ],
 
     historyScreen: [
         "super_admin",
-        "admin",
-        "staff"
+        "admin"
     ],
 
     settingsScreen: [
@@ -129,7 +129,8 @@ const SCREEN_PERMISSIONS = {
     stayTimeScreen: [
         "super_admin",
         "admin",
-        "staff"
+        "staff",
+        "viewer"
     ],
 
     outputScreen: [
@@ -181,6 +182,7 @@ export function initializeNavigation() {
     );
 
     applyNavigationPermissions();
+    setupSidebarClock();
 
     if (
         isAuthenticated() &&
@@ -996,4 +998,16 @@ document.addEventListener(
 if (!isAuthenticated()) {
 
     hideApplicationScreens();
+}
+
+
+function setupSidebarClock() {
+    const clock = document.getElementById("sideNavigationClock");
+    if (!clock || clock.dataset.initialized === "true") return;
+    clock.dataset.initialized = "true";
+    const update = () => {
+        clock.textContent = new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "Asia/Tokyo" }).format(new Date());
+    };
+    update();
+    setInterval(update, 1000);
 }
