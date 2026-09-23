@@ -155,6 +155,50 @@ function setupOrderForm() {
         customerInput.step =
             "1";
 
+        const decreaseButton =
+            document.querySelector(
+                "[data-customer-count-decrease]"
+            );
+
+        const increaseButton =
+            document.querySelector(
+                "[data-customer-count-increase]"
+            );
+
+        if (decreaseButton) {
+            decreaseButton.addEventListener(
+                "click",
+                () => {
+                    const currentValue =
+                        Math.max(
+                            1,
+                            Number(customerInput.value) || 1
+                        );
+
+                    customerInput.value =
+                        String(
+                            Math.max(1, currentValue - 1)
+                        );
+                }
+            );
+        }
+
+        if (increaseButton) {
+            increaseButton.addEventListener(
+                "click",
+                () => {
+                    const currentValue =
+                        Math.max(
+                            1,
+                            Number(customerInput.value) || 1
+                        );
+
+                    customerInput.value =
+                        String(currentValue + 1);
+                }
+            );
+        }
+
     }
 
 
@@ -1299,7 +1343,7 @@ function renderProducts() {
 
                         <img
                             class="order-product-category-icon"
-                            src="./logo_${category === "drink" ? "13" : category === "dessert" ? "14" : "15"}.png"
+                            src="./asset/logo_${category === "drink" ? "13" : category === "dessert" ? "14" : "15"}.png"
                             alt=""
                             aria-hidden="true"
                         >
