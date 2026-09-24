@@ -4,10 +4,6 @@
 
 import { supabase } from "./supabase.js";
 import { APP_CONFIG } from "./config.js";
-import {
-    getDateScope,
-    setupDateScopeControls
-} from "./date-scope.js";
 
 
 let outputInitialized = false;
@@ -24,25 +20,6 @@ export function initializeOutput() {
     }
 
     outputInitialized = true;
-
-    const header = document.querySelector("#outputScreen .screen-header");
-    if (header && !document.getElementById("outputDateMode")) {
-        header.insertAdjacentHTML("afterend", `
-            <div class="date-scope-control output-date-scope">
-                <select id="outputDateMode" aria-label="出力期間">
-                    <option value="all">すべて</option>
-                    <option value="date">指定日</option>
-                </select>
-                <input id="outputTargetDate" type="date" aria-label="出力日">
-            </div>
-        `);
-    }
-
-    setupDateScopeControls({
-        modeElement: document.getElementById("outputDateMode"),
-        dateElement: document.getElementById("outputTargetDate"),
-        defaultMode: "all"
-    });
 
     document.addEventListener(
         "click",
@@ -282,9 +259,7 @@ async function getOrdersCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).filter(
-            order => matchesOutputDate(order.order_date)
-        ).map(
+        ...(data || []).map(
             order => [
 
                 order.order_id,
@@ -335,20 +310,6 @@ async function getOrderItemsCSVData() {
         throw error;
     }
 
-    let filteredData = data || [];
-    const scope = getDateScope("all");
-
-    if (scope.mode === "date") {
-        const { data: orders, error: ordersError } = await supabase
-            .from("orders")
-            .select("id")
-            .eq("order_date", scope.date);
-
-        if (ordersError) throw ordersError;
-        const orderIds = new Set((orders || []).map(order => String(order.id)));
-        filteredData = filteredData.filter(item => orderIds.has(String(item.order_id)));
-    }
-
 
     return [
 
@@ -362,7 +323,7 @@ async function getOrderItemsCSVData() {
             "登録日時"
         ],
 
-        ...filteredData.map(
+        ...(data || []).map(
             item => [
 
                 item.id,
@@ -431,9 +392,7 @@ async function getExpensesCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).filter(
-            expense => matchesOutputDate(expense.expense_date)
-        ).map(
+        ...(data || []).map(
             expense => [
 
                 expense.id,
@@ -573,12 +532,7 @@ async function getHistoryCSVData() {
             "営業日"
         ],
 
-        ...(data || []).filter(
-            row => matchesOutputDate(
-                row.event_date ||
-                getDateJSTFromTimestamp(row.operated_at)
-            )
-        ).map(
+        ...(data || []).map(
             row => [
 
                 row.id,
@@ -648,8 +602,7 @@ async function getSalesCSVData() {
         (orders || []).filter(
             order =>
                 order.status !==
-                "cancelled" &&
-                matchesOutputDate(order.order_date)
+                "cancelled"
         );
 
 
@@ -886,22 +839,6 @@ function escapeCSVValue(
     }
 
 
-    /*
-     * Excel / LibreOffice 等で数式として解釈される値を無効化します。
-     * 先頭の空白を除いた最初の文字が = + - @ の場合、
-     * 文字列として扱わせるため先頭にアポストロフィを付与します。
-     */
-    if (
-        /^[\t\r\n ]*[=+\-@]/.test(
-            text
-        )
-    ) {
-        text =
-            "'" +
-            text;
-    }
-
-
     return (
         `"${text.replace(
             /"/g,
@@ -923,50 +860,9 @@ export async function exportPDF() {
         const data =
             await getPDFData();
 
-
-        const printWindow =
-            window.open(
-                "",
-                "_blank"
-            );
-
-
-        if (!printWindow) {
-
-            showOutputError(
-                "PDF出力画面を開けませんでした。"
-            );
-
-            return;
-
-        }
-
-
-        printWindow.document.open();
-
-
-        printWindow.document.write(
-            createPDFDocument(
-                data
-            )
+        openPDFPreview(
+            createPDFDocument(data)
         );
-
-
-        printWindow.document.close();
-
-
-        printWindow.focus();
-
-
-        setTimeout(
-            () => {
-
-                printWindow.print();
-
-            },
-            500
-        );
-
 
     } catch (error) {
 
@@ -984,6 +880,319 @@ export async function exportPDF() {
 }
 
 
+function openPDFPreview(html) {
+
+    closePDFPreview();
+
+    const overlay = document.createElement("div");
+    overlay.className = "operation-guide-preview-overlay";
+    overlay.id = "outputPdfPreviewOverlay";
+
+    overlay.innerHTML = `
+        <div
+            class="operation-guide-preview-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="outputPdfPreviewTitle"
+        >
+            <div class="operation-guide-preview-header">
+                <h2 id="outputPdfPreviewTitle">データ出力</h2>
+
+                <button
+                    type="button"
+                    class="operation-guide-preview-close"
+                    id="outputPdfPreviewClose"
+                    aria-label="閉じる"
+                >
+                    ×
+                </button>
+            </div>
+
+            <div class="operation-guide-preview-body">
+                <iframe
+                    class="operation-guide-preview-frame"
+                    id="outputPdfPreviewFrame"
+                    title="データ出力PDF"
+                ></iframe>
+            </div>
+
+            <div class="operation-guide-preview-actions" style="gap: 12px;">
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="outputPdfPreviewDownload"
+                >
+                    ダウンロード
+                </button>
+
+                <button
+                    type="button"
+                    class="primary-button operation-guide-preview-open"
+                    id="outputPdfPreviewPrint"
+                >
+                    出力
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const frame = document.getElementById(
+        "outputPdfPreviewFrame"
+    );
+
+    const printButton = document.getElementById(
+        "outputPdfPreviewPrint"
+    );
+
+    const downloadButton = document.getElementById(
+        "outputPdfPreviewDownload"
+    );
+
+    const closeButton = document.getElementById(
+        "outputPdfPreviewClose"
+    );
+
+    const frameDocument =
+        frame?.contentDocument ||
+        frame?.contentWindow?.document;
+
+    if (frameDocument) {
+        frameDocument.open();
+        frameDocument.write(html);
+        frameDocument.close();
+    }
+
+    printButton?.addEventListener(
+        "click",
+        () => {
+            frame?.contentWindow?.focus();
+            frame?.contentWindow?.print();
+        }
+    );
+
+    downloadButton?.addEventListener(
+        "click",
+        async () => {
+            await downloadPreviewPDF(
+                frame,
+                downloadButton
+            );
+        }
+    );
+
+    closeButton?.addEventListener(
+        "click",
+        closePDFPreview
+    );
+
+    overlay.addEventListener(
+        "click",
+        (event) => {
+            if (event.target === overlay) {
+                closePDFPreview();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "keydown",
+        handlePDFPreviewKeydown
+    );
+
+    requestAnimationFrame(() => {
+        overlay.classList.add("is-visible");
+        closeButton?.focus();
+    });
+
+}
+
+
+async function downloadPreviewPDF(frame, button) {
+
+    const frameWindow =
+        frame?.contentWindow;
+
+    const frameDocument =
+        frame?.contentDocument ||
+        frameWindow?.document;
+
+    if (!frameWindow || !frameDocument?.body) {
+        showOutputError(
+            "PDFをダウンロードできませんでした。"
+        );
+        return;
+    }
+
+    const originalText =
+        button?.textContent;
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "準備中";
+    }
+
+    try {
+
+        await loadHtml2PdfInPreview(
+            frameWindow,
+            frameDocument
+        );
+
+        const target =
+            frameDocument.querySelector(
+                ".document"
+            ) ||
+            frameDocument.body;
+
+        const filename =
+            `法マス喫茶_売上・運営実績報告書_${getTodayJST()}.pdf`;
+
+        await frameWindow
+            .html2pdf()
+            .set({
+                margin: 14,
+                filename,
+                image: {
+                    type: "jpeg",
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: "#ffffff"
+                },
+                jsPDF: {
+                    unit: "mm",
+                    format: "a4",
+                    orientation: "portrait"
+                },
+                pagebreak: {
+                    mode: [
+                        "css",
+                        "legacy"
+                    ]
+                }
+            })
+            .from(target)
+            .save();
+
+    } catch (error) {
+
+        console.error(
+            "PDFダウンロードエラー:",
+            error
+        );
+
+        showOutputError(
+            "PDFをダウンロードできませんでした。"
+        );
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText || "ダウンロード";
+        }
+    }
+
+}
+
+
+function loadHtml2PdfInPreview(
+    frameWindow,
+    frameDocument
+) {
+
+    if (
+        typeof frameWindow.html2pdf ===
+        "function"
+    ) {
+        return Promise.resolve();
+    }
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const existing =
+                frameDocument.getElementById(
+                    "html2pdfBundleScript"
+                );
+
+            if (existing) {
+                existing.addEventListener(
+                    "load",
+                    resolve,
+                    { once: true }
+                );
+                existing.addEventListener(
+                    "error",
+                    reject,
+                    { once: true }
+                );
+                return;
+            }
+
+            const script =
+                frameDocument.createElement(
+                    "script"
+                );
+
+            script.id =
+                "html2pdfBundleScript";
+
+            script.src =
+                "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+
+            script.onload =
+                () => resolve();
+
+            script.onerror =
+                () => reject(
+                    new Error(
+                        "PDF生成ライブラリを読み込めませんでした。"
+                    )
+                );
+
+            frameDocument.head.appendChild(
+                script
+            );
+
+        }
+    );
+
+}
+
+function handlePDFPreviewKeydown(event) {
+    if (event.key === "Escape") {
+        closePDFPreview();
+    }
+}
+
+
+function closePDFPreview() {
+
+    const overlay =
+        document.getElementById(
+            "outputPdfPreviewOverlay"
+        );
+
+    if (overlay) {
+        const focused = document.activeElement;
+        if (focused instanceof HTMLElement) {
+            focused.blur();
+        }
+        overlay.remove();
+    }
+
+    document.removeEventListener(
+        "keydown",
+        handlePDFPreviewKeydown
+    );
+
+}
+
+
 /* ========================================
    PDFデータ
 ======================================== */
@@ -991,7 +1200,6 @@ export async function exportPDF() {
 async function getPDFData() {
 
     const today = getTodayJST();
-    const scope = getDateScope("all");
 
     const {
         data: orders,
@@ -1012,8 +1220,7 @@ async function getPDFData() {
     const activeOrders =
         (orders || []).filter(
             order =>
-                order.status !== "cancelled" &&
-                matchesOutputDate(order.order_date)
+                order.status !== "cancelled"
         );
 
     const orderIds =
@@ -1145,16 +1352,14 @@ async function getPDFData() {
         error: expensesError
     } = await supabase
         .from("expenses")
-        .select("amount,expense_date");
+        .select("amount");
 
     if (expensesError) {
         throw expensesError;
     }
 
     const totalExpenses =
-        (expenses || []).filter(
-            expense => matchesOutputDate(expense.expense_date)
-        ).reduce(
+        (expenses || []).reduce(
             (total, expense) =>
                 total +
                 (Number(expense.amount) || 0),
@@ -1182,34 +1387,8 @@ async function getPDFData() {
             ? Math.round(sales / visitorCount)
             : 0;
 
-    let seatStayHistory = [];
-
-    if (scope.mode === "date" && scope.date) {
-        const start = `${scope.date}T00:00:00+09:00`;
-        const nextDate = new Date(start);
-        nextDate.setDate(nextDate.getDate() + 1);
-
-        const {
-            data: stayRows,
-            error: stayError
-        } = await supabase.rpc(
-            "get_output_table_stay_data",
-            { p_target_date: scope.date }
-        );
-
-        if (stayError) {
-            throw stayError;
-        }
-
-        seatStayHistory = stayRows || [];
-    }
-
     return {
-        date: scope.mode === "date"
-            ? scope.date
-            : "すべての期間",
-        generatedDate: today,
-        isDateSpecified: scope.mode === "date",
+        date: today,
         sales,
         expenses: totalExpenses,
         profit,
@@ -1217,8 +1396,7 @@ async function getPDFData() {
         visitorCount,
         averageOrderAmount,
         averageCustomerAmount,
-        productSales,
-        seatStayHistory
+        productSales
     };
 }
 
@@ -1253,21 +1431,6 @@ function createPDFDocument(
                     </td>
                 </tr>
             `;
-
-    const seatStayRows =
-        data.isDateSpecified
-            ? ((data.seatStayHistory || []).length
-                ? data.seatStayHistory.map((row, index) => `
-                    <tr>
-                        <td class="number-cell">${index + 1}</td>
-                        <td>テーブル${formatNumber(row.table_number)} ${row.seat_part === "full" ? "全面" : String(row.seat_part || "").toUpperCase()}</td>
-                        <td class="number-cell">${formatNumber(row.customer_count)} 人</td>
-                        <td class="number-cell">${escapeHTML(formatPDFTime(row.started_at))}〜${escapeHTML(formatPDFTime(row.ended_at))}</td>
-                        <td class="number-cell">${formatNumber(row.duration_minutes)} 分</td>
-                    </tr>
-                `).join("")
-                : `<tr><td colspan="5" class="empty-cell">対象となる座席利用データはありません。</td></tr>`)
-            : "";
 
     return `<!DOCTYPE html>
 
@@ -1500,16 +1663,9 @@ body {
                 出力日：
                 ${escapeHTML(
                     formatDateJapanese(
-                        data.generatedDate
+                        data.date
                     )
                 )}
-            </div>
-
-            <div>
-                集計対象：
-                ${data.isDateSpecified
-                    ? `${escapeHTML(formatDateJapanese(data.date))}のデータのみ`
-                    : "すべての期間"}
             </div>
 
             <div>
@@ -1521,12 +1677,6 @@ body {
 
 
     <section class="section">
-
-        <p class="note">
-            ${data.isDateSpecified
-                ? `※ 本報告書は${escapeHTML(formatDateJapanese(data.date))}のデータのみを集計しています。`
-                : "※ 本報告書はすべての期間のデータを集計しています。"}
-        </p>
 
         <h2 class="section-title">
             1. 集計概要
@@ -1604,28 +1754,6 @@ body {
     </section>
 
 
-    ${data.isDateSpecified ? `
-    <section class="section">
-        <h2 class="section-title">
-            3. 座席利用データ
-        </h2>
-        <table class="detail-table">
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>座席</th>
-                    <th class="number-cell">人数</th>
-                    <th class="number-cell">利用時刻</th>
-                    <th class="number-cell">滞在時間</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${seatStayRows}
-            </tbody>
-        </table>
-    </section>
-    ` : ""}
-
     <footer class="document-footer">
         法マス喫茶 総合管理システム
     </footer>
@@ -1636,20 +1764,6 @@ body {
 
 </html>`;
 
-}
-
-
-function formatPDFTime(value) {
-    if (!value) return "-";
-    return new Intl.DateTimeFormat(
-        "ja-JP",
-        {
-            timeZone: APP_CONFIG.TIME_ZONE,
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-        }
-    ).format(new Date(value));
 }
 
 
@@ -1853,14 +1967,8 @@ function createFilename(
     prefix
 ) {
 
-    const scope = getDateScope("all");
-    const target = scope.mode === "date"
-        ? scope.date
-        : "すべて";
-
     return (
         `${prefix}_` +
-        `${target}_` +
         `${getTodayJST()}.csv`
     );
 
@@ -1919,25 +2027,4 @@ function showOutputError(
 
 export function refreshOutput() {
     return true;
-}
-
-
-function matchesOutputDate(date) {
-    const scope = getDateScope("all");
-    return scope.mode === "all" || String(date || "") === String(scope.date || "");
-}
-
-
-function getDateJSTFromTimestamp(value) {
-    if (!value) return "";
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-
-    return new Intl.DateTimeFormat("sv-SE", {
-        timeZone: APP_CONFIG.TIME_ZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).format(date);
 }
