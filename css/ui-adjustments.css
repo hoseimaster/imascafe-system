@@ -2381,3 +2381,209 @@
     background: transparent !important;
     transform: none !important;
 }
+
+
+/* ========================================
+   設定：伝票PNG生成
+======================================== */
+.slip-preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 13000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(49, 39, 33, 0.42);
+    box-sizing: border-box;
+}
+
+.slip-preview-overlay[hidden] {
+    display: none !important;
+}
+
+.slip-preview-modal {
+    width: min(92vw, 620px);
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    box-sizing: border-box;
+}
+
+.slip-preview-header,
+.slip-preview-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.slip-preview-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.slip-preview-close {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-light);
+    border-radius: 9px;
+    background: var(--surface-soft);
+    color: var(--text);
+    font: inherit;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.slip-preview-stage {
+    min-height: 0;
+    overflow: auto;
+    padding: 12px;
+    background: #ececec;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.slip-preview-image {
+    display: block;
+    width: min(100%, 370px);
+    height: auto;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,.12);
+}
+
+.slip-preview-actions {
+    justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+    .slip-preview-overlay { padding: 12px; }
+    .slip-preview-modal { width: 100%; max-height: 94dvh; padding: 14px; }
+}
+
+/* ========================================
+   設定：操作説明PDFプレビュー
+======================================== */
+.operation-guide-preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .48);
+    opacity: 0;
+    transition: opacity .16s ease;
+}
+
+.operation-guide-preview-overlay.is-visible {
+    opacity: 1;
+}
+
+.operation-guide-preview-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(960px, 100%);
+    height: min(88vh, 900px);
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border-light, #e5e5e5);
+    border-radius: var(--radius-large, 16px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
+}
+
+.operation-guide-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    gap: 16px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border-light, #e5e5e5);
+}
+
+.operation-guide-preview-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.operation-guide-preview-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    color: var(--text, #222);
+    background: transparent;
+    border: 1px solid var(--border-light, #ddd);
+    border-radius: 10px;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.operation-guide-preview-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    background: #f2f2f2;
+}
+
+.operation-guide-preview-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+}
+
+.operation-guide-preview-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border-light, #e5e5e5);
+}
+
+.operation-guide-preview-open {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+@media (max-width: 767px) {
+    .operation-guide-preview-overlay {
+        padding: 10px;
+    }
+
+    .operation-guide-preview-modal {
+        width: 100%;
+        height: calc(100dvh - 20px);
+        border-radius: 12px;
+    }
+
+    .operation-guide-preview-header {
+        padding: 12px 14px;
+    }
+
+    .operation-guide-preview-actions {
+        padding: 10px 14px;
+    }
+
+    .operation-guide-preview-open {
+        width: 100%;
+    }
+}
