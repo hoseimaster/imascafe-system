@@ -68,6 +68,10 @@ import {
 } from "./settings.js";
 
 import {
+    initializeSlipGenerator
+} from "./slip-generator.js";
+
+import {
     initializeStayTime
 } from "./stay-time.js";
 
@@ -233,6 +237,11 @@ async function initializeApp(options = {}) {
         await initializeModule(
             "settings",
             initializeSettings
+        );
+
+        await initializeModule(
+            "slip-generator",
+            initializeSlipGenerator
         );
 
         await initializeModule(
