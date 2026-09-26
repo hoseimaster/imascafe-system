@@ -1754,6 +1754,67 @@ button.settings-item:active {
     min-width: 72px;
 }
 
+#productSettingsScreen .product-management-title-row {
+    width: 100%;
+}
+
+#productSettingsScreen .product-management-title-row .product-management-name {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+
+#productSettingsScreen .product-order-actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid #f2dac5;
+    border-radius: 11px;
+    background: #fff7ef;
+}
+
+#productSettingsScreen .product-order-actions .button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--primary-dark);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(105, 69, 41, 0.08);
+}
+
+#productSettingsScreen .product-order-actions .button:hover:not(:disabled) {
+    border-color: var(--primary-light);
+    background: var(--primary-soft);
+}
+
+#productSettingsScreen .product-order-actions .button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#productSettingsScreen .product-order-actions .button:disabled {
+    color: #b9ada3;
+    background: #f8f5f2;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+    #productSettingsScreen .product-order-actions .button {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+    }
+}
+
 
 /* ========================================
    日付管理
