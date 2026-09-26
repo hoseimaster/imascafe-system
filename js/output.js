@@ -4,6 +4,10 @@
 
 import { supabase } from "./supabase.js";
 import { APP_CONFIG } from "./config.js";
+import {
+    getDateScope,
+    setupDateScopeControls
+} from "./date-scope.js";
 
 
 let outputInitialized = false;
@@ -20,6 +24,25 @@ export function initializeOutput() {
     }
 
     outputInitialized = true;
+
+    const header = document.querySelector("#outputScreen .screen-header");
+    if (header && !document.getElementById("outputDateMode")) {
+        header.insertAdjacentHTML("afterend", `
+            <div class="date-scope-control output-date-scope">
+                <select id="outputDateMode" aria-label="出力期間">
+                    <option value="all">すべて</option>
+                    <option value="date">指定日</option>
+                </select>
+                <input id="outputTargetDate" type="date" aria-label="出力日">
+            </div>
+        `);
+    }
+
+    setupDateScopeControls({
+        modeElement: document.getElementById("outputDateMode"),
+        dateElement: document.getElementById("outputTargetDate"),
+        defaultMode: "all"
+    });
 
     document.addEventListener(
         "click",
@@ -259,7 +282,9 @@ async function getOrdersCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            order => matchesOutputDate(order.order_date)
+        ).map(
             order => [
 
                 order.order_id,
@@ -310,6 +335,20 @@ async function getOrderItemsCSVData() {
         throw error;
     }
 
+    let filteredData = data || [];
+    const scope = getDateScope("all");
+
+    if (scope.mode === "date") {
+        const { data: orders, error: ordersError } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("order_date", scope.date);
+
+        if (ordersError) throw ordersError;
+        const orderIds = new Set((orders || []).map(order => String(order.id)));
+        filteredData = filteredData.filter(item => orderIds.has(String(item.order_id)));
+    }
+
 
     return [
 
@@ -323,7 +362,7 @@ async function getOrderItemsCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...filteredData.map(
             item => [
 
                 item.id,
@@ -392,7 +431,9 @@ async function getExpensesCSVData() {
             "登録日時"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            expense => matchesOutputDate(expense.expense_date)
+        ).map(
             expense => [
 
                 expense.id,
@@ -532,7 +573,12 @@ async function getHistoryCSVData() {
             "営業日"
         ],
 
-        ...(data || []).map(
+        ...(data || []).filter(
+            row => matchesOutputDate(
+                row.event_date ||
+                getDateJSTFromTimestamp(row.operated_at)
+            )
+        ).map(
             row => [
 
                 row.id,
@@ -602,7 +648,8 @@ async function getSalesCSVData() {
         (orders || []).filter(
             order =>
                 order.status !==
-                "cancelled"
+                "cancelled" &&
+                matchesOutputDate(order.order_date)
         );
 
 
@@ -836,6 +883,22 @@ function escapeCSVValue(
         text =
             String(value);
 
+    }
+
+
+    /*
+     * Excel / LibreOffice 等で数式として解釈される値を無効化します。
+     * 先頭の空白を除いた最初の文字が = + - @ の場合、
+     * 文字列として扱わせるため先頭にアポストロフィを付与します。
+     */
+    if (
+        /^[\t\r\n ]*[=+\-@]/.test(
+            text
+        )
+    ) {
+        text =
+            "'" +
+            text;
     }
 
 
@@ -1200,6 +1263,7 @@ function closePDFPreview() {
 async function getPDFData() {
 
     const today = getTodayJST();
+    const scope = getDateScope("all");
 
     const {
         data: orders,
@@ -1220,7 +1284,8 @@ async function getPDFData() {
     const activeOrders =
         (orders || []).filter(
             order =>
-                order.status !== "cancelled"
+                order.status !== "cancelled" &&
+                matchesOutputDate(order.order_date)
         );
 
     const orderIds =
@@ -1352,14 +1417,16 @@ async function getPDFData() {
         error: expensesError
     } = await supabase
         .from("expenses")
-        .select("amount");
+        .select("amount,expense_date");
 
     if (expensesError) {
         throw expensesError;
     }
 
     const totalExpenses =
-        (expenses || []).reduce(
+        (expenses || []).filter(
+            expense => matchesOutputDate(expense.expense_date)
+        ).reduce(
             (total, expense) =>
                 total +
                 (Number(expense.amount) || 0),
@@ -1387,8 +1454,34 @@ async function getPDFData() {
             ? Math.round(sales / visitorCount)
             : 0;
 
+    let seatStayHistory = [];
+
+    if (scope.mode === "date" && scope.date) {
+        const start = `${scope.date}T00:00:00+09:00`;
+        const nextDate = new Date(start);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const {
+            data: stayRows,
+            error: stayError
+        } = await supabase.rpc(
+            "get_output_table_stay_data",
+            { p_target_date: scope.date }
+        );
+
+        if (stayError) {
+            throw stayError;
+        }
+
+        seatStayHistory = stayRows || [];
+    }
+
     return {
-        date: today,
+        date: scope.mode === "date"
+            ? scope.date
+            : "すべての期間",
+        generatedDate: today,
+        isDateSpecified: scope.mode === "date",
         sales,
         expenses: totalExpenses,
         profit,
@@ -1396,7 +1489,8 @@ async function getPDFData() {
         visitorCount,
         averageOrderAmount,
         averageCustomerAmount,
-        productSales
+        productSales,
+        seatStayHistory
     };
 }
 
@@ -1431,6 +1525,21 @@ function createPDFDocument(
                     </td>
                 </tr>
             `;
+
+    const seatStayRows =
+        data.isDateSpecified
+            ? ((data.seatStayHistory || []).length
+                ? data.seatStayHistory.map((row, index) => `
+                    <tr>
+                        <td class="number-cell">${index + 1}</td>
+                        <td>テーブル${formatNumber(row.table_number)} ${row.seat_part === "full" ? "全面" : String(row.seat_part || "").toUpperCase()}</td>
+                        <td class="number-cell">${formatNumber(row.customer_count)} 人</td>
+                        <td class="number-cell">${escapeHTML(formatPDFTime(row.started_at))}〜${escapeHTML(formatPDFTime(row.ended_at))}</td>
+                        <td class="number-cell">${formatNumber(row.duration_minutes)} 分</td>
+                    </tr>
+                `).join("")
+                : `<tr><td colspan="5" class="empty-cell">対象となる座席利用データはありません。</td></tr>`)
+            : "";
 
     return `<!DOCTYPE html>
 
@@ -1663,9 +1772,16 @@ body {
                 出力日：
                 ${escapeHTML(
                     formatDateJapanese(
-                        data.date
+                        data.generatedDate
                     )
                 )}
+            </div>
+
+            <div>
+                集計対象：
+                ${data.isDateSpecified
+                    ? `${escapeHTML(formatDateJapanese(data.date))}のデータのみ`
+                    : "すべての期間"}
             </div>
 
             <div>
@@ -1677,6 +1793,12 @@ body {
 
 
     <section class="section">
+
+        <p class="note">
+            ${data.isDateSpecified
+                ? `※ 本報告書は${escapeHTML(formatDateJapanese(data.date))}のデータのみを集計しています。`
+                : "※ 本報告書はすべての期間のデータを集計しています。"}
+        </p>
 
         <h2 class="section-title">
             1. 集計概要
@@ -1754,6 +1876,28 @@ body {
     </section>
 
 
+    ${data.isDateSpecified ? `
+    <section class="section">
+        <h2 class="section-title">
+            3. 座席利用データ
+        </h2>
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>座席</th>
+                    <th class="number-cell">人数</th>
+                    <th class="number-cell">利用時刻</th>
+                    <th class="number-cell">滞在時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${seatStayRows}
+            </tbody>
+        </table>
+    </section>
+    ` : ""}
+
     <footer class="document-footer">
         法マス喫茶 総合管理システム
     </footer>
@@ -1764,6 +1908,20 @@ body {
 
 </html>`;
 
+}
+
+
+function formatPDFTime(value) {
+    if (!value) return "-";
+    return new Intl.DateTimeFormat(
+        "ja-JP",
+        {
+            timeZone: APP_CONFIG.TIME_ZONE,
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+        }
+    ).format(new Date(value));
 }
 
 
@@ -1967,8 +2125,14 @@ function createFilename(
     prefix
 ) {
 
+    const scope = getDateScope("all");
+    const target = scope.mode === "date"
+        ? scope.date
+        : "すべて";
+
     return (
         `${prefix}_` +
+        `${target}_` +
         `${getTodayJST()}.csv`
     );
 
@@ -2027,4 +2191,25 @@ function showOutputError(
 
 export function refreshOutput() {
     return true;
+}
+
+
+function matchesOutputDate(date) {
+    const scope = getDateScope("all");
+    return scope.mode === "all" || String(date || "") === String(scope.date || "");
+}
+
+
+function getDateJSTFromTimestamp(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return new Intl.DateTimeFormat("sv-SE", {
+        timeZone: APP_CONFIG.TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(date);
 }
