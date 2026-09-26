@@ -12,6 +12,7 @@ import { confirmProductDeletion } from "./confirm-modal.js";
 let initialized = false;
 let productsLoading = false;
 let products = [];
+let productOrderAvailable = true;
 
 
 /* ========================================
@@ -77,18 +78,7 @@ export async function loadProducts() {
             error
         } = await supabase
             .from("products")
-            .select(`
-                id,
-                name,
-                category,
-                sort_order,
-                price,
-                provided_quantity,
-                low_stock_threshold,
-                active,
-                created_at,
-                updated_at
-            `)
+            .select("*")
             .order(
                 "category",
                 {
@@ -96,13 +86,7 @@ export async function loadProducts() {
                 }
             )
             .order(
-                "sort_order",
-                {
-                    ascending: true
-                }
-            )
-            .order(
-                "id",
+                "name",
                 {
                     ascending: true
                 }
@@ -124,8 +108,9 @@ export async function loadProducts() {
             return;
         }
 
-        products =
-            data || [];
+        products = data || [];
+        productOrderAvailable = !products.length ||
+            "sort_order" in products[0];
 
         renderProducts();
 
@@ -184,6 +169,9 @@ function renderProducts() {
 
 
     container.innerHTML =
+        (!productOrderAvailable
+            ? '<p role="status">表示順の変更には、先に商品並び順のSQLを適用してください。</p>'
+            : '') +
         Object.entries(
             groupedProducts
         )
@@ -235,12 +223,14 @@ function groupProductsByCategory() {
         "other"
     ];
 
-    Object.values(groups).forEach((group) => {
-        group.sort((a, b) =>
-            (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0) ||
-            Number(a.id) - Number(b.id)
-        );
-    });
+    if (productOrderAvailable) {
+        Object.values(groups).forEach((group) => {
+            group.sort((a, b) =>
+                Number(a.sort_order) - Number(b.sort_order) ||
+                Number(a.id) - Number(b.id)
+            );
+        });
+    }
 
 
     const orderedGroups = {};
@@ -398,6 +388,15 @@ function renderProductItem(
                         product.name
                     )}
                     </div>
+
+                    ${productOrderAvailable ? `<div class="product-order-actions" role="group" aria-label="${escapeHtml(product.name)}の並び順">
+                        <button type="button" class="button button-secondary"
+                            data-product-move="up" data-product-id="${escapeHtml(product.id)}"
+                            aria-label="${escapeHtml(product.name)}を上へ移動" ${index === 0 ? "disabled" : ""}>↑</button>
+                        <button type="button" class="button button-secondary"
+                            data-product-move="down" data-product-id="${escapeHtml(product.id)}"
+                            aria-label="${escapeHtml(product.name)}を下へ移動" ${index === categoryCount - 1 ? "disabled" : ""}>↓</button>
+                    </div>` : ""}
                 </div>
 
 
@@ -435,16 +434,6 @@ function renderProductItem(
                         }
                     </span>
 
-                </div>
-
-                <div class="product-order-actions" aria-label="カテゴリ内の並び順">
-                    <span>表示順</span>
-                    <button type="button" class="button button-secondary"
-                        data-product-move="up" data-product-id="${escapeHtml(product.id)}"
-                        aria-label="${escapeHtml(product.name)}を上へ移動" ${index === 0 ? "disabled" : ""}>↑</button>
-                    <button type="button" class="button button-secondary"
-                        data-product-move="down" data-product-id="${escapeHtml(product.id)}"
-                        aria-label="${escapeHtml(product.name)}を下へ移動" ${index === categoryCount - 1 ? "disabled" : ""}>↓</button>
                 </div>
 
             </div>
