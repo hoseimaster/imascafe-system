@@ -80,11 +80,16 @@ export async function loadStatistics(
         const scope = getDateScope("all");
         const date = targetDate || (scope.mode === "date" ? scope.date : null);
 
+        const { data: productOrder, error: productOrderError } = await supabase
+            .from("products")
+            .select("id,name,category,sort_order");
+        if (productOrderError) throw productOrderError;
+
         await Promise.all([
             loadDailySales(date),
             loadHourlySales(date),
-            loadProductSales(date),
-            loadProductDailySales(date),
+            loadProductSales(date, productOrder || []),
+            loadProductDailySales(date, productOrder || []),
             loadVisitorStatistics(date),
             loadKPI(date)
         ]);
@@ -209,7 +214,7 @@ async function loadHourlySales(
    商品別売上
 ======================================== */
 
-async function loadProductSales(targetDate = null) {
+async function loadProductSales(targetDate = null, products = []) {
 
     let query = supabase
         .from(targetDate ? "product_daily_sales_summary" : "product_sales_summary")
@@ -240,9 +245,7 @@ async function loadProductSales(targetDate = null) {
     }
 
 
-    renderProductSales(
-        data || []
-    );
+    renderProductSales(sortProductRows(data || [], products));
 }
 
 
@@ -250,7 +253,7 @@ async function loadProductSales(targetDate = null) {
    商品別日別売上
 ======================================== */
 
-async function loadProductDailySales(targetDate = null) {
+async function loadProductDailySales(targetDate = null, products = []) {
 
     let query = supabase
         .from("product_daily_sales_summary")
@@ -281,9 +284,7 @@ async function loadProductDailySales(targetDate = null) {
     }
 
 
-    renderProductDailySales(
-        data || []
-    );
+    renderProductDailySales(sortProductRows(data || [], products));
 }
 
 
@@ -751,28 +752,6 @@ function renderProductSales(
             }
 
 
-            /*
-             * 各カテゴリ内でも売上順にする。
-             */
-
-            categoryRows.sort(
-                (
-                    a,
-                    b
-                ) =>
-                    (
-                        Number(
-                            b.sales_amount
-                        ) || 0
-                    ) -
-                    (
-                        Number(
-                            a.sales_amount
-                        ) || 0
-                    )
-            );
-
-
             html += `
                 <div class="statistics-category-group">
 
@@ -830,7 +809,7 @@ function renderProductSales(
     `;
 
 
-    rows.forEach((row) => {
+    categories.flatMap(category => grouped[category]).forEach((row) => {
 
         const category =
             normalizeProductCategory(
@@ -880,6 +859,33 @@ function renderProductSales(
 
 
     container.innerHTML = html;
+}
+
+
+function sortProductRows(rows, products) {
+    const categoryRank = new Map([
+        ["ドリンク", 0], ["デザート", 1], ["セット", 2], ["その他", 3]
+    ]);
+    const byId = new Map(products.map(product => [String(product.id), product]));
+    const byName = new Map(products.map(product => [
+        `${normalizeProductCategory(product.category)}\u0000${product.name}`,
+        product
+    ]));
+    const productFor = row => byId.get(String(row.product_id ?? row.id ?? "")) ||
+        byName.get(`${normalizeProductCategory(row.category)}\u0000${row.name}`);
+
+    return [...rows].sort((a, b) => {
+        const aCategory = normalizeProductCategory(a.category);
+        const bCategory = normalizeProductCategory(b.category);
+        const aProduct = productFor(a);
+        const bProduct = productFor(b);
+        return (categoryRank.get(aCategory) ?? 3) - (categoryRank.get(bCategory) ?? 3) ||
+            (Number(aProduct?.sort_order) || 2147483647) -
+                (Number(bProduct?.sort_order) || 2147483647) ||
+            (Number(aProduct?.id) || 2147483647) -
+                (Number(bProduct?.id) || 2147483647) ||
+            String(a.name || "").localeCompare(String(b.name || ""), "ja");
+    });
 }
 
 
