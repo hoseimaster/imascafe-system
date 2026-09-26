@@ -81,6 +81,7 @@ export async function loadProducts() {
                 id,
                 name,
                 category,
+                sort_order,
                 price,
                 provided_quantity,
                 low_stock_threshold,
@@ -95,7 +96,13 @@ export async function loadProducts() {
                 }
             )
             .order(
-                "name",
+                "sort_order",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "id",
                 {
                     ascending: true
                 }
@@ -228,6 +235,13 @@ function groupProductsByCategory() {
         "other"
     ];
 
+    Object.values(groups).forEach((group) => {
+        group.sort((a, b) =>
+            (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0) ||
+            Number(a.id) - Number(b.id)
+        );
+    });
+
 
     const orderedGroups = {};
 
@@ -303,9 +317,11 @@ function renderCategory(
 
                 ${categoryProducts
                     .map(
-                        (product) =>
+                        (product, index) =>
                             renderProductItem(
-                                product
+                                product,
+                                index,
+                                categoryProducts.length
                             )
                     )
                     .join("")}
@@ -322,7 +338,9 @@ function renderCategory(
 ======================================== */
 
 function renderProductItem(
-    product
+    product,
+    index,
+    categoryCount
 ) {
 
     const active =
@@ -417,6 +435,16 @@ function renderProductItem(
                         }
                     </span>
 
+                </div>
+
+                <div class="product-order-actions" aria-label="カテゴリ内の並び順">
+                    <span>表示順</span>
+                    <button type="button" class="button button-secondary"
+                        data-product-move="up" data-product-id="${escapeHtml(product.id)}"
+                        aria-label="${escapeHtml(product.name)}を上へ移動" ${index === 0 ? "disabled" : ""}>↑</button>
+                    <button type="button" class="button button-secondary"
+                        data-product-move="down" data-product-id="${escapeHtml(product.id)}"
+                        aria-label="${escapeHtml(product.name)}を下へ移動" ${index === categoryCount - 1 ? "disabled" : ""}>↓</button>
                 </div>
 
             </div>
@@ -535,6 +563,17 @@ function setupProductEvents() {
 
 
             if (!target) {
+                return;
+            }
+
+            const moveButton = target.closest("[data-product-move]");
+            if (moveButton) {
+                event.preventDefault();
+                if (!isAdmin()) {
+                    showToast("商品を変更する権限がありません。");
+                    return;
+                }
+                moveProduct(moveButton);
                 return;
             }
 
@@ -739,6 +778,37 @@ function setupProductEvents() {
 
     }
 
+}
+
+
+async function moveProduct(button) {
+    const product = products.find(item => String(item.id) === button.dataset.productId);
+    if (!product || button.disabled) return;
+
+    const category = normalizeCategory(product.category) || "other";
+    const siblings = products
+        .filter(item => (normalizeCategory(item.category) || "other") === category)
+        .sort((a, b) =>
+            (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0) ||
+            Number(a.id) - Number(b.id)
+        );
+    const current = siblings.findIndex(item => String(item.id) === String(product.id));
+    const next = current + (button.dataset.productMove === "up" ? -1 : 1);
+    if (current < 0 || next < 0 || next >= siblings.length) return;
+
+    button.disabled = true;
+    try {
+        const { error } = await supabase.rpc("reorder_product_within_category", {
+            p_product_id: product.id,
+            p_position: next + 1
+        });
+        if (error) throw error;
+        await loadProducts();
+    } catch (error) {
+        console.error("商品並び順変更エラー:", error);
+        showToast(getErrorMessage(error));
+        button.disabled = false;
+    }
 }
 
 
