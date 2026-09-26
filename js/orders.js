@@ -1082,7 +1082,13 @@ export async function loadProducts() {
                     }
                 )
                 .order(
-                    "name",
+                    "sort_order",
+                    {
+                        ascending: true
+                    }
+                )
+                .order(
+                    "id",
                     {
                         ascending: true
                     }
@@ -1318,6 +1324,13 @@ function renderProducts() {
 
         }
     );
+
+    grouped.forEach((categoryProducts) => {
+        categoryProducts.sort((a, b) =>
+            (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0) ||
+            Number(a.id) - Number(b.id)
+        );
+    });
 
 
     let html = "";
