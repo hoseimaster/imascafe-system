@@ -100,7 +100,7 @@ async function renderSlip(products) {
     ctx.textBaseline = "middle";
     const issueYear = new Date().getFullYear();
     ctx.font = '700 72px "Noto Sans JP", "Yu Gothic", sans-serif';
-    ctx.fillText(`${issueYear}年法マス喫茶伝票`, margin + 28, titleY + titleHeight / 2);
+    ctx.fillText(`${issueYear}年 法マス喫茶伝票`, margin + 28, titleY + titleHeight / 2);
 
     drawInfoFields(ctx, margin + 20, infoY, innerWidth - 40, infoHeight);
     const categoryIcons = await loadCategoryIcons();
