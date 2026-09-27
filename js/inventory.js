@@ -189,18 +189,17 @@ export async function loadInventory() {
 
     try {
 
-        const {
-            data,
-            error
-        } = await supabase
-            .from("inventory_status")
-            .select("*")
-            .order(
-                "name",
-                {
-                    ascending: true
-                }
-            );
+        const [inventoryResult, productOrderResult] = await Promise.all([
+            supabase
+                .from("inventory_status")
+                .select("*")
+                .order("name", { ascending: true }),
+            supabase
+                .from("products")
+                .select("id,sort_order")
+        ]);
+
+        const { data, error } = inventoryResult;
 
 
         if (error) {
@@ -221,9 +220,18 @@ export async function loadInventory() {
         }
 
 
-        renderInventory(
-            data || []
+        if (productOrderResult.error) {
+            console.warn("商品表示順の取得エラー:", productOrderResult.error);
+        }
+
+        const sortOrderById = new Map(
+            (productOrderResult.data || []).map((product) => [
+                Number(product.id),
+                Number(product.sort_order)
+            ])
         );
+
+        renderInventory(data || [], sortOrderById);
 
     } finally {
 
@@ -237,7 +245,7 @@ export async function loadInventory() {
    在庫表示
 ======================================== */
 
-function renderInventory(rows) {
+function renderInventory(rows, sortOrderById = new Map()) {
 
     const container =
         document.getElementById(
@@ -323,6 +331,17 @@ function renderInventory(rows) {
 
         }
     );
+
+    for (const category of categoryOrder) {
+        grouped[category].sort((a, b) => {
+            const aOrder = sortOrderById.get(Number(a.product_id));
+            const bOrder = sortOrderById.get(Number(b.product_id));
+            return (Number.isFinite(aOrder) ? aOrder : Number.MAX_SAFE_INTEGER) -
+                (Number.isFinite(bOrder) ? bOrder : Number.MAX_SAFE_INTEGER) ||
+                String(a.name || "").localeCompare(String(b.name || ""), "ja") ||
+                Number(a.product_id) - Number(b.product_id);
+        });
+    }
 
 
     const sections =
