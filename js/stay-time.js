@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { isAdmin, isViewer, getOperatorName, getTerminalId } from "./auth.js";
+import { isAdmin, isStaff, isViewer, getOperatorName, getTerminalId } from "./auth.js";
 import { showConfirmModal } from "./confirm-modal.js";
 
 let initialized = false;
@@ -7,6 +7,7 @@ let activeSeats = [];
 let settings = { stay_minutes: 30, warning_before: 15, danger_before: 5 };
 let minuteTimer = null;
 let channel = null;
+let currentJstDate = null;
 
 export function initializeStayTime() {
     if (initialized) return;
@@ -22,6 +23,7 @@ export function initializeStayTime() {
     window.addEventListener("resize", renderDeviceState);
 
     const today = getTodayJST();
+    currentJstDate = today;
     const dateInput = document.getElementById("stayTimeHistoryDate");
     if (dateInput) dateInput.value = today;
 
@@ -33,7 +35,7 @@ export function initializeStayTime() {
 export async function refreshStayTime() {
     renderDeviceState();
     if (isMobile()) return;
-    await Promise.all([loadSettings(), loadActiveSeats(), isAdmin() ? refreshHistory() : Promise.resolve()]);
+    await Promise.all([loadSettings(), loadActiveSeats(), isStaff() ? refreshHistory() : Promise.resolve()]);
     renderAll();
 }
 
@@ -322,7 +324,7 @@ async function resetAllSeats() {
 }
 
 async function refreshHistory() {
-    if (isMobile() || !isAdmin()) return;
+    if (isMobile() || !isStaff()) return;
     const input = document.getElementById("stayTimeHistoryDate");
     const date = input?.value || getTodayJST();
     const start = `${date}T00:00:00+09:00`;
@@ -382,13 +384,28 @@ function subscribeRealtime() {
     channel = supabase.channel("stay-time-live")
         .on("postgres_changes", { event: "*", schema: "public", table: "table_seats" }, async () => { await loadActiveSeats(); renderAll(); })
         .on("postgres_changes", { event: "*", schema: "public", table: "stay_time_settings" }, async () => { await loadSettings(); renderAll(); })
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "table_stay_history" }, () => { if (isAdmin()) refreshHistory(); })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "table_stay_history" }, () => { if (isStaff()) refreshHistory(); })
         .subscribe();
 }
 
 function startMinuteTimer() {
     if (minuteTimer) clearInterval(minuteTimer);
-    minuteTimer = setInterval(() => { renderAll(); }, 15000);
+    minuteTimer = setInterval(async () => {
+        const today = getTodayJST();
+        if (today !== currentJstDate) {
+            const previousDate = currentJstDate;
+            currentJstDate = today;
+            const dateInput = document.getElementById("stayTimeHistoryDate");
+            if (dateInput?.value === previousDate) dateInput.value = today;
+            try {
+                await loadActiveSeats();
+                if (isStaff()) await refreshHistory();
+            } catch (error) {
+                console.error("日付更新時の座席取得エラー:", error);
+            }
+        }
+        renderAll();
+    }, 15000);
 }
 
 function renderAdminActions() {
@@ -398,7 +415,7 @@ function renderAdminActions() {
     if (settingsButton) settingsButton.hidden = !admin;
     if (resetButton) resetButton.hidden = !admin;
     const recordSection = document.getElementById("stayTimeRecordSection");
-    if (recordSection) recordSection.hidden = !admin;
+    if (recordSection) recordSection.hidden = !isStaff();
 }
 
 let historyExpanded = false;
