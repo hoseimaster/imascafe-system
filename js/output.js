@@ -1585,6 +1585,14 @@ body {
     width: 100%;
 }
 
+@media screen {
+    body {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 13mm 14mm 14mm;
+    }
+}
+
 .document-header {
     display: flex;
     align-items: flex-start;
