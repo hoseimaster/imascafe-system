@@ -37,7 +37,7 @@ async function createSlipPreview() {
 async function fetchProducts() {
     const { data, error } = await supabase
         .from("products")
-        .select("id,name,category,price,active")
+        .select("*")
         .eq("active", true)
         .order("category", { ascending: true })
         .order("name", { ascending: true });
@@ -59,10 +59,14 @@ async function fetchProducts() {
             return categoryDiff;
         }
 
-        return String(a.name || "").localeCompare(
-            String(b.name || ""),
-            "ja"
-        );
+        const aOrder = Number.isInteger(a.sort_order)
+            ? a.sort_order : Number.MAX_SAFE_INTEGER;
+        const bOrder = Number.isInteger(b.sort_order)
+            ? b.sort_order : Number.MAX_SAFE_INTEGER;
+
+        return aOrder - bOrder ||
+            String(a.name || "").localeCompare(String(b.name || ""), "ja") ||
+            Number(a.id) - Number(b.id);
     });
 }
 
@@ -323,8 +327,8 @@ function loadImage(src) {
 
 function normalizeCategory(category) {
     const value = String(category || "").trim().toLowerCase();
-    if (["drink", "ドリンク", "飲み物"].includes(value)) return "drink";
-    if (["dessert", "デザート", "スイーツ"].includes(value)) return "dessert";
+    if (["drink", "drinks", "ドリンク", "飲み物", "飲料"].includes(value)) return "drink";
+    if (["dessert", "food", "デザート", "スイーツ", "フード", "料理"].includes(value)) return "dessert";
     if (["set", "セット"].includes(value)) return "other";
     return "other";
 }
