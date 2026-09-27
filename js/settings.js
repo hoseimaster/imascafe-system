@@ -172,115 +172,44 @@ function setupSettingsEvents() {
 
 }
 
-
-/* ========================================
-   操作説明プレビュー
-======================================== */
 function openOperationGuidePreview() {
-
     closeOperationGuidePreview();
 
     const overlay = document.createElement("div");
-    overlay.className = "operation-guide-preview-overlay";
     overlay.id = "operationGuidePreviewOverlay";
-
+    overlay.className = "operation-guide-preview-overlay";
     overlay.innerHTML = `
-        <div
-            class="operation-guide-preview-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="operationGuidePreviewTitle"
-        >
+        <div class="operation-guide-preview-modal" role="dialog" aria-modal="true" aria-labelledby="operationGuidePreviewTitle">
             <div class="operation-guide-preview-header">
                 <h2 id="operationGuidePreviewTitle">操作説明</h2>
-
-                <button
-                    type="button"
-                    class="operation-guide-preview-close"
-                    id="operationGuidePreviewClose"
-                    aria-label="閉じる"
-                >
-                    ×
-                </button>
+                <button type="button" class="operation-guide-preview-close" aria-label="閉じる">×</button>
             </div>
-
             <div class="operation-guide-preview-body">
-                <iframe
-                    class="operation-guide-preview-frame"
-                    src="./manual/operation-guide.pdf#view=FitH"
-                    title="操作説明PDF"
-                ></iframe>
+                <iframe class="operation-guide-preview-frame" src="./manual/operation-guide.pdf" title="操作説明PDF"></iframe>
             </div>
-
             <div class="operation-guide-preview-actions">
-                <a
-                    class="secondary-button operation-guide-preview-open"
-                    href="./manual/operation-guide.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    PDFを別画面で開く
-                </a>
+                <a class="secondary-button" href="./manual/operation-guide.pdf" target="_blank" rel="noopener noreferrer">別タブで開く</a>
             </div>
         </div>
     `;
 
-    document.body.appendChild(overlay);
-
-    const closeButton = document.getElementById(
-        "operationGuidePreviewClose"
-    );
-
-    closeButton?.addEventListener(
-        "click",
-        closeOperationGuidePreview
-    );
-
-    overlay.addEventListener(
-        "click",
-        (event) => {
-            if (event.target === overlay) {
-                closeOperationGuidePreview();
-            }
-        }
-    );
-
-    document.addEventListener(
-        "keydown",
-        handleOperationGuidePreviewKeydown
-    );
-
-    requestAnimationFrame(() => {
-        overlay.classList.add("is-visible");
-        closeButton?.focus();
+    overlay.querySelector(".operation-guide-preview-close")
+        .addEventListener("click", closeOperationGuidePreview);
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) closeOperationGuidePreview();
     });
+    document.body.appendChild(overlay);
+    document.addEventListener("keydown", handleOperationGuidePreviewKeydown);
+    overlay.querySelector(".operation-guide-preview-close").focus();
 }
 
 function handleOperationGuidePreviewKeydown(event) {
-    if (event.key === "Escape") {
-        closeOperationGuidePreview();
-    }
+    if (event.key === "Escape") closeOperationGuidePreview();
 }
 
 function closeOperationGuidePreview() {
-    const overlay = document.getElementById(
-        "operationGuidePreviewOverlay"
-    );
-
-    if (!overlay) {
-        return;
-    }
-
-    if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-    }
-
-    document.removeEventListener(
-        "keydown",
-        handleOperationGuidePreviewKeydown
-    );
-
-    overlay.remove();
+    document.getElementById("operationGuidePreviewOverlay")?.remove();
+    document.removeEventListener("keydown", handleOperationGuidePreviewKeydown);
 }
 
 
